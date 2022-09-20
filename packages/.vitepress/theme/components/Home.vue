@@ -12,6 +12,7 @@
 
 <script lang="ts" setup>
 import wrapper from 'free-dom'
+import '../../../core/style.scss'
 import { ref, watch } from 'vue-demi'
 const style = ref({})
 watch(style, (val) => {

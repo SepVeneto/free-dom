@@ -1,0 +1,23 @@
+.widget-wrapper {
+  display: inline-block;
+  position: absolute;
+  border: 1px dashed transparent;
+  transition: border-color 0.3s;
+  &.can-move:hover {
+    border: 1px dashed#4089ef;
+    cursor: move;
+  }
+  &:hover {
+    .widget-dot {
+      opacity: 1;
+    }
+  }
+}
+.widget-dot {
+  opacity: 0;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  border: 1px solid #4089ef;
+}

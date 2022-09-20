@@ -1,3 +1,3 @@
-import Wrapper from './wrapper.vue'
+import Wrapper from './wrapper'
 
 export default Wrapper

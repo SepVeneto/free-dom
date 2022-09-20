@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "rollup -c",
     "dev": "vue-demi-switch 3 && vitepress dev packages",
     "test": "vitest"
   },
@@ -16,7 +17,10 @@
   },
   "devDependencies": {
     "@types/node": "^18.7.18",
+    "esno": "^0.16.3",
     "rollup": "^2.79.0",
+    "rollup-plugin-esbuild": "^4.10.1",
+    "rollup-plugin-scss": "^3.0.0",
     "sass": "^1.54.9",
     "typescript": "^4.8.3",
     "unplugin-vue-components": "^0.22.7",
