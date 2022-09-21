@@ -1,5 +1,6 @@
 import esbuild from 'rollup-plugin-esbuild'
 import scss from 'rollup-plugin-scss'
+import dts from 'rollup-plugin-dts'
 
 const esbuildPlugin = esbuild()
 
@@ -20,6 +21,17 @@ const configs = [
       esbuildPlugin,
       scss(),
     ],
+    external: [
+      'vue-demi'
+    ]
+  },
+  {
+    input: 'packages/core/wrapper.ts',
+    output: {
+      file: 'packages/core/dist/index.d.ts',
+      format: 'es'
+    },
+    plugins: [dts()],
     external: [
       'vue-demi'
     ]

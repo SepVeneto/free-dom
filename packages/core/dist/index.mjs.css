@@ -3,12 +3,13 @@
   position: absolute;
   border: 1px dashed transparent;
   transition: border-color 0.3s;
+  box-sizing: content-box;
 }
-.widget-wrapper.can-move:hover {
+.widget-wrapper.is-active, .widget-wrapper.can-move:hover {
   border: 1px dashed #4089ef;
   cursor: move;
 }
-.widget-wrapper:hover .widget-dot {
+.widget-wrapper.is-active .widget-dot, .widget-wrapper:hover .widget-dot {
   opacity: 1;
 }
 

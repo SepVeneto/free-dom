@@ -1,38 +1,32 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2017",
     "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": true,
-
-    "suppressImplicitAnyIndexErrors": true,
-
-    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "resolveJsonModule": true,
+    "rootDir": ".",
     "baseUrl": ".",
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noUnusedLocals": true,
+
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": [ "src/*" ],
+      "free-dom": [ "packages/core/index.ts" ]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "packages",
+    "packages/.vitepress/theme/components/*.vue",
+    "packages/.vitepress/*.ts",
   ],
   "exclude": [
     "node_modules"
