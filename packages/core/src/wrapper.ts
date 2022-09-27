@@ -10,6 +10,8 @@ import {
   shallowRef,
   inject,
   ref,
+  watchEffect,
+  watch,
 } from 'vue-demi';
 
 import { useNormalizeStyle } from './hooks';
@@ -39,34 +41,50 @@ export const FreeDom = defineComponent({
     const wrapStyle = useNormalizeStyle(_style);
 
     const domNode = new Dom()
+    console.log(props.customStyle)
+    const _rect = domNode.normalize(props.customStyle)
+
+    watch(() => domNode.getRect(), (val) => {
+      console.log('watch')
+      _style.value = {
+        transform: `translate(${val.x}px, ${val.y}px)`,
+        width: val.width,
+        height: val.height,
+      }
+    }, { deep: true })
 
     onMounted(async () => {
-      normalizeCustomStyle();
-      const { transform, width, height } = _style.value
-      domNode.setRect(transform, width, height)
+      await nextTick();
+      console.log('trigger')
+      const rect = widgetRef.value.getBoundingClientRect();
+      console.log(rect)
+      const _width = rect.width;
+      const _height = rect.height;
+      _rect.width = _width
+      _rect.height = _height
+      // domNode.setRect(_rect)
       // await SceneContext?.register(d)
     });
-    async function normalizeCustomStyle() {
-      const { width, height } = props.customStyle;
-      let _width = width;
-      let _height = height;
+    // async function normalizeCustomStyle() {
+    //   const { width, height } = props.customStyle;
+    //   let _width = width;
+    //   let _height = height;
 
-      _style.value = {
-        transform: 'translate(0, 0)',
-        ...props.customStyle,
-      };
+    //   _style.value = {
+    //     transform: 'translate(0, 0)',
+    //     ...props.customStyle,
+    //   };
 
-      // 等待默认样式改变后，重新计算尺寸
-      await nextTick();
-      const rect = widgetRef.value.getBoundingClientRect();
-      _width = rect.width;
-      _height = rect.height;
-      _style.value = {
-        ...props.customStyle,
-        width: _width,
-        height: _height,
-      };
-    }
+    //   // 等待默认样式改变后，重新计算尺寸
+    //   const rect = widgetRef.value.getBoundingClientRect();
+    //   _width = rect.width;
+    //   _height = rect.height;
+    //   _style.value = {
+    //     ...props.customStyle,
+    //     width: _width,
+    //     height: _height,
+    //   };
+    // }
 
     const dots = computed(() => {
       return isActive.value ? ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] : [];
@@ -174,11 +192,10 @@ export const FreeDom = defineComponent({
       const pos = getPos(_style.value);
       const move = (mouseEvt: MouseEvent) => {
         const { clientX, clientY } = mouseEvt;
-        setPosition({
-          ...pos,
-          x: clientX - evt.clientX + Number(pos.x),
-          y: clientY - evt.clientY + Number(pos.y),
-        });
+        domNode.setPosition(
+          clientX - evt.clientX + Number(pos.x),
+          clientY - evt.clientY + Number(pos.y)
+        )
       };
       const up = () => {
         // console.log('drag', 'up')

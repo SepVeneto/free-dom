@@ -1,5 +1,5 @@
 <template>
-  <section
+  <free-scene
     style="
       width: 600px;
       height: 400px;
@@ -13,7 +13,7 @@
     <free-dom v-model:custom-style="style2" move scale active>
       <div>测试文本2</div>
     </free-dom>
-  </section>
+  </free-scene>
 </template>
 
 <script lang="ts" setup>
