@@ -14,6 +14,8 @@ import {
 
 import { useNormalizeStyle } from './hooks';
 import { isVue2 } from 'vue-demi';
+import { SceneToken } from './tokens'
+import { Dom } from './DomNode'
 
 export const FreeDom = defineComponent({
   name: 'FreeDom',
@@ -28,16 +30,21 @@ export const FreeDom = defineComponent({
     active: Boolean,
   },
   setup(props, { emit }) {
-    const editorContext = inject('Editor', { preview: false });
-    const _preview = computed(() => editorContext.preview);
+    const SceneContext = inject(SceneToken);
+    const _preview = computed(() => /* editorContext.preview */ false);
     const canScale = computed(() => !_preview.value && props.scale);
     const canMove = computed(() => !_preview.value && props.move);
     const widgetRef = shallowRef();
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
 
-    onMounted(() => {
+    const domNode = new Dom()
+
+    onMounted(async () => {
       normalizeCustomStyle();
+      const { transform, width, height } = _style.value
+      domNode.setRect(transform, width, height)
+      // await SceneContext?.register(d)
     });
     async function normalizeCustomStyle() {
       const { width, height } = props.customStyle;
@@ -208,7 +215,6 @@ export const FreeDom = defineComponent({
     };
   },
   render() {
-    console.log('render');
     const dots = this.canScale
       ? this.dots.map((dot) => {
           if (isVue2) {

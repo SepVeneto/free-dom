@@ -17,8 +17,8 @@
 </template>
 
 <script lang="ts" setup>
-import { freeDom } from 'free-dom';
-import '../../../core/style.scss';
+import { freeDom, freeScene } from 'free-dom';
+import 'free-dom/../style.scss';
 import { ref } from 'vue-demi';
 const style1 = ref({});
 const style2 = ref({ fontSize: '24px' })

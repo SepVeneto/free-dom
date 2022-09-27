@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "module": "esnext",
+    "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -20,7 +20,7 @@
 
     "paths": {
       "@/*": [ "src/*" ],
-      "free-dom": [ "packages/core/index.ts" ]
+      "free-dom": [ "packages/core/src/index.ts" ]
     },
   },
   "include": [

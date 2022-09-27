@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'free-dom': resolve(__dirname, './core/index.ts'),
+      'free-dom': resolve(__dirname, './core/src/index.ts'),
     },
     dedupe: ['vue', 'vue-demi', '@vue/runtime-core'],
   },
