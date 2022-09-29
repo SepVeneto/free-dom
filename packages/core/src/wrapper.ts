@@ -7,15 +7,15 @@ import {
   defineComponent,
   h,
   computed,
-  shallowRef,
   inject,
   ref,
   watchEffect,
   watch,
+  triggerRef,
 } from 'vue-demi';
 
 import { useNormalizeStyle } from './hooks';
-import { isVue2 } from 'vue-demi';
+import { isVue2, shallowRef } from 'vue-demi';
 import { SceneToken } from './tokens'
 import { Dom } from './DomNode'
 
@@ -32,7 +32,7 @@ export const FreeDom = defineComponent({
     active: Boolean,
   },
   setup(props, { emit }) {
-    const SceneContext = inject(SceneToken);
+    const SceneContext = inject<any>(SceneToken);
     const _preview = computed(() => /* editorContext.preview */ false);
     const canScale = computed(() => !_preview.value && props.scale);
     const canMove = computed(() => !_preview.value && props.move);
@@ -40,12 +40,19 @@ export const FreeDom = defineComponent({
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
 
-    const domNode = new Dom()
-    console.log(props.customStyle)
-    const _rect = domNode.normalize(props.customStyle)
+    const _rect = shallowRef({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    })
+    const domNode = new Dom(_rect, widgetRef)
+    domNode.normalize(props.customStyle)
 
-    watch(() => domNode.getRect(), (val) => {
-      console.log('watch')
+    SceneContext.register(domNode)
+
+    watch(_rect, (val) => {
+      // console.log(val)
       _style.value = {
         transform: `translate(${val.x}px, ${val.y}px)`,
         width: val.width,
@@ -56,35 +63,8 @@ export const FreeDom = defineComponent({
     onMounted(async () => {
       await nextTick();
       console.log('trigger')
-      const rect = widgetRef.value.getBoundingClientRect();
-      console.log(rect)
-      const _width = rect.width;
-      const _height = rect.height;
-      _rect.width = _width
-      _rect.height = _height
-      // domNode.setRect(_rect)
-      // await SceneContext?.register(d)
+      domNode.updateRect()
     });
-    // async function normalizeCustomStyle() {
-    //   const { width, height } = props.customStyle;
-    //   let _width = width;
-    //   let _height = height;
-
-    //   _style.value = {
-    //     transform: 'translate(0, 0)',
-    //     ...props.customStyle,
-    //   };
-
-    //   // 等待默认样式改变后，重新计算尺寸
-    //   const rect = widgetRef.value.getBoundingClientRect();
-    //   _width = rect.width;
-    //   _height = rect.height;
-    //   _style.value = {
-    //     ...props.customStyle,
-    //     width: _width,
-    //     height: _height,
-    //   };
-    // }
 
     const dots = computed(() => {
       return isActive.value ? ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] : [];

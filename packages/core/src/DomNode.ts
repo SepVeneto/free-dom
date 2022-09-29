@@ -1,4 +1,5 @@
-import { CSSProperties } from "vue-demi"
+import { CSSProperties, Ref } from "vue-demi"
+import { unrefElement } from '@vueuse/core'
 
 interface IDom {
   x: number
@@ -9,28 +10,33 @@ interface IDom {
 
 export class Dom {
   private _rect: IDom = { x: 0, y: 0, width: 0, height: 0 }
+  private _observe: Ref<IDom>
+  private _widgetRef: Ref
+
+
+  constructor(observer: Ref, ele: Ref) {
+    this._observe = observer
+    this._widgetRef = ele
+  }
 
   public normalize(style: CSSProperties) {
     const { transform, width, height } = style;
-    console.log(transform, width, height)
-    const proxy = new Proxy({
+    this._rect = new Proxy({
       width: parseNum(width ?? 0),
       height: parseNum(height ?? 0),
       ...this.getPos(transform)
     }, {
       get: () => {
-        return this._rect
+        return this._observe.value
       },
       set: (data, key, value) => {
-        this._rect = {
-          ...data,
+        this._observe.value = {
+          ...this._observe.value,
           [key]: value
         }
-        console.log('proxy', this._rect)
         return true
       }
     })
-    return proxy
   }
   public getPos(transform?: string) {
     if (!transform) {
@@ -44,7 +50,10 @@ export class Dom {
     return { x: parseNum(x), y: parseNum(y) }
   }
 
-  constructor() {
+  public updateRect() {
+    const rect = this._widgetRef.value.getBoundingClientRect();
+    this._rect.width = rect.width
+    this._rect.height = rect.height
   }
   public setPosition(x: number | string, y: number | string) {
     console.log('set')
