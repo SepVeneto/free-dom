@@ -16,6 +16,8 @@ import { useNormalizeStyle } from './hooks';
 import { isVue2, shallowRef } from 'vue-demi';
 import { SceneToken } from './tokens'
 import { onClickOutside } from '@vueuse/core'
+import EventBus from './EventBus';
+import { v4 as uuidv4 } from 'uuid'
 
 export const FreeDom = defineComponent({
   name: 'FreeDom',
@@ -37,6 +39,7 @@ export const FreeDom = defineComponent({
     const widgetRef = shallowRef();
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
+    const uuid = uuidv4()
 
     const _rect = reactive({
       x: 0,
@@ -44,6 +47,14 @@ export const FreeDom = defineComponent({
       width: 0,
       height: 0,
     })
+
+    const context = {
+      _rect,
+      trigger,
+    }
+
+    SceneContext.register(uuid, context)
+
     onClickOutside(widgetRef, () => {
       active.value = false;
     })
@@ -114,13 +125,15 @@ export const FreeDom = defineComponent({
         const deltaY = currY - startY;
         const newWidth = cWidth + (isL ? -deltaX : isR ? deltaX : 0);
         const newHeight = cHeight + (isT ? -deltaY : isB ? deltaY : 0);
-        const pos = {
-          x: (x as number) + (isL ? deltaX : 0),
-          y: (y as number) + (isT ? deltaY : 0),
-          width: newWidth < 0 ? 0 : newWidth,
-          height: newHeight < 0 ? 0 : newHeight,
-        };
-        setPosition(pos);
+
+        _rect.x = x + (isL ? deltaX : 0)
+        _rect.y = y + (isT ? deltaY : 0)
+        _rect.width = newWidth < 0 ? 0 : newWidth
+        _rect.height = newHeight < 0 ? 0 : newHeight
+        if (!SceneContext.checkValid(_rect)) return;
+        EventBus.emit('move', uuid)
+        trigger()
+        // setPosition(pos);
       };
       const up = () => {
         document.removeEventListener('mousemove', move);
@@ -130,19 +143,7 @@ export const FreeDom = defineComponent({
       document.addEventListener('mousemove', move);
       document.addEventListener('mouseup', up);
     }
-    function setPosition(pos: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    }) {
-      _style.value = {
-        ...props.customStyle,
-        transform: `translate(${pos.x}px, ${pos.y}px)`,
-        width: pos.width,
-        height: pos.height,
-      };
-    }
+
     function getDotPos(dot: string): CSSProperties {
       if (!_style.value) return {};
       const { width, height } = _style.value;
@@ -194,6 +195,7 @@ export const FreeDom = defineComponent({
         _rect.width = pos.width
         _rect.height = pos.height
         if (!SceneContext.checkValid(_rect)) return;
+        EventBus.emit('move', uuid)
         trigger()
       };
       const up = () => {
