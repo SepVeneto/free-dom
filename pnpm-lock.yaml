@@ -45,10 +45,12 @@ importers:
     specifiers:
       '@types/uuid': ^8.3.4
       '@vueuse/core': ^9.2.0
+      uuid: ^9.0.0
       vue: ^3.2.39
       vue-demi: latest
     dependencies:
       '@vueuse/core': 9.3.0_vue@3.2.39
+      uuid: 9.0.0
       vue-demi: 0.13.11_vue@3.2.39
     devDependencies:
       '@types/uuid': 8.3.4
@@ -1387,6 +1389,11 @@ packages:
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.5
     dev: true
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /vite/3.1.4_sass@1.55.0:
     resolution: {integrity: sha512-JoQI08aBjY9lycL7jcEq4p9o1xUjq5aRvdH4KWaXtkSx7e7RpAh9D3IjzDWRD4Fg44LS3oDAIOG/Kq1L+82psA==}

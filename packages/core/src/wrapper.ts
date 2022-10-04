@@ -9,29 +9,27 @@ import {
   computed,
   inject,
   ref,
-  watchEffect,
-  watch,
-  triggerRef,
+  reactive
 } from 'vue-demi';
 
 import { useNormalizeStyle } from './hooks';
 import { isVue2, shallowRef } from 'vue-demi';
 import { SceneToken } from './tokens'
-import { Dom } from './DomNode'
+import { onClickOutside } from '@vueuse/core'
 
 export const FreeDom = defineComponent({
   name: 'FreeDom',
   emits: ['update:customStyle', 'select'],
   props: {
     customStyle: {
-      type: Object as PropType<CSSProperties>,
+      type: Object as PropType<Partial<CSSProperties>>,
       required: true,
     },
     scale: Boolean,
     move: Boolean,
-    active: Boolean,
   },
   setup(props, { emit }) {
+    const active = ref(false)
     const SceneContext = inject<any>(SceneToken);
     const _preview = computed(() => /* editorContext.preview */ false);
     const canScale = computed(() => !_preview.value && props.scale);
@@ -40,31 +38,47 @@ export const FreeDom = defineComponent({
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
 
-    const _rect = shallowRef({
+    const _rect = reactive({
       x: 0,
       y: 0,
       width: 0,
       height: 0,
     })
-    const domNode = new Dom(_rect, widgetRef)
-    domNode.normalize(props.customStyle)
+    onClickOutside(widgetRef, () => {
+      active.value = false;
+    })
 
-    SceneContext.register(domNode)
+    function normalize(style: CSSProperties) {
+      const { transform, width, height } = style;
+      const { x, y } = getPos(transform)
+      _rect.width = parseNum(width ?? 0)
+      _rect.height = parseNum(height ?? 0)
+      _rect.x = x
+      _rect.y = y;
+    }
 
-    watch(_rect, (val) => {
-      // console.log(val)
-      _style.value = {
-        transform: `translate(${val.x}px, ${val.y}px)`,
-        width: val.width,
-        height: val.height,
-      }
-    }, { deep: true })
+    function parseNum(val: number | string) {
+      return typeof val === 'number' ? val : parseFloat(val)
+    }
 
     onMounted(async () => {
+      _style.value = props.customStyle
       await nextTick();
-      console.log('trigger')
-      domNode.updateRect()
+      const rect = widgetRef.value.getBoundingClientRect();
+      normalize(props.customStyle)
+      _rect.width = rect.width
+      _rect.height = rect.height
+      trigger()
     });
+
+    function trigger() {
+      const { x, y, width, height } = _rect
+      _style.value = {
+        transform: `translate(${x}px, ${y}px)`,
+        width: width,
+        height: height,
+      }
+    }
 
     const dots = computed(() => {
       return isActive.value ? ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] : [];
@@ -81,7 +95,7 @@ export const FreeDom = defineComponent({
       evt.stopPropagation();
       evt.preventDefault();
 
-      const { x, y, width, height } = getPos(_style.value);
+      const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
       const cHeight = height;
 
@@ -165,20 +179,24 @@ export const FreeDom = defineComponent({
       };
     }
     function onMousedown(evt: MouseEvent) {
+      active.value = true;
       emit('select');
       evt.stopPropagation();
       if (!canMove.value) return;
-      // componentData.current = props.element
-      const pos = getPos(_style.value);
+      const pos = getStyle(_style.value);
       const move = (mouseEvt: MouseEvent) => {
         const { clientX, clientY } = mouseEvt;
-        domNode.setPosition(
-          clientX - evt.clientX + Number(pos.x),
-          clientY - evt.clientY + Number(pos.y)
-        )
+        const x = clientX - evt.clientX + pos.x
+        const y = clientY - evt.clientY + pos.y
+
+        _rect.x = x
+        _rect.y = y
+        _rect.width = pos.width
+        _rect.height = pos.height
+        if (!SceneContext.checkValid(_rect)) return;
+        trigger()
       };
       const up = () => {
-        // console.log('drag', 'up')
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         emit('update:customStyle', _style.value);
@@ -186,17 +204,26 @@ export const FreeDom = defineComponent({
       document.addEventListener('mousemove', move);
       document.addEventListener('mouseup', up);
     }
-    function getPos(style: CSSProperties) {
+    function getStyle(style: CSSProperties) {
       const { transform, width, height } = style;
-      const posRegexp = /translate\((\d+)px[, ]+(\d+)px\)/;
-      const [, x, y] = posRegexp.exec(transform!) ?? [];
-      // console.log('getPos', x, y)
+      const { x, y } = getPos(transform)
       return {
         x: x ? Number(x) : 0,
         y: y ? Number(y) : 0,
         width: parseFloat(width as string),
         height: parseFloat(height as string),
       };
+    }
+    function getPos(transform?: string) {
+      if (!transform) {
+        return {
+          x: 0,
+          y: 0
+        }
+      }
+      const posRegexp = /translate\((\d+)px[, ]+(\d+)px\)/;
+      const [, x, y] = posRegexp.exec(transform!) ?? [];
+      return { x: parseNum(x), y: parseNum(y) }
     }
 
     return {
@@ -205,6 +232,7 @@ export const FreeDom = defineComponent({
       wrapStyle,
       canScale,
       dots,
+      active,
 
       getDotPos,
       onMousedown,

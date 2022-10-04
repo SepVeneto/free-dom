@@ -52,11 +52,12 @@ export class Dom {
 
   public updateRect() {
     const rect = this._widgetRef.value.getBoundingClientRect();
+    console.log(rect.width)
     this._rect.width = rect.width
     this._rect.height = rect.height
   }
   public setPosition(x: number | string, y: number | string) {
-    console.log('set')
+    // console.log('set')
     this._rect.x = parseNum(x)
     this._rect.y = parseNum(y)
   }

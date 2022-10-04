@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@vueuse/core": "^9.2.0",
+    "uuid": "^9.0.0",
     "vue-demi": "latest"
   },
   "peerDependencies": {
