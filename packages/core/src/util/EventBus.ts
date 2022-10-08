@@ -1,4 +1,4 @@
-export default class EventBus {
+export class EventBus {
   private static _callbacks: Record<string, Function[]> = {}
 
   public static on(name: string, callback: Function) {
@@ -8,6 +8,6 @@ export default class EventBus {
     EventBus._callbacks[name].push(callback)
   }
   public static emit(name: string, ...args: any) {
-    EventBus._callbacks[name].forEach(item => item.apply(this, args))
+    EventBus._callbacks[name]?.forEach(item => item.apply(this, args))
   }
 }

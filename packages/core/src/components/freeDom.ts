@@ -1,4 +1,3 @@
-import './style.scss';
 import {
   CSSProperties,
   nextTick,
@@ -12,11 +11,10 @@ import {
   reactive
 } from 'vue-demi';
 
-import { useNormalizeStyle } from './hooks';
+import { useNormalizeStyle } from '../hooks';
 import { isVue2, shallowRef } from 'vue-demi';
-import { SceneToken } from './tokens'
 import { onClickOutside } from '@vueuse/core'
-import EventBus from './EventBus';
+import { EventBus, SceneToken  } from '../util';
 import { v4 as uuidv4 } from 'uuid'
 
 export const FreeDom = defineComponent({
@@ -53,7 +51,9 @@ export const FreeDom = defineComponent({
       trigger,
     }
 
-    SceneContext.register(uuid, context)
+    onMounted(() => {
+      SceneContext.register(uuid, context)
+    })
 
     onClickOutside(widgetRef, () => {
       active.value = false;
@@ -136,6 +136,7 @@ export const FreeDom = defineComponent({
         // setPosition(pos);
       };
       const up = () => {
+        EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         emit('update:customStyle', _style.value);
@@ -199,6 +200,7 @@ export const FreeDom = defineComponent({
         trigger()
       };
       const up = () => {
+        EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         emit('update:customStyle', _style.value);
@@ -223,7 +225,7 @@ export const FreeDom = defineComponent({
           y: 0
         }
       }
-      const posRegexp = /translate\((\d+)px[, ]+(\d+)px\)/;
+      const posRegexp = /translate\(([.0-9]+)px[, ]+([.0-9]+)px\)/;
       const [, x, y] = posRegexp.exec(transform!) ?? [];
       return { x: parseNum(x), y: parseNum(y) }
     }
@@ -246,7 +248,7 @@ export const FreeDom = defineComponent({
       ? this.dots.map((dot) => {
           if (isVue2) {
             return h('div', {
-              class: 'widget-dot',
+              class: 'free-dom__widget-dot',
               style: this.getDotPos(dot),
               on: {
                 mousedown: (evt: MouseEvent) => this.onMousedownDot(evt, dot),
@@ -254,7 +256,7 @@ export const FreeDom = defineComponent({
             });
           }
           return h('div', {
-            class: 'widget-dot',
+            class: 'free-dom__widget-dot',
             style: this.getDotPos(dot),
             onMousedown: (evt: MouseEvent) => this.onMousedownDot(evt, dot),
           });
@@ -269,7 +271,7 @@ export const FreeDom = defineComponent({
         'section',
         {
           class: [
-            'widget-wrapper',
+            'free-dom__widget-wrapper',
             { 'can-move': this.canMove },
             { 'is-active': this.active },
           ],
@@ -287,7 +289,7 @@ export const FreeDom = defineComponent({
       {
         ref: 'widgetRef',
         class: [
-          'widget-wrapper',
+          'free-dom__widget-wrapper',
           { 'can-move': this.canMove },
           { 'is-active': this.active },
         ],

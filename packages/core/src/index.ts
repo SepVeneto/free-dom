@@ -1,4 +1,4 @@
-import { FreeDom } from './wrapper'
-import _scene from './scene'
+import { FreeDom } from './components/freeDom'
+import { FreeDomWrap } from './components/freeDomWrap'
 export const freeDom = FreeDom
-export const freeScene = _scene
+export const freeScene = FreeDomWrap

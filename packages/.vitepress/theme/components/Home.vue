@@ -1,4 +1,5 @@
 <template>
+  <button @click="handleAdd">添加</button>
   <free-scene
     style="
       width: 600px;
@@ -7,20 +8,35 @@
       position: relative;
     "
   >
-    <free-dom v-model:custom-style="style1" move scale>
-      <div>测试文本1</div>
-    </free-dom>
-    <free-dom v-model:custom-style="style2" move scale active>
-      <div>测试文本2</div>
+    <free-dom
+      v-for="(item, index) in domList"
+      :key="index"
+      v-model:custom-style="item.style"
+      move
+      scale
+    >
+      <span>{{ item.text }}{{ index }}</span>
     </free-dom>
   </free-scene>
 </template>
 
 <script lang="ts" setup>
 import { freeDom, freeScene } from 'free-dom';
-import 'free-dom/../style.scss';
+import 'free-dom/../style/index.scss';
 import { ref } from 'vue-demi';
-const style1 = ref({});
-const style2 = ref({ fontSize: '24px' })
+const domList = ref([
+  {
+    text: '测试文本',
+    style: {},
+  },
+  {
+    text: '测试文本',
+    style: {},
+  }
+])
+
+function handleAdd() {
+  domList.value.push({ text: '测试文本', style: {} })
+}
 
 </script>

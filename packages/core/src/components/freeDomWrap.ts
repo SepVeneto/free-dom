@@ -1,10 +1,18 @@
-import { defineComponent, shallowRef, h, provide, reactive } from "vue-demi"
+import { defineComponent, shallowRef, h, provide, reactive, toRefs } from "vue-demi"
 import { useElementBounding } from '@vueuse/core'
-import { SceneToken } from './tokens'
+import { SceneToken } from '../util'
 import markLine from "./markLine"
 
-export default defineComponent({
+export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
+  props:{
+    move: Boolean,
+    scale: Boolean,
+    diff: {
+      type: Number,
+      default: 3,
+    }
+  },
   setup(props, { expose }) {
     const rectRef = shallowRef(null)
     const rect = useElementBounding(rectRef)
@@ -18,12 +26,16 @@ export default defineComponent({
       return x >= 0 && x + width <= rect.width.value && y >= 0 && y + height <= rect.height.value
     }
 
-    provide(SceneToken, {
-      nodes,
+    provide(
+      SceneToken,
+      reactive({
+        ...toRefs(props),
+        nodes,
 
-      register,
-      checkValid
-    })
+        register,
+        checkValid
+      })
+    )
 
     expose({
       register
