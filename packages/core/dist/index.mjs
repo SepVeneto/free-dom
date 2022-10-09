@@ -66,9 +66,9 @@ const FreeDom = defineComponent({
   setup(props, { emit }) {
     const active = ref(false);
     const SceneContext = inject(SceneToken);
-    const _preview = computed(() => SceneContext?.preview ?? props.preview);
-    const canScale = computed(() => !_preview.value && (SceneContext?.scale ?? props.scale));
-    const canMove = computed(() => !_preview.value && (SceneContext?.move ?? props.move));
+    const _preview = computed(() => SceneContext?.preview || props.preview);
+    const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale));
+    const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
     const widgetRef = shallowRef();
     const _style = ref({});
     const wrapStyle = useNormalizeStyle(_style);

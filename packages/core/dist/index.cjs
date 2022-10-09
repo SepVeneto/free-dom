@@ -70,9 +70,9 @@ const FreeDom = vueDemi.defineComponent({
   setup(props, { emit }) {
     const active = vueDemi.ref(false);
     const SceneContext = vueDemi.inject(SceneToken);
-    const _preview = vueDemi.computed(() => SceneContext?.preview ?? props.preview);
-    const canScale = vueDemi.computed(() => !_preview.value && (SceneContext?.scale ?? props.scale));
-    const canMove = vueDemi.computed(() => !_preview.value && (SceneContext?.move ?? props.move));
+    const _preview = vueDemi.computed(() => SceneContext?.preview || props.preview);
+    const canScale = vueDemi.computed(() => !_preview.value && (SceneContext?.scale || props.scale));
+    const canMove = vueDemi.computed(() => !_preview.value && (SceneContext?.move || props.move));
     const widgetRef = vueDemi.shallowRef();
     const _style = vueDemi.ref({});
     const wrapStyle = useNormalizeStyle(_style);
