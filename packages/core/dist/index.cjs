@@ -3,23 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vueDemi = require('vue-demi');
+var core = require('@vueuse/core');
+var uuid = require('uuid');
 
-var __defProp$1 = Object.defineProperty;
-var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$1 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$1.call(b, prop))
-      __defNormalProp$1(a, prop, b[prop]);
-  if (__getOwnPropSymbols$1)
-    for (var prop of __getOwnPropSymbols$1(b)) {
-      if (__propIsEnum$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
-    }
-  return a;
-};
 function useNormalizeStyle(style) {
   const _style = vueDemi.ref({
     transition: "inherit"
@@ -37,30 +23,30 @@ function useNormalizeStyle(style) {
       },
       {}
     );
-    _style.value = __spreadValues$1(__spreadValues$1({}, _style.value), res);
+    _style.value = {
+      ..._style.value,
+      ...res
+    };
   });
   return _style;
 }
 
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
+class EventBus {
+  static _callbacks = {};
+  static on(name, callback) {
+    if (!Array.isArray(EventBus._callbacks[name])) {
+      EventBus._callbacks[name] = [];
     }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+    EventBus._callbacks[name].push(callback);
+  }
+  static emit(name, ...args) {
+    EventBus._callbacks[name]?.forEach((item) => item.apply(this, args));
+  }
+}
+
+const SceneToken = Symbol("Scene");
+
+const Dots = ["t", "r", "l", "b", "lt", "lb", "rt", "rb"];
 const FreeDom = vueDemi.defineComponent({
   name: "FreeDom",
   emits: ["update:customStyle", "select"],
@@ -69,39 +55,79 @@ const FreeDom = vueDemi.defineComponent({
       type: Object,
       required: true
     },
-    scale: Boolean,
+    scale: [Boolean, Array],
     move: Boolean,
-    active: Boolean
+    preview: Boolean,
+    limitWidth: {
+      type: Number,
+      default: void 0
+    },
+    limitHeight: {
+      type: Number,
+      default: void 0
+    }
   },
   setup(props, { emit }) {
-    const editorContext = vueDemi.inject("Editor", { preview: false });
-    const _preview = vueDemi.computed(() => editorContext.preview);
-    const canScale = vueDemi.computed(() => !_preview.value && props.scale);
-    const canMove = vueDemi.computed(() => !_preview.value && props.move);
+    const active = vueDemi.ref(false);
+    const SceneContext = vueDemi.inject(SceneToken);
+    const _preview = vueDemi.computed(() => SceneContext?.preview ?? props.preview);
+    const canScale = vueDemi.computed(() => !_preview.value && (SceneContext?.scale ?? props.scale));
+    const canMove = vueDemi.computed(() => !_preview.value && (SceneContext?.move ?? props.move));
     const widgetRef = vueDemi.shallowRef();
     const _style = vueDemi.ref({});
     const wrapStyle = useNormalizeStyle(_style);
-    vueDemi.onMounted(() => {
-      normalizeCustomStyle();
+    const uuid$1 = uuid.v4();
+    const _rect = vueDemi.reactive({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0
     });
-    async function normalizeCustomStyle() {
-      const { width, height } = props.customStyle;
-      let _width = width;
-      let _height = height;
-      _style.value = __spreadValues({
-        transform: "translate(0, 0)"
-      }, props.customStyle);
+    const context = {
+      _rect,
+      trigger
+    };
+    vueDemi.onMounted(() => {
+      SceneContext?.register(uuid$1, context);
+    });
+    core.onClickOutside(widgetRef, () => {
+      active.value = false;
+    });
+    function normalize(style) {
+      const { transform, width, height } = style;
+      const { x, y } = getPos(transform);
+      _rect.width = parseNum(width ?? 0);
+      _rect.height = parseNum(height ?? 0);
+      _rect.x = x;
+      _rect.y = y;
+    }
+    function parseNum(val) {
+      return typeof val === "number" ? val : parseFloat(val);
+    }
+    vueDemi.onMounted(async () => {
+      _style.value = props.customStyle;
       await vueDemi.nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
-      _width = rect.width;
-      _height = rect.height;
-      _style.value = __spreadProps(__spreadValues({}, props.customStyle), {
-        width: _width,
-        height: _height
-      });
+      normalize(props.customStyle);
+      _rect.width = rect.width;
+      _rect.height = rect.height;
+      trigger();
+    });
+    function trigger() {
+      const { x, y, width, height } = _rect;
+      _style.value = {
+        transform: `translate(${x}px, ${y}px)`,
+        width,
+        height
+      };
     }
+    const _dots = vueDemi.computed(() => {
+      return SceneContext && Array.isArray(SceneContext.scale) ? SceneContext.scale : props.scale;
+    });
     const dots = vueDemi.computed(() => {
-      return isActive.value ? ["t", "r", "l", "b", "lt", "lb", "rt", "rb"] : [];
+      if (!isActive.value)
+        return [];
+      return Array.isArray(_dots.value) ? _dots.value : Dots;
     });
     const direct = {
       l: "w",
@@ -113,7 +139,7 @@ const FreeDom = vueDemi.defineComponent({
     function onMousedownDot(evt, dot) {
       evt.stopPropagation();
       evt.preventDefault();
-      const { x, y, width, height } = getPos(_style.value);
+      const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
       const cHeight = height;
       const startX = evt.clientX;
@@ -129,28 +155,23 @@ const FreeDom = vueDemi.defineComponent({
         const deltaY = currY - startY;
         const newWidth = cWidth + (isL ? -deltaX : isR ? deltaX : 0);
         const newHeight = cHeight + (isT ? -deltaY : isB ? deltaY : 0);
-        const pos = {
-          x: x + (isL ? deltaX : 0),
-          y: y + (isT ? deltaY : 0),
-          width: newWidth < 0 ? 0 : newWidth,
-          height: newHeight < 0 ? 0 : newHeight
-        };
-        setPosition(pos);
+        _rect.x = x + (isL ? deltaX : 0);
+        _rect.y = y + (isT ? deltaY : 0);
+        _rect.width = newWidth < 0 ? 0 : newWidth;
+        _rect.height = newHeight < 0 ? 0 : newHeight;
+        if (!checkValid(_rect))
+          return;
+        EventBus.emit("move", uuid$1);
+        trigger();
       };
       const up = () => {
+        EventBus.emit("moveup", uuid$1);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
         emit("update:customStyle", _style.value);
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
-    }
-    function setPosition(pos) {
-      _style.value = __spreadProps(__spreadValues({}, props.customStyle), {
-        transform: `translate(${pos.x}px, ${pos.y}px)`,
-        width: pos.width,
-        height: pos.height
-      });
     }
     function getDotPos(dot) {
       if (!_style.value)
@@ -159,7 +180,6 @@ const FreeDom = vueDemi.defineComponent({
       const isL = /l/.test(dot);
       const isR = /r/.test(dot);
       const isT = /t/.test(dot);
-      /b/.test(dot);
       let left, top;
       if (dot.length === 2) {
         left = isL ? 0 : width;
@@ -182,31 +202,47 @@ const FreeDom = vueDemi.defineComponent({
       };
     }
     function onMousedown(evt) {
-      emit("select");
       evt.stopPropagation();
       if (!canMove.value)
         return;
-      const pos = getPos(_style.value);
+      active.value = true;
+      const pos = getStyle(_style.value);
       const move = (mouseEvt) => {
         const { clientX, clientY } = mouseEvt;
-        setPosition(__spreadProps(__spreadValues({}, pos), {
-          x: clientX - evt.clientX + Number(pos.x),
-          y: clientY - evt.clientY + Number(pos.y)
-        }));
+        const x = clientX - evt.clientX + pos.x;
+        const y = clientY - evt.clientY + pos.y;
+        _rect.x = x;
+        _rect.y = y;
+        _rect.width = pos.width;
+        _rect.height = pos.height;
+        if (!checkValid(_rect))
+          return;
+        EventBus.emit("move", uuid$1);
+        trigger();
       };
       const up = () => {
+        EventBus.emit("moveup", uuid$1);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
         emit("update:customStyle", _style.value);
+        emit("select", _rect);
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
     }
-    function getPos(style) {
-      var _a;
+    function checkValid(rect) {
+      if (SceneContext) {
+        return SceneContext.checkValid(rect);
+      } else if (props.limitWidth && props.limitHeight) {
+        const { x, y, width, height } = rect;
+        return x >= 0 && x + width <= props.limitWidth && y >= 0 && y + height <= props.limitHeight;
+      } else {
+        return true;
+      }
+    }
+    function getStyle(style) {
       const { transform, width, height } = style;
-      const posRegexp = /translate\((\d+)px[, ]+(\d+)px\)/;
-      const [, x, y] = (_a = posRegexp.exec(transform)) != null ? _a : [];
+      const { x, y } = getPos(transform);
       return {
         x: x ? Number(x) : 0,
         y: y ? Number(y) : 0,
@@ -214,23 +250,34 @@ const FreeDom = vueDemi.defineComponent({
         height: parseFloat(height)
       };
     }
+    function getPos(transform) {
+      if (!transform) {
+        return {
+          x: 0,
+          y: 0
+        };
+      }
+      const posRegexp = /translate\(([.0-9]+)px[, ]+([.0-9]+)px\)/;
+      const [, x, y] = posRegexp.exec(transform) ?? [];
+      return { x: parseNum(x), y: parseNum(y) };
+    }
     return {
       widgetRef,
       canMove,
       wrapStyle,
       canScale,
       dots,
+      active,
       getDotPos,
       onMousedown,
       onMousedownDot
     };
   },
   render() {
-    console.log("render");
     const dots = this.canScale ? this.dots.map((dot) => {
       if (vueDemi.isVue2) {
         return vueDemi.h("div", {
-          class: "widget-dot",
+          class: "free-dom__widget-dot",
           style: this.getDotPos(dot),
           on: {
             mousedown: (evt) => this.onMousedownDot(evt, dot)
@@ -238,7 +285,7 @@ const FreeDom = vueDemi.defineComponent({
         });
       }
       return vueDemi.h("div", {
-        class: "widget-dot",
+        class: "free-dom__widget-dot",
         style: this.getDotPos(dot),
         onMousedown: (evt) => this.onMousedownDot(evt, dot)
       });
@@ -249,7 +296,7 @@ const FreeDom = vueDemi.defineComponent({
         "section",
         {
           class: [
-            "widget-wrapper",
+            "free-dom__widget-wrapper",
             { "can-move": this.canMove },
             { "is-active": this.active }
           ],
@@ -267,7 +314,7 @@ const FreeDom = vueDemi.defineComponent({
       {
         ref: "widgetRef",
         class: [
-          "widget-wrapper",
+          "free-dom__widget-wrapper",
           { "can-move": this.canMove },
           { "is-active": this.active }
         ],
@@ -279,13 +326,211 @@ const FreeDom = vueDemi.defineComponent({
   }
 });
 
-class Scene$1 {
-  constructor() {
+const lineType = ["xt", "xc", "xb", "yl", "yc", "yr"];
+var markLine = vueDemi.defineComponent({
+  setup() {
+    const SceneContext = vueDemi.inject(SceneToken);
+    const lines = vueDemi.shallowRef(lineType);
+    const diff = vueDemi.ref(SceneContext.diff);
+    const nodes = SceneContext.nodes;
+    const lineStatus = vueDemi.reactive({
+      xt: {
+        show: false,
+        pos: 0
+      },
+      xc: {
+        show: false,
+        pos: 0
+      },
+      xb: {
+        show: false,
+        pos: 0
+      },
+      yl: {
+        show: false,
+        pos: 0
+      },
+      yc: {
+        show: false,
+        pos: 0
+      },
+      yr: {
+        show: false,
+        pos: 0
+      }
+    });
+    EventBus.on("move", async (uuid) => {
+      const current = nodes.find((node) => node.uuid === uuid)?.node ?? {};
+      clearStatus();
+      nodes.forEach((node) => {
+        if (node.uuid === uuid)
+          return;
+        const _current = normalize(current._rect);
+        const _target = normalize(node.node._rect);
+        if (isNearly(_current.top, _target.top)) {
+          lineStatus.xt = {
+            show: true,
+            pos: _target.top
+          };
+          current._rect.y = _target.top;
+        }
+        if (isNearly(_current.bottom, _target.top)) {
+          lineStatus.xt = {
+            show: true,
+            pos: _target.top
+          };
+          current._rect.y = _target.top - _current.height;
+        }
+        if (isNearly(_current.centerY, _target.centerY)) {
+          lineStatus.xc = {
+            show: true,
+            pos: _target.centerY
+          };
+          current._rect.y = _target.centerY - _current.height / 2;
+        }
+        if (isNearly(_current.top, _target.bottom)) {
+          lineStatus.xb = {
+            show: true,
+            pos: _target.bottom
+          };
+          current._rect.y = _target.bottom;
+        }
+        if (isNearly(_current.bottom, _target.bottom)) {
+          lineStatus.xb = {
+            show: true,
+            pos: _target.bottom
+          };
+          current._rect.y = _target.bottom - _current.height;
+        }
+        if (isNearly(_current.left, _target.left)) {
+          lineStatus.yl = {
+            show: true,
+            pos: _target.left
+          };
+          current._rect.x = _target.left;
+        }
+        if (isNearly(_current.right, _target.left)) {
+          lineStatus.yl = {
+            show: true,
+            pos: _target.left
+          };
+          current._rect.x = _target.left - _current.width;
+        }
+        if (isNearly(_current.centerX, _target.centerX)) {
+          lineStatus.yc = {
+            show: true,
+            pos: _target.centerX
+          };
+          current._rect.x = _target.centerX - _current.width / 2;
+        }
+        if (isNearly(_current.left, _target.right)) {
+          lineStatus.yr = {
+            show: true,
+            pos: _target.right
+          };
+          current._rect.x = _target.right;
+        }
+        if (isNearly(_current.right, _target.right)) {
+          lineStatus.yr = {
+            show: true,
+            pos: _target.right
+          };
+          current._rect.x = _target.right - _current.width;
+        }
+      });
+    });
+    EventBus.on("moveup", clearStatus);
+    function clearStatus() {
+      lineStatus.xt.show = false;
+      lineStatus.xc.show = false;
+      lineStatus.xb.show = false;
+      lineStatus.yl.show = false;
+      lineStatus.yc.show = false;
+      lineStatus.yr.show = false;
+    }
+    function normalize(rect) {
+      return {
+        top: rect.y,
+        bottom: rect.y + rect.height,
+        left: rect.x,
+        right: rect.x + rect.width,
+        width: rect.width,
+        height: rect.height,
+        centerX: rect.x + rect.width / 2,
+        centerY: rect.y + rect.height / 2
+      };
+    }
+    function isNearly(curr, target) {
+      return Math.abs(curr - target) <= diff.value;
+    }
+    return {
+      lines,
+      diff,
+      lineStatus
+    };
+  },
+  render() {
+    const _line = (line, info) => vueDemi.h("div", {
+      style: { [line.includes("x") ? "top" : "left"]: info.pos + "px" },
+      class: [line.includes("x") ? "free-dom__xline" : "free-dom__yline", "free-dom__line"]
+    });
+    const _lines = this.lines.filter((line) => this.lineStatus[line].show).map((line) => vueDemi.h("div", null, _line(line, this.lineStatus[line])));
+    return vueDemi.h("div", {
+      class: "free-dom__mark-line"
+    }, _lines);
   }
-}
+});
+
+const freeDomWrapProps = {
+  preview: Boolean,
+  move: Boolean,
+  scale: [Boolean, Array],
+  diff: {
+    type: Number,
+    default: 3
+  }
+};
+const FreeDomWrap = vueDemi.defineComponent({
+  name: "FreeDomWrap",
+  props: freeDomWrapProps,
+  setup(props, { expose }) {
+    const rectRef = vueDemi.shallowRef(null);
+    const rect = core.useElementBounding(rectRef);
+    const nodes = vueDemi.reactive([]);
+    function register(uuid, node) {
+      nodes.push({ uuid, node });
+    }
+    function checkValid(pos) {
+      const { x, y, width, height } = pos;
+      return x >= 0 && x + width <= rect.width.value && y >= 0 && y + height <= rect.height.value;
+    }
+    vueDemi.provide(
+      SceneToken,
+      vueDemi.reactive({
+        ...vueDemi.toRefs(props),
+        nodes,
+        register,
+        checkValid
+      })
+    );
+    expose({
+      register
+    });
+    return {
+      rectRef
+    };
+  },
+  render() {
+    const defaultSlot = typeof this.$slots.default === "function" ? this.$slots.default() : this.$slots.default;
+    return vueDemi.h("section", {
+      ref: "rectRef",
+      style: "width: 600px"
+    }, [defaultSlot, vueDemi.h(markLine)]);
+  }
+});
 
 const freeDom = FreeDom;
-const Scene = Scene$1;
+const freeScene = FreeDomWrap;
 
-exports.Scene = Scene;
 exports.freeDom = freeDom;
+exports.freeScene = freeScene;

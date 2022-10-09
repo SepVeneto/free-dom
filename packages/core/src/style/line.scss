@@ -2,7 +2,7 @@
   height: 100%;
 }
 .free-dom__line {
-  background: $free-dom-line-border;
+  background: var(--free-dom-line-border);
   position: absolute;
   z-index: 1000;
 }

@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "pnpm clear && rollup -c",
     "build:type": "tsc --emitDeclarationOnly",
+    "clear": "rimraf packages/core/dist",
     "dev": "vue-demi-switch 3 && vitepress dev packages",
     "test": "vitest"
   },
@@ -20,6 +21,7 @@
     "@types/node": "^18.7.18",
     "esno": "^0.16.3",
     "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
     "rollup": "^2.79.0",
     "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-esbuild": "^4.10.1",

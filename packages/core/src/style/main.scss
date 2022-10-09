@@ -6,7 +6,7 @@
   box-sizing: content-box;
   user-select: none;
   &.is-active, &.can-move:hover {
-    border: 1px dashed $free-dom-dot-border;
+    border: 1px dashed var(--free-dom-dot-border);
     cursor: move;
   }
   &.is-active, &:hover {
@@ -18,8 +18,8 @@
 .free-dom__widget-dot {
   opacity: 0;
   position: absolute;
-  width: $free-dom-dot-size;
-  height: $free-dom-dot-size;
+  width: var(--free-dom-dot-size);
+  height: var(--free-dom-dot-size);
   border-radius: 50%;
-  border: 1px solid $free-dom-dot-border;
+  border: 1px solid var(--free-dom-dot-border);
 }

@@ -1,12 +1,12 @@
+import { defineConfig } from 'rollup'
 import esbuild from 'rollup-plugin-esbuild'
 import scss from 'rollup-plugin-scss'
-import dts from 'rollup-plugin-dts'
 
 const esbuildPlugin = esbuild()
 
-const configs = [
+export default defineConfig([
   {
-    input: 'packages/core/index.ts',
+    input: 'packages/core/src/index.ts',
     output: [
       {
         file: 'packages/core/dist/index.mjs',
@@ -19,23 +19,12 @@ const configs = [
     ],
     plugins: [
       esbuildPlugin,
-      scss(),
+      scss({ output: 'packages/core/dist/theme.css' })
     ],
     external: [
-      'vue-demi'
+      'vue-demi',
+      'uuid',
+      '@vueuse/core'
     ]
   },
-  {
-    input: 'packages/core/wrapper.ts',
-    output: {
-      file: 'packages/core/dist/index.d.ts',
-      format: 'es'
-    },
-    plugins: [dts()],
-    external: [
-      'vue-demi'
-    ]
-  }
-]
-
-export default configs
+])
