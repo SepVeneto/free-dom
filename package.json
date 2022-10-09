@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.7.18",
+    "conventional-changelog": "^3.1.25",
     "esno": "^0.16.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
