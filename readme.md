@@ -22,6 +22,7 @@ vue2.6及以下
 </template>
 <script>
 import { freeDom } from 'free-dom'
+import 'free-dom/dist/theme.css'
 export default {
   component: {
     freeDom
@@ -46,6 +47,7 @@ vue2.7及以上
 </template>
 <script setup>
 import { freeDom } from 'free-dom'
+import 'free-dom/dist/theme.css'
 import { ref } from 'vue'
 
 const style = ref({ tranform: 'translate(50px, 50px)' })
@@ -62,6 +64,7 @@ vue2.6及以下
 </template>
 <script>
 import { freeDom, freeScene } from 'free-dom'
+import 'free-dom/dist/theme.css'
 export default {
   components: {
     freeDom,
@@ -85,6 +88,7 @@ vue2.7及以上
 </template>
 <script setup>
 import { freeDom, freeScene } from 'free-dom'
+import 'free-dom/dist/theme.css'
 import { ref } from 'vue'
 
 const style = ref({ tranform: 'translate(50px, 50px)' })
