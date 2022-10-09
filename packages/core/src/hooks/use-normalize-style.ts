@@ -12,8 +12,10 @@ export function useNormalizeStyle(
       (obj, _style) => {
         const [key, value] = _style;
         if (typeof value === 'number') {
+          // @ts-ignore
           obj[key] = `${value}px`;
         } else {
+          // @ts-ignore
           obj[key] = value;
         }
         return obj;
