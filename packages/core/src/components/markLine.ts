@@ -157,7 +157,7 @@ export default defineComponent({
     })
     const _lines = this.lines
       .filter(line => this.lineStatus[line].show)
-      .map(line => h('div', null, _line(line, this.lineStatus[line])))
+      .map(line => _line(line, this.lineStatus[line]))
     return h('div', {
       class: 'free-dom__mark-line',
     }, _lines)

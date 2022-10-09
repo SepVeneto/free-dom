@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm clear && rollup -c",
+    "build": "pnpm build:type && pnpm build:core",
+    "build:core": "pnpm clear && rollup -c",
     "build:type": "tsc --emitDeclarationOnly",
     "clear": "rimraf packages/core/dist",
     "dev": "vue-demi-switch 3 && vitepress dev packages",

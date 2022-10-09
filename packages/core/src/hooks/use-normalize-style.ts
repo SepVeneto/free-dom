@@ -1,4 +1,4 @@
-import { CSSProperties, ref, Ref, unref, watchEffect } from 'vue-demi';
+import { CSSProperties, ref, Ref, unref, watch } from 'vue-demi';
 type Style = Partial<Record<keyof CSSProperties, string | number>>
 export function useNormalizeStyle(
   style: Style | Ref<any>,
@@ -7,8 +7,8 @@ export function useNormalizeStyle(
   const _style = ref({
     transition: 'inherit',
   })
-  watchEffect(() => {
-    const res = Object.entries(unref(style)).reduce<Partial<CSSProperties>>(
+  watch(() => style, (data) => {
+    const res = Object.entries(unref(data)).reduce<Partial<CSSProperties>>(
       (obj, _style) => {
         const [key, value] = _style;
         if (typeof value === 'number') {
@@ -24,6 +24,6 @@ export function useNormalizeStyle(
         ..._style.value,
         ...res,
       }
-  })
+  }, { deep: true })
   return _style
 }

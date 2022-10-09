@@ -1,4 +1,4 @@
-import { ref, watchEffect, unref, defineComponent, inject, computed, shallowRef, reactive, onMounted, nextTick, isVue2, h, provide, toRefs } from 'vue-demi';
+import { ref, watch, unref, defineComponent, inject, computed, shallowRef, reactive, onMounted, nextTick, isVue2, h, provide, toRefs } from 'vue-demi';
 import { onClickOutside, useElementBounding } from '@vueuse/core';
 import { v4 } from 'uuid';
 
@@ -6,8 +6,8 @@ function useNormalizeStyle(style) {
   const _style = ref({
     transition: "inherit"
   });
-  watchEffect(() => {
-    const res = Object.entries(unref(style)).reduce(
+  watch(() => style, (data) => {
+    const res = Object.entries(unref(data)).reduce(
       (obj, _style2) => {
         const [key, value] = _style2;
         if (typeof value === "number") {
@@ -23,7 +23,7 @@ function useNormalizeStyle(style) {
       ..._style.value,
       ...res
     };
-  });
+  }, { deep: true });
   return _style;
 }
 
@@ -470,7 +470,7 @@ var markLine = defineComponent({
       style: { [line.includes("x") ? "top" : "left"]: info.pos + "px" },
       class: [line.includes("x") ? "free-dom__xline" : "free-dom__yline", "free-dom__line"]
     });
-    const _lines = this.lines.filter((line) => this.lineStatus[line].show).map((line) => h("div", null, _line(line, this.lineStatus[line])));
+    const _lines = this.lines.filter((line) => this.lineStatus[line].show).map((line) => _line(line, this.lineStatus[line]));
     return h("div", {
       class: "free-dom__mark-line"
     }, _lines);
@@ -489,7 +489,7 @@ const freeDomWrapProps = {
 const FreeDomWrap = defineComponent({
   name: "FreeDomWrap",
   props: freeDomWrapProps,
-  setup(props, { expose }) {
+  setup(props) {
     const rectRef = shallowRef(null);
     const rect = useElementBounding(rectRef);
     const nodes = reactive([]);
@@ -509,9 +509,6 @@ const FreeDomWrap = defineComponent({
         checkValid
       })
     );
-    expose({
-      register
-    });
     return {
       rectRef
     };

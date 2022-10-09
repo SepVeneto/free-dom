@@ -10,8 +10,8 @@ function useNormalizeStyle(style) {
   const _style = vueDemi.ref({
     transition: "inherit"
   });
-  vueDemi.watchEffect(() => {
-    const res = Object.entries(vueDemi.unref(style)).reduce(
+  vueDemi.watch(() => style, (data) => {
+    const res = Object.entries(vueDemi.unref(data)).reduce(
       (obj, _style2) => {
         const [key, value] = _style2;
         if (typeof value === "number") {
@@ -27,7 +27,7 @@ function useNormalizeStyle(style) {
       ..._style.value,
       ...res
     };
-  });
+  }, { deep: true });
   return _style;
 }
 
@@ -474,7 +474,7 @@ var markLine = vueDemi.defineComponent({
       style: { [line.includes("x") ? "top" : "left"]: info.pos + "px" },
       class: [line.includes("x") ? "free-dom__xline" : "free-dom__yline", "free-dom__line"]
     });
-    const _lines = this.lines.filter((line) => this.lineStatus[line].show).map((line) => vueDemi.h("div", null, _line(line, this.lineStatus[line])));
+    const _lines = this.lines.filter((line) => this.lineStatus[line].show).map((line) => _line(line, this.lineStatus[line]));
     return vueDemi.h("div", {
       class: "free-dom__mark-line"
     }, _lines);
@@ -493,7 +493,7 @@ const freeDomWrapProps = {
 const FreeDomWrap = vueDemi.defineComponent({
   name: "FreeDomWrap",
   props: freeDomWrapProps,
-  setup(props, { expose }) {
+  setup(props) {
     const rectRef = vueDemi.shallowRef(null);
     const rect = core.useElementBounding(rectRef);
     const nodes = vueDemi.reactive([]);
@@ -513,9 +513,6 @@ const FreeDomWrap = vueDemi.defineComponent({
         checkValid
       })
     );
-    expose({
-      register
-    });
     return {
       rectRef
     };

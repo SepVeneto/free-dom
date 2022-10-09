@@ -35,7 +35,7 @@ export type IPos = {
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  setup(props, { expose }) {
+  setup(props) {
     const rectRef = shallowRef(null)
     const rect = useElementBounding(rectRef)
     const nodes = reactive<INode[]>([])
@@ -58,10 +58,6 @@ export const FreeDomWrap = defineComponent({
         checkValid
       })
     )
-
-    expose({
-      register
-    })
 
     return {
       rectRef
