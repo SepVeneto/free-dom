@@ -1,6 +1,8 @@
 <template>
   <button @click="handleAdd">添加</button>
   <free-scene
+    move
+    :scale="['lt', 'lb', 'rt', 'rb']"
     style="
       width: 600px;
       height: 400px;
@@ -12,8 +14,7 @@
       v-for="(item, index) in domList"
       :key="index"
       v-model:custom-style="item.style"
-      move
-      scale
+      @select="handleSelect"
     >
       <span>{{ item.text }}{{ index }}</span>
     </free-dom>
@@ -38,5 +39,7 @@ const domList = ref([
 function handleAdd() {
   domList.value.push({ text: '测试文本', style: {} })
 }
-
+function handleSelect(data: any) {
+  console.log(data)
+}
 </script>

@@ -14,8 +14,12 @@ import {
 import { useNormalizeStyle } from '../hooks';
 import { isVue2, shallowRef } from 'vue-demi';
 import { onClickOutside } from '@vueuse/core'
-import { EventBus, SceneToken  } from '../util';
+import { EventBus, SceneToken, SceneTokenContext  } from '../util';
 import { v4 as uuidv4 } from 'uuid'
+import { IPos } from './freeDomWrap';
+
+const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
+type IDot = typeof Dots[number]
 
 export const FreeDom = defineComponent({
   name: 'FreeDom',
@@ -25,15 +29,24 @@ export const FreeDom = defineComponent({
       type: Object as PropType<Partial<CSSProperties>>,
       required: true,
     },
-    scale: Boolean,
+    scale: [Boolean, Array] as PropType<IDot[] | boolean>,
     move: Boolean,
+    preview: Boolean,
+    limitWidth: {
+      type: Number,
+      default: undefined,
+    },
+    limitHeight: {
+      type: Number,
+      default: undefined
+    }
   },
   setup(props, { emit }) {
     const active = ref(false)
-    const SceneContext = inject<any>(SceneToken);
-    const _preview = computed(() => /* editorContext.preview */ false);
-    const canScale = computed(() => !_preview.value && props.scale);
-    const canMove = computed(() => !_preview.value && props.move);
+    const SceneContext = inject<SceneTokenContext>(SceneToken);
+    const _preview = computed(() => SceneContext?.preview ?? props.preview);
+    const canScale = computed(() => !_preview.value && (SceneContext?.scale ?? props.scale));
+    const canMove  = computed(() => !_preview.value && (SceneContext?.move ?? props.move));
     const widgetRef = shallowRef();
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
@@ -52,7 +65,7 @@ export const FreeDom = defineComponent({
     }
 
     onMounted(() => {
-      SceneContext.register(uuid, context)
+      SceneContext?.register(uuid, context)
     })
 
     onClickOutside(widgetRef, () => {
@@ -91,8 +104,15 @@ export const FreeDom = defineComponent({
       }
     }
 
+    const _dots = computed(() => {
+      return SceneContext && Array.isArray(SceneContext.scale)
+        ? SceneContext.scale
+        : props.scale
+    })
+
     const dots = computed(() => {
-      return isActive.value ? ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] : [];
+      if (!isActive.value) return []
+      return Array.isArray(_dots.value) ? _dots.value : Dots
     });
     const direct = {
       l: 'w',
@@ -130,7 +150,7 @@ export const FreeDom = defineComponent({
         _rect.y = y + (isT ? deltaY : 0)
         _rect.width = newWidth < 0 ? 0 : newWidth
         _rect.height = newHeight < 0 ? 0 : newHeight
-        if (!SceneContext.checkValid(_rect)) return;
+        if (!checkValid(_rect)) return;
         EventBus.emit('move', uuid)
         trigger()
         // setPosition(pos);
@@ -181,10 +201,9 @@ export const FreeDom = defineComponent({
       };
     }
     function onMousedown(evt: MouseEvent) {
-      active.value = true;
-      emit('select');
       evt.stopPropagation();
       if (!canMove.value) return;
+      active.value = true;
       const pos = getStyle(_style.value);
       const move = (mouseEvt: MouseEvent) => {
         const { clientX, clientY } = mouseEvt;
@@ -195,7 +214,7 @@ export const FreeDom = defineComponent({
         _rect.y = y
         _rect.width = pos.width
         _rect.height = pos.height
-        if (!SceneContext.checkValid(_rect)) return;
+        if (!checkValid(_rect)) return;
         EventBus.emit('move', uuid)
         trigger()
       };
@@ -204,9 +223,20 @@ export const FreeDom = defineComponent({
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         emit('update:customStyle', _style.value);
+        emit('select', _rect);
       };
       document.addEventListener('mousemove', move);
       document.addEventListener('mouseup', up);
+    }
+    function checkValid(rect: IPos) {
+      if (SceneContext) {
+        return SceneContext.checkValid(rect)
+      } else if (props.limitWidth && props.limitHeight) {
+        const { x, y, width, height } = rect;
+        return x >= 0 && x + width <= props.limitWidth && y >= 0 && y + height <= props.limitHeight
+      } else {
+        return true;
+      }
     }
     function getStyle(style: CSSProperties) {
       const { transform, width, height } = style;
