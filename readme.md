@@ -119,8 +119,9 @@ const style = ref({ tranform: 'translate(50px, 50px)' })
 
 ## 注意事项
 
-1. `custom-style`本身就是一个样式，只不过组件会通过`transform`的`translate`以及`width`和`height`控制插槽内容的位置及大小
-2. 组合使用时，操作区域由`scene`决定，会自动忽略`limitHeight`和`limitWidth`
-3. `limitHeight`和`limitWidth`必须同时设置
-4. `preview`的优先级比其它操作属性要高
-5. 不同的`vue`版本双向绑定的语法糖不一样，具体可以参考上面的使用说明
+1. `vue@2.6.14`及以下需要安装`@vue/composition-api`才可以正常使用
+2. `custom-style`本身就是一个样式，只不过组件会通过`transform`的`translate`以及`width`和`height`控制插槽内容的位置及大小
+3. 组合使用时，操作区域由`scene`决定，会自动忽略`limitHeight`和`limitWidth`
+4. `limitHeight`和`limitWidth`必须同时设置
+5. `preview`的优先级比其它操作属性要高
+6. 不同的`vue`版本双向绑定的语法糖不一样，具体可以参考上面的使用说明
