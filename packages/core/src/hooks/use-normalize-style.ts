@@ -19,11 +19,11 @@ export function useNormalizeStyle(
           obj[key] = value;
         }
         return obj;
-      }, {} as Partial<CSSProperties>)
-      _style.value = {
-        ..._style.value,
-        ...res,
-      }
+      }, {} as Partial<CSSProperties>);
+    _style.value = {
+      ..._style.value,
+      ...res,
+    }
   }, { deep: true })
   return _style
 }

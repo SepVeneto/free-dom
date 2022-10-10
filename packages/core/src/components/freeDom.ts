@@ -98,6 +98,7 @@ export const FreeDom = defineComponent({
     function trigger() {
       const { x, y, width, height } = _rect
       _style.value = {
+        ...props.customStyle,
         transform: `translate(${x}px, ${y}px)`,
         width: width,
         height: height,
@@ -222,6 +223,7 @@ export const FreeDom = defineComponent({
         EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
+        console.log(_style.value)
         emit('update:customStyle', _style.value);
         emit('select', _rect);
       };

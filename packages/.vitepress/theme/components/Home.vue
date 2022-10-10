@@ -28,11 +28,11 @@ import { ref } from 'vue-demi';
 const domList = ref([
   {
     text: '测试文本',
-    style: {},
+    style: { color: '#d1239d'},
   },
   {
     text: '测试文本',
-    style: {},
+    style: { fontSize: '24px' },
   }
 ])
 
