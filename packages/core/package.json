@@ -1,6 +1,6 @@
 {
   "name": "free-dom",
-  "version": "0.0.2-rc.2",
+  "version": "0.0.2-rc.3",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

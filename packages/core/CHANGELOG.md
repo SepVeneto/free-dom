@@ -1,3 +1,12 @@
+## [0.0.2-rc.3](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.2...v0.0.2-rc.3) (2022-10-10)
+
+
+### Bug Fixes
+
+* 忘了打包 ([4f8b51e](https://github.com/SepVeneto/free-dom/commit/4f8b51e32b5e66ad08cdf4d1e2571db94628a3f7))
+
+
+
 ## [0.0.2-rc.2](https://github.com/SepVeneto/free-dom/compare/v0.0.2...v0.0.2-rc.2) (2022-10-10)
 
 
