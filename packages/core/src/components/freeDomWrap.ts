@@ -71,7 +71,6 @@ export const FreeDomWrap = defineComponent({
 
     return h('section', {
       ref: 'rectRef',
-      style: 'width: 600px'
     }, [defaultSlot, h(markLine)])
   }
 })
