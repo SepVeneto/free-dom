@@ -1,5 +1,7 @@
 # free-dom
 
+[在线预览](https://sepveneto.github.io/free-dom/)
+
 vue2/3通用的自由拖拽dom的组件
 
 支持独立使用和组合使用
