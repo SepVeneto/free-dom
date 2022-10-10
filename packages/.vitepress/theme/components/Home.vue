@@ -1,5 +1,6 @@
 <template>
   <button @click="handleAdd">添加</button>
+  <button @click="handlePreview">预览</button>
   <free-scene
     move
     :scale="['lt', 'lb', 'rt', 'rb']"
@@ -25,6 +26,7 @@
 import { freeDom, freeScene } from 'free-dom';
 import 'free-dom/../style/index.scss';
 import { ref } from 'vue-demi';
+const preview = ref(false)
 const domList = ref([
   {
     text: '测试文本',
@@ -36,6 +38,9 @@ const domList = ref([
   }
 ])
 
+function handlePreview() {
+  preview.value = !preview.value
+}
 function handleAdd() {
   domList.value.push({ text: '测试文本', style: {} })
 }

@@ -223,7 +223,6 @@ export const FreeDom = defineComponent({
         EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
-        console.log(_style.value)
         emit('update:customStyle', _style.value);
         emit('select', _rect);
       };
