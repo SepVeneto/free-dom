@@ -1,3 +1,12 @@
+## [0.0.2-rc.4](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.3...v0.0.2-rc.4) (2022-10-10)
+
+
+### Bug Fixes
+
+* 个别情况y轴标线位置错误 ([15f0ba5](https://github.com/SepVeneto/free-dom/commit/15f0ba5ab9a1d16feb3fe6dbe639f351b65b6e8d))
+
+
+
 ## [0.0.2-rc.3](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.2...v0.0.2-rc.3) (2022-10-10)
 
 
