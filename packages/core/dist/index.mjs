@@ -516,8 +516,7 @@ const FreeDomWrap = defineComponent({
   render() {
     const defaultSlot = typeof this.$slots.default === "function" ? this.$slots.default() : this.$slots.default;
     return h("section", {
-      ref: "rectRef",
-      style: "width: 600px"
+      ref: "rectRef"
     }, [defaultSlot, h(markLine)]);
   }
 });

@@ -520,8 +520,7 @@ const FreeDomWrap = vueDemi.defineComponent({
   render() {
     const defaultSlot = typeof this.$slots.default === "function" ? this.$slots.default() : this.$slots.default;
     return vueDemi.h("section", {
-      ref: "rectRef",
-      style: "width: 600px"
+      ref: "rectRef"
     }, [defaultSlot, vueDemi.h(markLine)]);
   }
 });
