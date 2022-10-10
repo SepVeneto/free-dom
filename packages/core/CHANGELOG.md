@@ -1,3 +1,12 @@
+## [0.0.2-rc.2](https://github.com/SepVeneto/free-dom/compare/v0.0.2...v0.0.2-rc.2) (2022-10-10)
+
+
+### Bug Fixes
+
+* **FreeScene:** 去除默认宽度 ([094ecb1](https://github.com/SepVeneto/free-dom/commit/094ecb195ccef8daf6b54ff68fd131bb745edefa))
+
+
+
 ## 0.0.2 (2022-10-09)
 
 
