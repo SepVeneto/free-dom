@@ -1,3 +1,14 @@
+## [0.0.3](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.4...v0.0.3) (2022-10-10)
+
+
+### Bug Fixes
+
+* 标线导致的空白元素 ([0853eb3](https://github.com/SepVeneto/free-dom/commit/0853eb3baab07df358bb9639a662e93f46581783))
+* 数据对象不保存除width,height,transform的样式信息 ([525cdb8](https://github.com/SepVeneto/free-dom/commit/525cdb8120d2fac4374d03dee4d703f33c74ffb2))
+* v-if导致事件的重复监听 ([2f8d6f0](https://github.com/SepVeneto/free-dom/commit/2f8d6f07d11be66d455513b869c28f3f99777c66))
+
+
+
 ## [0.0.2-rc.4](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.3...v0.0.2-rc.4) (2022-10-10)
 
 

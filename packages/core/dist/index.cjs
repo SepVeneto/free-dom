@@ -42,6 +42,9 @@ class EventBus {
   static emit(name, ...args) {
     EventBus._callbacks[name]?.forEach((item) => item.apply(this, args));
   }
+  static off(name) {
+    EventBus._callbacks[name].length = 0;
+  }
 }
 
 const SceneToken = Symbol("Scene");
@@ -116,6 +119,7 @@ const FreeDom = vueDemi.defineComponent({
     function trigger() {
       const { x, y, width, height } = _rect;
       _style.value = {
+        ...props.customStyle,
         transform: `translate(${x}px, ${y}px)`,
         width,
         height
@@ -440,6 +444,10 @@ var markLine = vueDemi.defineComponent({
       });
     });
     EventBus.on("moveup", clearStatus);
+    vueDemi.onBeforeUnmount(() => {
+      EventBus.off("move");
+      EventBus.off("moveup");
+    });
     function clearStatus() {
       lineStatus.xt.show = false;
       lineStatus.xc.show = false;

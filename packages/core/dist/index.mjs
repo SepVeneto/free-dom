@@ -1,4 +1,4 @@
-import { ref, watch, unref, defineComponent, inject, computed, shallowRef, reactive, onMounted, nextTick, isVue2, h, provide, toRefs } from 'vue-demi';
+import { ref, watch, unref, defineComponent, inject, computed, shallowRef, reactive, onMounted, nextTick, isVue2, h, onBeforeUnmount, provide, toRefs } from 'vue-demi';
 import { onClickOutside, useElementBounding } from '@vueuse/core';
 import { v4 } from 'uuid';
 
@@ -37,6 +37,9 @@ class EventBus {
   }
   static emit(name, ...args) {
     EventBus._callbacks[name]?.forEach((item) => item.apply(this, args));
+  }
+  static off(name) {
+    EventBus._callbacks[name].length = 0;
   }
 }
 
@@ -112,6 +115,7 @@ const FreeDom = defineComponent({
     function trigger() {
       const { x, y, width, height } = _rect;
       _style.value = {
+        ...props.customStyle,
         transform: `translate(${x}px, ${y}px)`,
         width,
         height
@@ -436,6 +440,10 @@ var markLine = defineComponent({
       });
     });
     EventBus.on("moveup", clearStatus);
+    onBeforeUnmount(() => {
+      EventBus.off("move");
+      EventBus.off("moveup");
+    });
     function clearStatus() {
       lineStatus.xt.show = false;
       lineStatus.xc.show = false;
