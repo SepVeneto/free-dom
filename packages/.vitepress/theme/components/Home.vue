@@ -1,25 +1,27 @@
 <template>
   <button @click="handleAdd">添加</button>
-  <button @click="handlePreview">预览</button>
-  <free-scene
-    move
-    :scale="['lt', 'lb', 'rt', 'rb']"
-    style="
-      width: 600px;
-      height: 400px;
-      border: 1px solid #999;
-      position: relative;
-    "
-  >
-    <free-dom
-      v-for="(item, index) in domList"
-      :key="index"
-      v-model:custom-style="item.style"
-      @select="handleSelect"
+  <button style="margin-left: 20px" @click="handlePreview">{{!preview ? '隐藏' : '显示'}}</button>
+  <template v-if="!preview">
+    <free-scene
+      move
+      :scale="['lt', 'lb', 'rt', 'rb']"
+      style="
+        width: 600px;
+        height: 400px;
+        border: 1px solid #999;
+        position: relative;
+      "
     >
-      <span>{{ item.text }}{{ index }}</span>
-    </free-dom>
-  </free-scene>
+      <free-dom
+        v-for="(item, index) in domList"
+        :key="index"
+        v-model:custom-style="item.style"
+        @select="handleSelect"
+      >
+        <span>{{ item.text }}{{ index }}</span>
+      </free-dom>
+    </free-scene>
+  </template>
 </template>
 
 <script lang="ts" setup>

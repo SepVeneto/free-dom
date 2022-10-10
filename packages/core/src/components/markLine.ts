@@ -1,4 +1,4 @@
-import { h, defineComponent, shallowRef, ref, reactive, inject } from "vue-demi";
+import { h, defineComponent, shallowRef, ref, reactive, inject, onBeforeUnmount } from "vue-demi";
 import { EventBus, SceneToken } from "../util";
 
 const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
@@ -119,6 +119,11 @@ export default defineComponent({
       })
     })
     EventBus.on('moveup', clearStatus)
+
+    onBeforeUnmount(() => {
+      EventBus.off('move')
+      EventBus.off('moveup')
+    })
 
     function clearStatus() {
       lineStatus.xt.show = false;

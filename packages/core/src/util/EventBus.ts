@@ -10,4 +10,7 @@ export class EventBus {
   public static emit(name: string, ...args: any) {
     EventBus._callbacks[name]?.forEach(item => item.apply(this, args))
   }
+  public static off(name: string) {
+    EventBus._callbacks[name].length = 0
+  }
 }

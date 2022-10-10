@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: '1',
+  title: 'free-dom',
 })
