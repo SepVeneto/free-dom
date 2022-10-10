@@ -14,7 +14,7 @@ export default defineConfig({
     alias: {
       'free-dom': resolve(__dirname, './core/src/index.ts'),
     },
-    dedupe: ['vue', 'vue-demi', '@vue/runtime-core'],
+    dedupe: ['vue', 'vue-demi'],
   },
   optimizeDeps: {
     exclude: ['vue-demi']
