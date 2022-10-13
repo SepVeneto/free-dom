@@ -1,3 +1,14 @@
+## [0.0.4](https://github.com/SepVeneto/free-dom/compare/v0.0.3...v0.0.4) (2022-10-13)
+
+
+### Bug Fixes
+
+* 对角线设置无效 ([b5b8979](https://github.com/SepVeneto/free-dom/commit/b5b89796487179538cb976872ded1ef0130d9f88))
+* 拖拽点位置修改 ([673654a](https://github.com/SepVeneto/free-dom/commit/673654ac87580adbf0b0ed10cb9d44ab75864be7))
+* vue2 reactive ([0fc9340](https://github.com/SepVeneto/free-dom/commit/0fc93406fd4697632ab7ebce32ffca42b8c85d65))
+
+
+
 ## [0.0.3](https://github.com/SepVeneto/free-dom/compare/v0.0.2-rc.4...v0.0.3) (2022-10-10)
 
 

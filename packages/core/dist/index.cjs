@@ -152,17 +152,31 @@ const FreeDom = vueDemi.defineComponent({
       const isL = /l/.test(dot);
       const isB = /b/.test(dot);
       const isR = /r/.test(dot);
+      const isDiagonal = dot.length === 2;
       const move = (mouseEvt) => {
         const currX = mouseEvt.clientX;
         const currY = mouseEvt.clientY;
         const deltaX = currX - startX;
         const deltaY = currY - startY;
+        const rate = cWidth / cHeight;
         const newWidth = cWidth + (isL ? -deltaX : isR ? deltaX : 0);
         const newHeight = cHeight + (isT ? -deltaY : isB ? deltaY : 0);
-        _rect.x = x + (isL ? deltaX : 0);
-        _rect.y = y + (isT ? deltaY : 0);
-        _rect.width = newWidth < 0 ? 0 : newWidth;
-        _rect.height = newHeight < 0 ? 0 : newHeight;
+        if (isDiagonal) {
+          if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+            _rect.x = x + (isL ? deltaX : 0);
+            _rect.width = newWidth < 0 ? 0 : newWidth;
+            _rect.height = newWidth / rate;
+          } else {
+            _rect.y = y + (isT ? deltaY : 0);
+            _rect.height = newHeight < 0 ? 0 : newHeight;
+            _rect.width = newHeight * rate;
+          }
+        } else {
+          _rect.x = x + (isL ? deltaX : 0);
+          _rect.y = y + (isT ? deltaY : 0);
+          _rect.width = newWidth < 0 ? 0 : newWidth;
+          _rect.height = newHeight < 0 ? 0 : newHeight;
+        }
         if (!checkValid(_rect))
           return;
         EventBus.emit("move", uuid$1);
@@ -198,8 +212,6 @@ const FreeDom = vueDemi.defineComponent({
         }
       }
       return {
-        marginLeft: "-2px",
-        marginTop: "-2px",
         top: top + "px",
         left: left + "px",
         cursor: dot.split("").reverse().map((item) => direct[item]).join("") + "-resize"
@@ -504,9 +516,9 @@ const FreeDomWrap = vueDemi.defineComponent({
   setup(props) {
     const rectRef = vueDemi.shallowRef(null);
     const rect = core.useElementBounding(rectRef);
-    const nodes = vueDemi.reactive([]);
+    const nodes = vueDemi.ref([]);
     function register(uuid, node) {
-      nodes.push({ uuid, node });
+      nodes.value.push({ uuid, node });
     }
     function checkValid(pos) {
       const { x, y, width, height } = pos;
