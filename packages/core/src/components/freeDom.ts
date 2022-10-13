@@ -205,8 +205,6 @@ export const FreeDom = defineComponent({
         }
       }
       return {
-        marginLeft: '-2px',
-        marginTop: '-2px',
         top: top + 'px',
         left: left + 'px',
         cursor:
