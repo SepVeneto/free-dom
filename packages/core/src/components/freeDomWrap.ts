@@ -1,4 +1,4 @@
-import { defineComponent, shallowRef, h, provide, reactive, toRefs, ExtractPropTypes, PropType } from "vue-demi"
+import { defineComponent, shallowRef, h, provide, reactive, ref, toRefs, ExtractPropTypes, PropType } from "vue-demi"
 import { useElementBounding } from '@vueuse/core'
 import { SceneToken } from '../util'
 import markLine from "./markLine"
@@ -38,10 +38,10 @@ export const FreeDomWrap = defineComponent({
   setup(props) {
     const rectRef = shallowRef(null)
     const rect = useElementBounding(rectRef)
-    const nodes = reactive<INode[]>([])
+    const nodes = ref<INode[]>([])
 
     function register(uuid: string, node: INodeInfo) {
-      nodes.push({ uuid, node })
+      nodes.value.push({ uuid, node })
     }
     function checkValid(pos: IPos) {
       const { x, y, width, height } = pos;
