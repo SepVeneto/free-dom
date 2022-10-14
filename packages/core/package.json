@@ -8,6 +8,10 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./css": "./dist/theme.css"
+  },
   "scripts": {
     "dev": "vue-demi-switch 3 && vitepress dev docs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . && git add CHANGELOG.md",
