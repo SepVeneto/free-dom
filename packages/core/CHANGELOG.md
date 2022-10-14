@@ -1,3 +1,12 @@
+## [0.0.5](https://github.com/SepVeneto/free-dom/compare/v0.0.4...v0.0.5) (2022-10-14)
+
+
+### Bug Fixes
+
+* 无法导出Css文件 ([467c81a](https://github.com/SepVeneto/free-dom/commit/467c81a0f87d5434c0c33a160d11542e7e6d45f8))
+
+
+
 ## [0.0.4](https://github.com/SepVeneto/free-dom/compare/v0.0.3...v0.0.4) (2022-10-13)
 
 
