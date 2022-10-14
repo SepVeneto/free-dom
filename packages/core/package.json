@@ -1,13 +1,18 @@
 {
   "name": "free-dom",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/type.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./css": "./dist/theme.css"
+  },
   "scripts": {
     "dev": "vue-demi-switch 3 && vitepress dev docs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . && git add CHANGELOG.md",
