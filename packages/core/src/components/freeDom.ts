@@ -12,7 +12,7 @@ import {
 } from 'vue-demi';
 
 import { useNormalizeStyle } from '../hooks';
-import { isVue2, shallowRef } from 'vue-demi';
+import { isVue2, shallowRef, watch } from 'vue-demi';
 import { onClickOutside } from '@vueuse/core'
 import { EventBus, SceneToken, SceneTokenContext  } from '../util';
 import { v4 as uuidv4 } from 'uuid'
@@ -51,6 +51,8 @@ export const FreeDom = defineComponent({
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
     const uuid = uuidv4()
+    const isScale = ref(false)
+    const isMove = ref(false)
 
     const _rect = reactive({
       x: 0,
@@ -84,6 +86,11 @@ export const FreeDom = defineComponent({
     function parseNum(val: number | string) {
       return typeof val === 'number' ? val : parseFloat(val)
     }
+
+    watch(() => props.customStyle, (_style) => {
+      normalize(_style)
+      trigger()
+    })
 
     onMounted(async () => {
       _style.value = props.customStyle
@@ -126,6 +133,8 @@ export const FreeDom = defineComponent({
     function onMousedownDot(evt: MouseEvent, dot: string) {
       evt.stopPropagation();
       evt.preventDefault();
+      if (isMove.value) return;
+      isScale.value = true
 
       const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
@@ -173,6 +182,7 @@ export const FreeDom = defineComponent({
         // setPosition(pos);
       };
       const up = () => {
+        isScale.value = false;
         EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
@@ -217,7 +227,8 @@ export const FreeDom = defineComponent({
     }
     function onMousedown(evt: MouseEvent) {
       evt.stopPropagation();
-      if (!canMove.value) return;
+      if (isScale.value || !canMove.value) return;
+      isMove.value = true
       active.value = true;
       const pos = getStyle(_style.value);
       const move = (mouseEvt: MouseEvent) => {
@@ -234,6 +245,7 @@ export const FreeDom = defineComponent({
         trigger()
       };
       const up = () => {
+        isMove.value = false;
         EventBus.emit('moveup', uuid)
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
