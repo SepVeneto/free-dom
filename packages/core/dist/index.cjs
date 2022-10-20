@@ -80,6 +80,8 @@ const FreeDom = vueDemi.defineComponent({
     const _style = vueDemi.ref({});
     const wrapStyle = useNormalizeStyle(_style);
     const uuid$1 = uuid.v4();
+    const isScale = vueDemi.ref(false);
+    const isMove = vueDemi.ref(false);
     const _rect = vueDemi.reactive({
       x: 0,
       y: 0,
@@ -107,6 +109,10 @@ const FreeDom = vueDemi.defineComponent({
     function parseNum(val) {
       return typeof val === "number" ? val : parseFloat(val);
     }
+    vueDemi.watch(() => props.customStyle, (_style2) => {
+      normalize(_style2);
+      trigger();
+    });
     vueDemi.onMounted(async () => {
       _style.value = props.customStyle;
       await vueDemi.nextTick();
@@ -143,6 +149,9 @@ const FreeDom = vueDemi.defineComponent({
     function onMousedownDot(evt, dot) {
       evt.stopPropagation();
       evt.preventDefault();
+      if (isMove.value)
+        return;
+      isScale.value = true;
       const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
       const cHeight = height;
@@ -183,6 +192,7 @@ const FreeDom = vueDemi.defineComponent({
         trigger();
       };
       const up = () => {
+        isScale.value = false;
         EventBus.emit("moveup", uuid$1);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
@@ -219,8 +229,9 @@ const FreeDom = vueDemi.defineComponent({
     }
     function onMousedown(evt) {
       evt.stopPropagation();
-      if (!canMove.value)
+      if (isScale.value || !canMove.value)
         return;
+      isMove.value = true;
       active.value = true;
       const pos = getStyle(_style.value);
       const move = (mouseEvt) => {
@@ -237,6 +248,7 @@ const FreeDom = vueDemi.defineComponent({
         trigger();
       };
       const up = () => {
+        isMove.value = false;
         EventBus.emit("moveup", uuid$1);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);

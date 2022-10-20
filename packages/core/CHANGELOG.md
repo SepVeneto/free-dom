@@ -1,3 +1,12 @@
+## [0.0.6](https://github.com/SepVeneto/free-dom/compare/v0.0.5...v0.0.6) (2022-10-20)
+
+
+### Bug Fixes
+
+* 无法手动设置样式 ([8ee9a9d](https://github.com/SepVeneto/free-dom/commit/8ee9a9dc45f1c6317b766a9239b777ebfaf43928))
+
+
+
 ## [0.0.5](https://github.com/SepVeneto/free-dom/compare/v0.0.4...v0.0.5) (2022-10-14)
 
 

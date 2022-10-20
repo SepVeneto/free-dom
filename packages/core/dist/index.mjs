@@ -76,6 +76,8 @@ const FreeDom = defineComponent({
     const _style = ref({});
     const wrapStyle = useNormalizeStyle(_style);
     const uuid = v4();
+    const isScale = ref(false);
+    const isMove = ref(false);
     const _rect = reactive({
       x: 0,
       y: 0,
@@ -103,6 +105,10 @@ const FreeDom = defineComponent({
     function parseNum(val) {
       return typeof val === "number" ? val : parseFloat(val);
     }
+    watch(() => props.customStyle, (_style2) => {
+      normalize(_style2);
+      trigger();
+    });
     onMounted(async () => {
       _style.value = props.customStyle;
       await nextTick();
@@ -139,6 +145,9 @@ const FreeDom = defineComponent({
     function onMousedownDot(evt, dot) {
       evt.stopPropagation();
       evt.preventDefault();
+      if (isMove.value)
+        return;
+      isScale.value = true;
       const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
       const cHeight = height;
@@ -179,6 +188,7 @@ const FreeDom = defineComponent({
         trigger();
       };
       const up = () => {
+        isScale.value = false;
         EventBus.emit("moveup", uuid);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
@@ -215,8 +225,9 @@ const FreeDom = defineComponent({
     }
     function onMousedown(evt) {
       evt.stopPropagation();
-      if (!canMove.value)
+      if (isScale.value || !canMove.value)
         return;
+      isMove.value = true;
       active.value = true;
       const pos = getStyle(_style.value);
       const move = (mouseEvt) => {
@@ -233,6 +244,7 @@ const FreeDom = defineComponent({
         trigger();
       };
       const up = () => {
+        isMove.value = false;
         EventBus.emit("moveup", uuid);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
