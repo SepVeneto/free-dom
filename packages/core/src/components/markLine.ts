@@ -1,15 +1,15 @@
-import { h, defineComponent, shallowRef, ref, reactive, inject, onBeforeUnmount } from "vue-demi";
-import { EventBus, SceneToken } from "../util";
+import { h, defineComponent, shallowRef, ref, reactive, inject, onBeforeUnmount } from 'vue-demi';
+import { EventBus, SceneToken } from '../util';
 
-const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
+const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const;
 type LineType = typeof lineType[number]
 
 export default defineComponent({
-  setup() {
-    const SceneContext = inject<any>(SceneToken)
-    const lines = shallowRef(lineType)
-    const diff = ref(SceneContext.diff)
-    const nodes = SceneContext.nodes as any[]
+  setup () {
+    const SceneContext = inject<any>(SceneToken);
+    const lines = shallowRef(lineType);
+    const diff = ref(SceneContext.diff);
+    const nodes = SceneContext.nodes as any[];
 
     const lineStatus = reactive({
       xt: {
@@ -26,7 +26,7 @@ export default defineComponent({
       },
       yl: {
         show: false,
-        pos: 0
+        pos: 0,
       },
       yc: {
         show: false,
@@ -35,97 +35,97 @@ export default defineComponent({
       yr: {
         show: false,
         pos: 0,
-      }
-    })
+      },
+    });
 
     EventBus.on('move', async (uuid: string) => {
-      const current = nodes.find(node => node.uuid === uuid)?.node ?? {}
-      clearStatus()
+      const current = nodes.find(node => node.uuid === uuid)?.node ?? {};
+      clearStatus();
       nodes.forEach((node: any) => {
         if (node.uuid === uuid) return;
-        const _current = normalize(current._rect)
-        const _target = normalize(node.node._rect)
+        const _current = normalize(current._rect);
+        const _target = normalize(node.node._rect);
 
         if (isNearly(_current.top, _target.top)) {
           lineStatus.xt = {
             show: true,
             pos: _target.top,
-          }
-          current._rect.y = _target.top
+          };
+          current._rect.y = _target.top;
         }
         if (isNearly(_current.bottom, _target.top)) {
           lineStatus.xt = {
             show: true,
             pos: _target.top,
-          }
-          current._rect.y = _target.top - _current.height
+          };
+          current._rect.y = _target.top - _current.height;
         }
         if (isNearly(_current.centerY, _target.centerY)) {
           lineStatus.xc = {
             show: true,
             pos: _target.centerY,
-          }
-          current._rect.y = _target.centerY - _current.height / 2
+          };
+          current._rect.y = _target.centerY - _current.height / 2;
         }
         if (isNearly(_current.top, _target.bottom)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
-          }
-          current._rect.y = _target.bottom
+          };
+          current._rect.y = _target.bottom;
         }
         if (isNearly(_current.bottom, _target.bottom)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
-          }
-          current._rect.y = _target.bottom - _current.height
+          };
+          current._rect.y = _target.bottom - _current.height;
         }
         if (isNearly(_current.left, _target.left)) {
           lineStatus.yl = {
             show: true,
             pos: _target.left,
-          }
+          };
           current._rect.x = _target.left;
         }
         if (isNearly(_current.right, _target.left)) {
           lineStatus.yl = {
             show: true,
             pos: _target.left,
-          }
-          current._rect.x = _target.left - _current.width
+          };
+          current._rect.x = _target.left - _current.width;
         }
         if (isNearly(_current.centerX, _target.centerX)) {
           lineStatus.yc = {
             show: true,
             pos: _target.centerX,
-          }
-          current._rect.x = _target.centerX - _current.width / 2
+          };
+          current._rect.x = _target.centerX - _current.width / 2;
         }
         if (isNearly(_current.left, _target.right)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
-          }
-          current._rect.x = _target.right
+          };
+          current._rect.x = _target.right;
         }
         if (isNearly(_current.right, _target.right)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
-          }
-          current._rect.x = _target.right - _current.width
+          };
+          current._rect.x = _target.right - _current.width;
         }
-      })
-    })
-    EventBus.on('moveup', clearStatus)
+      });
+    });
+    EventBus.on('moveup', clearStatus);
 
     onBeforeUnmount(() => {
-      EventBus.off('move')
-      EventBus.off('moveup')
-    })
+      EventBus.off('move');
+      EventBus.off('moveup');
+    });
 
-    function clearStatus() {
+    function clearStatus () {
       lineStatus.xt.show = false;
       lineStatus.xc.show = false;
       lineStatus.xb.show = false;
@@ -133,7 +133,7 @@ export default defineComponent({
       lineStatus.yc.show = false;
       lineStatus.yr.show = false;
     }
-    function normalize(rect: { x: number, y: number, width: number, height: number }) {
+    function normalize (rect: { x: number, y: number, width: number, height: number }) {
       return {
         top: rect.y,
         bottom: rect.y + rect.height,
@@ -142,29 +142,29 @@ export default defineComponent({
         width: rect.width,
         height: rect.height,
         centerX: rect.x + rect.width / 2,
-        centerY: rect.y + rect.height / 2
-      }
+        centerY: rect.y + rect.height / 2,
+      };
     }
-    function isNearly(curr: number, target: number) {
-      return Math.abs(curr - target) <= diff.value
+    function isNearly (curr: number, target: number) {
+      return Math.abs(curr - target) <= diff.value;
     }
 
     return {
       lines,
       diff,
       lineStatus,
-    }
+    };
   },
-  render() {
+  render () {
     const _line = (line: LineType, info: typeof this.lineStatus[LineType]) => h('div', {
-      style: { [line.includes('x') ? 'top': 'left']: info.pos + 'px' },
-      class: [line.includes('x') ? 'free-dom__xline' : 'free-dom__yline', 'free-dom__line']
-    })
+      style: { [line.includes('x') ? 'top' : 'left']: info.pos + 'px' },
+      class: [line.includes('x') ? 'free-dom__xline' : 'free-dom__yline', 'free-dom__line'],
+    });
     const _lines = this.lines
       .filter(line => this.lineStatus[line].show)
-      .map(line => _line(line, this.lineStatus[line]))
+      .map(line => _line(line, this.lineStatus[line]));
     return h('div', {
       class: 'free-dom__mark-line',
-    }, _lines)
-  }
-})
+    }, _lines);
+  },
+});

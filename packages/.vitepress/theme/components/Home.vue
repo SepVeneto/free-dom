@@ -1,6 +1,13 @@
 <template>
-  <button @click="handleAdd">添加</button>
-  <button style="margin-left: 20px" @click="handlePreview">{{!preview ? '隐藏' : '显示'}}</button>
+  <button @click="handleAdd">
+    添加
+  </button>
+  <button
+    style="margin-left: 20px"
+    @click="handlePreview"
+  >
+    {{ !preview ? '隐藏' : '显示' }}
+  </button>
   <template v-if="!preview">
     <free-scene
       move
@@ -26,27 +33,27 @@
 
 <script lang="ts" setup>
 import { freeDom, freeScene } from 'free-dom';
-import 'free-dom/../style/index.scss';
+import 'free-dom/index.css';
 import { ref } from 'vue-demi';
-const preview = ref(false)
+const preview = ref(false);
 const domList = ref([
   {
     text: '测试文本',
-    style: { color: '#d1239d'},
+    style: { color: '#d1239d' },
   },
   {
     text: '测试文本',
     style: { fontSize: '24px' },
-  }
-])
+  },
+]);
 
-function handlePreview() {
-  preview.value = !preview.value
+function handlePreview () {
+  preview.value = !preview.value;
 }
-function handleAdd() {
-  domList.value.push({ text: '测试文本', style: {} })
+function handleAdd () {
+  domList.value.push({ text: '测试文本', style: {} });
 }
-function handleSelect(data: any) {
-  console.log(data)
+function handleSelect (data: any) {
+  console.log(data);
 }
 </script>

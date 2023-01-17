@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
-import Components from 'unplugin-vue-components/vite'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+import Components from 'unplugin-vue-components/vite';
 
 export default defineConfig({
   plugins: [
@@ -8,7 +8,7 @@ export default defineConfig({
       dirs: resolve(__dirname, '.vitepress/theme/components'),
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
       transformer: 'vue3',
-    })
+    }),
   ],
   resolve: {
     alias: {
@@ -17,6 +17,6 @@ export default defineConfig({
     dedupe: ['vue', 'vue-demi'],
   },
   optimizeDeps: {
-    exclude: ['vue-demi']
-  }
-})
+    exclude: ['vue-demi'],
+  },
+});

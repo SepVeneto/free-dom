@@ -1,2 +1,2 @@
-export * from './EventBus'
-export * from './tokens'
+export * from './EventBus';
+export * from './tokens';

@@ -1,9 +1,9 @@
-import { defineComponent, shallowRef, h, provide, reactive, ref, toRefs, ExtractPropTypes, PropType } from "vue-demi"
-import { useElementBounding } from '@vueuse/core'
-import { SceneToken } from '../util'
-import markLine from "./markLine"
+import { defineComponent, shallowRef, h, provide, reactive, ref, toRefs, ExtractPropTypes, PropType } from 'vue-demi';
+import { useElementBounding } from '@vueuse/core';
+import { SceneToken } from '../util';
+import markLine from './markLine';
 
-const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
+const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const;
 type IDot = typeof Dots[number]
 
 export const freeDomWrapProps = {
@@ -13,39 +13,39 @@ export const freeDomWrapProps = {
   diff: {
     type: Number,
     default: 3,
-  }
-}
+  },
+};
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
-export type INode = {
-  uuid: string
-  node: INodeInfo
-}
-export type INodeInfo = {
-  _rect: IPos
-  trigger: () => void
-}
 export type IPos = {
   x: number
   y: number
   width: number
   height: number
 }
+export type INodeInfo = {
+  _rect: IPos
+  trigger: () => void
+}
+export type INode = {
+  uuid: string
+  node: INodeInfo
+}
 
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  setup(props) {
-    const rectRef = shallowRef(null)
-    const rect = useElementBounding(rectRef)
-    const nodes = ref<INode[]>([])
+  setup (props) {
+    const rectRef = shallowRef(null);
+    const rect = useElementBounding(rectRef);
+    const nodes = ref<INode[]>([]);
 
-    function register(uuid: string, node: INodeInfo) {
-      nodes.value.push({ uuid, node })
+    function register (uuid: string, node: INodeInfo) {
+      nodes.value.push({ uuid, node });
     }
-    function checkValid(pos: IPos) {
+    function checkValid (pos: IPos) {
       const { x, y, width, height } = pos;
-      return x >= 0 && x + width <= rect.width.value && y >= 0 && y + height <= rect.height.value
+      return x >= 0 && x + width <= rect.width.value && y >= 0 && y + height <= rect.height.value;
     }
 
     provide(
@@ -55,22 +55,22 @@ export const FreeDomWrap = defineComponent({
         nodes,
 
         register,
-        checkValid
-      })
-    )
+        checkValid,
+      }),
+    );
 
     return {
-      rectRef
-    }
+      rectRef,
+    };
   },
-  render() {
+  render () {
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
-        : this.$slots.default
+        : this.$slots.default;
 
     return h('section', {
       ref: 'rectRef',
-    }, [defaultSlot, h(markLine)])
-  }
-})
+    }, [defaultSlot, h(markLine)]);
+  },
+});

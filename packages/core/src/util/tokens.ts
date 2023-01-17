@@ -1,5 +1,5 @@
-import { FreeDomWrapProps, INode, INodeInfo, IPos } from "../components/freeDomWrap"
-export const SceneToken = Symbol('Scene')
+import { FreeDomWrapProps, INode, INodeInfo, IPos } from '../components/freeDomWrap';
+export const SceneToken = Symbol('Scene');
 
 export type SceneTokenContext = {
   nodes: INode[]
