@@ -1,4 +1,5 @@
-import DefaultTheme from "vitepress/theme"
+import theme from 'vitepress/theme';
+
 export default {
-  ...DefaultTheme,
-}
+  ...theme,
+};

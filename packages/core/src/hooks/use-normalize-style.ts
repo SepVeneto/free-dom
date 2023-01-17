@@ -1,21 +1,20 @@
 import { CSSProperties, ref, Ref, unref, watch } from 'vue-demi';
 type Style = Partial<Record<keyof CSSProperties, string | number>>
-export function useNormalizeStyle(
+export function useNormalizeStyle (
   style: Style | Ref<any>,
 ) {
-
   const _style = ref({
     transition: 'inherit',
-  })
+  });
   watch(() => style, (data) => {
     const res = Object.entries(unref(data)).reduce<Partial<CSSProperties>>(
       (obj, _style) => {
         const [key, value] = _style;
         if (typeof value === 'number') {
-          // @ts-ignore
+          // @ts-expect-error: css
           obj[key] = `${value}px`;
         } else {
-          // @ts-ignore
+          // @ts-expect-error: css
           obj[key] = value;
         }
         return obj;
@@ -23,7 +22,7 @@ export function useNormalizeStyle(
     _style.value = {
       ..._style.value,
       ...res,
-    }
-  }, { deep: true })
-  return _style
+    };
+  }, { deep: true });
+  return _style;
 }

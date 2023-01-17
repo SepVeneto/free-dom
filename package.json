@@ -4,10 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm build:type && pnpm build:core",
-    "build:core": "pnpm clear && rollup -c",
-    "build:type": "tsc --emitDeclarationOnly",
-    "clear": "rimraf packages/core/dist",
     "dev": "vue-demi-switch 3 && vitepress dev packages",
     "docs:build": "vitepress build packages",
     "docs:deploy": "git subtree push --prefix=packages/.vitepress/dist origin docs",
@@ -21,8 +17,10 @@
     "vue-demi": "*"
   },
   "devDependencies": {
+    "@sepveneto/eslint-config": "^0.4.0",
     "@types/node": "^18.7.18",
     "conventional-changelog": "^3.1.25",
+    "eslint": "^8.32.0",
     "esno": "^0.16.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
