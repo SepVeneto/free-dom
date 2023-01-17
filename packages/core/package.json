@@ -1,13 +1,12 @@
 {
-  "name": "free-dom",
+  "name": "@sepveneto/free-dom",
   "version": "0.0.6",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/type.d.ts",
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "exports": {
     ".": "./dist/index.mjs",
