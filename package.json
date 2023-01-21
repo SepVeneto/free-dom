@@ -32,7 +32,8 @@
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
-        "@algolia/client-search"
+        "@algolia/client-search",
+        "esbuild"
       ]
     }
   }
