@@ -1,9 +1,9 @@
 name: Release
 
-on: push
-  # push:
-    # tags:
-    #   - 'v*'
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -17,7 +17,8 @@ jobs:
         with:
           node-version: 16.x
 
-      - run: |
+      - name: Build
+        run: |
           npm i -g pnpm
           pnpm i
           pnpm docs:build
@@ -28,6 +29,6 @@ jobs:
           branch: docs
           folder: packages/.vitepress/dist
 
-      # - run: npx changelogithub
-      #   env:
-      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
