@@ -39,7 +39,6 @@
   "devDependencies": {
     "@types/uuid": "^8.3.4",
     "bumpp": "^8.2.1",
-    "esbuild-plugin-sass": "^1.0.1",
     "tsup": "^6.5.0",
     "vue": "^3.2.39"
   },
