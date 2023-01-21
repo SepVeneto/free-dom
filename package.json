@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "vue-demi-switch 3 && vitepress dev packages",
-    "docs:build": "vitepress build packages",
+    "build:core": "pnpm -C packages/core build",
+    "docs:build": "pnpm build:core && vitepress build packages",
     "docs:deploy": "git subtree push --prefix=packages/.vitepress/dist origin docs",
     "test": "vitest"
   },
