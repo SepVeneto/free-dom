@@ -31,7 +31,7 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": "@algolia/client-search"
+      "ignoreMissing": ["@algolia/client-search"]
     }
   }
 }
