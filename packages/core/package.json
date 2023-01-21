@@ -1,6 +1,6 @@
 {
   "name": "@sepveneto/free-dom",
-  "version": "0.0.6",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -15,8 +15,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "vue-demi-switch 3 && vitepress dev docs",
-    "release": "bumpp package.json --commit --push --tag && pnpm -r publish --access public",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . && git add CHANGELOG.md",
+    "release": "pnpm build && bumpp package.json --commit --push --tag && pnpm -r publish --access public",
     "test": "vitest"
   },
   "keywords": [],
