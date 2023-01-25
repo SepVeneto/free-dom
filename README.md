@@ -1,4 +1,4 @@
-# free-dom
+# ＠sepveneto/free-dom
 
 [在线预览](https://sepveneto.github.io/free-dom/)
 
@@ -11,6 +11,14 @@ vue2/3通用的自由拖拽dom的组件
 组合使用额外提供了拖拽区域的限制以及标线自动吸附功能
 
 ## 使用
+
+### 安装
+```bash
+pnpm i @sepveneto/free-dom
+yarn add @sepveneto/free-dom
+npm i @sepveneto/free-dom
+```
+### 基本用法
 
 1. 独立使用
 vue2.6及以下
