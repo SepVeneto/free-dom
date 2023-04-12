@@ -9,7 +9,7 @@ import {
   inject,
   ref,
   reactive,
-  isVue2, shallowRef, watch,
+  isVue2, shallowRef, watchEffect,
 } from 'vue-demi';
 
 import { useNormalizeStyle } from '../hooks';
@@ -25,13 +25,25 @@ type IDot = typeof Dots[number]
 export const FreeDom = defineComponent({
   name: 'FreeDom',
   props: {
+    x: {
+      type: Number,
+      default: 0,
+    },
+    y: {
+      type: Number,
+      default: 0,
+    },
+    width: {
+      type: Number,
+      default: 100,
+    },
+    height: {
+      type: Number,
+      default: 50,
+    },
     absolute: {
       type: Boolean,
       default: undefined,
-    },
-    customStyle: {
-      type: Object as PropType<Partial<CSSProperties>>,
-      required: true,
     },
     scale: {
       type: [Boolean, Array] as PropType<IDot[] | boolean>,
@@ -48,7 +60,7 @@ export const FreeDom = defineComponent({
       default: undefined,
     },
   },
-  emits: ['update:customStyle', 'select'],
+  emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
   setup (props, { emit }) {
     const active = ref(false);
     const SceneContext = inject<SceneTokenContext>(SceneToken);
@@ -83,29 +95,20 @@ export const FreeDom = defineComponent({
       active.value = false;
     });
 
-    function normalize (style: CSSProperties) {
-      const { transform, width, height } = style;
-      const { x, y } = getPos(transform);
-      _rect.width = parseNum(width ?? 0);
-      _rect.height = parseNum(height ?? 0);
-      _rect.x = x;
-      _rect.y = y;
-    }
-
     function parseNum (val: number | string) {
       return typeof val === 'number' ? val : parseFloat(val);
     }
 
-    watch(() => props.customStyle, (_style) => {
-      normalize(_style);
-      trigger();
+    watchEffect(() => {
+      _rect.width = props.width;
+      _rect.height = props.height;
+      _rect.x = props.x;
+      _rect.y = props.y;
     });
 
     onMounted(async () => {
-      _style.value = props.customStyle;
       await nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
-      normalize(props.customStyle);
       _rect.width = rect.width;
       _rect.height = rect.height;
       trigger();
@@ -114,7 +117,6 @@ export const FreeDom = defineComponent({
     function trigger () {
       const { x, y, width, height } = _rect;
       _style.value = {
-        ...props.customStyle,
         transform: `translate(${x}px, ${y}px)`,
         width,
         height,
@@ -195,10 +197,17 @@ export const FreeDom = defineComponent({
         EventBus.emit('moveup', uuid);
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
-        emit('update:customStyle', _style.value);
+        emitPos();
       };
       document.addEventListener('mousemove', move);
       document.addEventListener('mouseup', up);
+    }
+
+    function emitPos () {
+      emit('update:x', _rect.x);
+      emit('update:y', _rect.y);
+      emit('update:width', _rect.width);
+      emit('update:height', _rect.height);
     }
 
     function getDotPos (dot: string): CSSProperties {
@@ -258,7 +267,7 @@ export const FreeDom = defineComponent({
         EventBus.emit('moveup', uuid);
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
-        emit('update:customStyle', _style.value);
+        emitPos();
         emit('select', _rect);
       };
       document.addEventListener('mousemove', move);
