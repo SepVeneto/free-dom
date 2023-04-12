@@ -27,19 +27,19 @@ export const FreeDom = defineComponent({
   props: {
     x: {
       type: Number,
-      default: 0,
+      required: true,
     },
     y: {
       type: Number,
-      default: 0,
+      required: true,
     },
     width: {
       type: Number,
-      default: 100,
+      required: true,
     },
     height: {
       type: Number,
-      default: 50,
+      required: true,
     },
     absolute: {
       type: Boolean,
@@ -87,10 +87,6 @@ export const FreeDom = defineComponent({
       trigger,
     };
 
-    onMounted(() => {
-      SceneContext?.register(uuid, context);
-    });
-
     onClickOutside(widgetRef, () => {
       active.value = false;
     });
@@ -104,14 +100,19 @@ export const FreeDom = defineComponent({
       _rect.height = props.height;
       _rect.x = props.x;
       _rect.y = props.y;
+      console.log(_rect);
     });
 
     onMounted(async () => {
+      SceneContext?.register(uuid, context);
       await nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
       _rect.width = rect.width;
       _rect.height = rect.height;
+      _rect.x = props.x ?? 0;
+      _rect.y = props.y ?? 0;
       trigger();
+      emitPos();
     });
 
     function trigger () {
