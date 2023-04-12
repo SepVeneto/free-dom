@@ -1,22 +1,24 @@
 {
   "name": "@sepveneto/free-dom",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
-  "types": "dist/type.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
-    ".": "./dist/index.mjs",
-    "./css": "./dist/theme.css"
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./css": "./dist/index.css"
   },
   "scripts": {
     "build": "tsup",
     "dev": "vue-demi-switch 3 && vitepress dev docs",
-    "release": "bumpp package.json --commit --push --tag && pnpm -r publish --access public",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . && git add CHANGELOG.md",
+    "release": "pnpm build && bumpp package.json --commit --push --tag && pnpm -r publish --access public",
     "test": "vitest"
   },
   "keywords": [],

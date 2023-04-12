@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'free-dom': resolve(__dirname, './core/src/index.ts'),
+      'free-dom': resolve(__dirname, './core/dist'),
     },
     dedupe: ['vue', 'vue-demi'],
   },

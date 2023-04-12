@@ -34,9 +34,13 @@
 <script lang="ts" setup>
 import { freeDom, freeScene } from 'free-dom';
 import 'free-dom/index.css';
-import { ref } from 'vue-demi';
+import { CSSProperties, ref } from 'vue-demi';
+type Dom = {
+  text: string
+  style: Partial<CSSProperties>
+}
 const preview = ref(false);
-const domList = ref([
+const domList = ref<Dom[]>([
   {
     text: '测试文本',
     style: { color: '#d1239d' },

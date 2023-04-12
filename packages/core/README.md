@@ -121,7 +121,7 @@ const style = ref({ tranform: 'translate(50px, 50px)' })
 | 事件 | 参数 | 说明 |
 | --- | ---- | ---- |
 | update:custom-style | css properties | 直接返回样式，不需要做转换 |
-| select | { x: number, y: number, width: number, height: number } | 当dom被选中时触发，参数包含相关的位置大小信息（`preview`时不会触发）
+| select | \{ x: number, y: number, width: number, height: number \} | 当dom被选中时触发，参数包含相关的位置大小信息（`preview`时不会触发）
 
 ## 注意事项
 
