@@ -100,7 +100,6 @@ export const FreeDom = defineComponent({
       _rect.height = props.height;
       _rect.x = props.x;
       _rect.y = props.y;
-      console.log(_rect);
     });
 
     onMounted(async () => {
@@ -147,6 +146,7 @@ export const FreeDom = defineComponent({
       evt.preventDefault();
       if (isMove.value) return;
       isScale.value = true;
+      active.value = true;
 
       const { x, y, width, height } = getStyle(_style.value);
       const cWidth = width;
