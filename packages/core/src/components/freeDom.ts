@@ -25,6 +25,10 @@ type IDot = typeof Dots[number]
 export const FreeDom = defineComponent({
   name: 'FreeDom',
   props: {
+    absolute: {
+      type: Boolean,
+      default: undefined,
+    },
     customStyle: {
       type: Object as PropType<Partial<CSSProperties>>,
       required: true,
@@ -51,6 +55,7 @@ export const FreeDom = defineComponent({
     const _preview = computed(() => SceneContext?.preview || props.preview);
     const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale));
     const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
+    const isAbsolute = computed(() => props.absolute ?? SceneContext?.absolute ?? true);
     const widgetRef = shallowRef();
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
@@ -298,6 +303,7 @@ export const FreeDom = defineComponent({
       canScale,
       dots,
       active,
+      isAbsolute,
 
       getDotPos,
       onMousedown,
@@ -333,6 +339,7 @@ export const FreeDom = defineComponent({
         {
           class: [
             'free-dom__widget-wrapper',
+            { 'is-absolute': this.isAbsolute },
             { 'can-move': this.canMove },
             { 'is-active': this.active },
           ],
@@ -351,6 +358,7 @@ export const FreeDom = defineComponent({
         ref: 'widgetRef',
         class: [
           'free-dom__widget-wrapper',
+          { 'is-absolute': this.isAbsolute },
           { 'can-move': this.canMove },
           { 'is-active': this.active },
         ],
