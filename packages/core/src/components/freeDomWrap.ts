@@ -18,6 +18,14 @@ export const freeDomWrapProps = {
     type: Number,
     default: 3,
   },
+  handler: {
+    type: String as PropType<'dot' | 'mark'>,
+    default: undefined,
+  },
+  diagonal: {
+    type: Boolean,
+    default: undefined,
+  },
 };
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>

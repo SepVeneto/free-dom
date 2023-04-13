@@ -12,7 +12,7 @@ import {
   isVue2, shallowRef, watchEffect,
 } from 'vue-demi';
 
-import { useNormalizeStyle } from '../hooks';
+import { useNormalizeStyle, useResize } from '../hooks';
 
 import { onClickOutside } from '@vueuse/core';
 import { EventBus, SceneToken, SceneTokenContext } from '../util';
@@ -59,6 +59,14 @@ export const FreeDom = defineComponent({
       type: Number,
       default: undefined,
     },
+    handler: {
+      type: String as PropType<'dot' | 'mark'>,
+      default: undefined,
+    },
+    diagonal: {
+      type: Boolean,
+      default: undefined,
+    },
   },
   emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
   setup (props, { emit }) {
@@ -68,6 +76,10 @@ export const FreeDom = defineComponent({
     const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale));
     const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
     const isAbsolute = computed(() => props.absolute ?? SceneContext?.absolute ?? true);
+    const handlerType = computed(() => props.handler ?? SceneContext?.handler ?? 'dot');
+
+    const diagonal = computed(() => props.diagonal ?? SceneContext?.diagonal ?? true);
+
     const widgetRef = shallowRef();
     const _style = ref<Partial<CSSProperties>>({});
     const wrapStyle = useNormalizeStyle(_style);
@@ -142,66 +154,26 @@ export const FreeDom = defineComponent({
     const isActive = shallowRef(true);
 
     function onMousedownDot (evt: MouseEvent, dot: string) {
+      console.log('click');
       evt.stopPropagation();
       evt.preventDefault();
       if (isMove.value) return;
       isScale.value = true;
       active.value = true;
 
-      const { x, y, width, height } = getStyle(_style.value);
-      const cWidth = width;
-      const cHeight = height;
-
-      const startX = evt.clientX;
-      const startY = evt.clientY;
-
-      const isT = /t/.test(dot);
-      const isL = /l/.test(dot);
-      const isB = /b/.test(dot);
-      const isR = /r/.test(dot);
-      const isDiagonal = dot.length === 2;
-
-      const move = (mouseEvt: MouseEvent) => {
-        const currX = mouseEvt.clientX;
-        const currY = mouseEvt.clientY;
-        const deltaX = currX - startX;
-        const deltaY = currY - startY;
-        const rate = cWidth / cHeight;
-        const newWidth = cWidth + (isL ? -deltaX : isR ? deltaX : 0);
-        const newHeight = cHeight + (isT ? -deltaY : isB ? deltaY : 0);
-
-        if (isDiagonal) {
-          if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-            _rect.x = x + (isL ? deltaX : 0);
-            _rect.width = newWidth < 0 ? 0 : newWidth;
-
-            _rect.height = newWidth / rate;
-          } else {
-            _rect.y = y + (isT ? deltaY : 0);
-            _rect.height = newHeight < 0 ? 0 : newHeight;
-
-            _rect.width = newHeight * rate;
-          }
-        } else {
-          _rect.x = x + (isL ? deltaX : 0);
-          _rect.y = y + (isT ? deltaY : 0);
-          _rect.width = newWidth < 0 ? 0 : newWidth;
-          _rect.height = newHeight < 0 ? 0 : newHeight;
-        }
-        if (!checkValid(_rect)) return;
-        EventBus.emit('move', uuid);
-        trigger();
-        // setPosition(pos);
-      };
-      const up = () => {
-        isScale.value = false;
-        EventBus.emit('moveup', uuid);
-        document.removeEventListener('mousemove', move);
-        document.removeEventListener('mouseup', up);
-        emitPos();
-      };
-      document.addEventListener('mousemove', move);
-      document.addEventListener('mouseup', up);
+      const { clientX, clientY } = evt;
+      useResize(clientX, clientY, _rect, dot, diagonal.value, {
+        onMove () {
+          if (!checkValid(_rect)) return;
+          EventBus.emit('move', uuid);
+          trigger();
+        },
+        onUp () {
+          isScale.value = false;
+          EventBus.emit('moveup', uuid);
+          emitPos();
+        },
+      });
     }
 
     function emitPos () {
@@ -233,9 +205,10 @@ export const FreeDom = defineComponent({
           top = isT ? 0 : height;
         }
       }
+      // TODO: 如果是mark需要另外计算不同位置的坐标，以保证显示在虚线框内部
       return {
-        top: top + 'px',
-        left: left + 'px',
+        top: handlerType.value === 'dot' ? top : (top as number - 3) + 'px',
+        left: handlerType.value === 'dot' ? left : (left as number - 3) + 'px',
         cursor:
           dot
             .split('')
@@ -314,6 +287,7 @@ export const FreeDom = defineComponent({
       dots,
       active,
       isAbsolute,
+      handlerType,
 
       getDotPos,
       onMousedown,
@@ -333,12 +307,13 @@ export const FreeDom = defineComponent({
           });
         }
         return h('div', {
-          class: 'free-dom__widget-dot',
+          class: this.handlerType === 'dot' ? 'free-dom__widget-dot' : 'free-dom__resizable-handler',
           style: this.getDotPos(dot),
           onMousedown: (evt: MouseEvent) => this.onMousedownDot(evt, dot),
         });
       })
       : null;
+
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
@@ -375,7 +350,7 @@ export const FreeDom = defineComponent({
         style: this.wrapStyle,
         onMousedown: this.onMousedown,
       },
-      [dots, defaultSlot],
+      [defaultSlot, dots],
     );
   },
 });

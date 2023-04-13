@@ -15,6 +15,9 @@
     .free-dom__widget-dot {
       opacity: 1;
     }
+    .free-dom__resizable-handler {
+      opacity: 1;
+    }
   }
 }
 .free-dom__widget-dot {
@@ -27,4 +30,21 @@
   border-radius: 50%;
   border: 1px solid var(--free-dom-dot-border);
   background-color: var(--free-dom-dot-border);
+}
+
+.free-dom__resizable-handler {
+  opacity: 0;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  &::after {
+    content: "";
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 5px;
+    height: 5px;
+    border-right: 2px solid rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+  }
 }
