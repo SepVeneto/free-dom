@@ -27,19 +27,19 @@ export const FreeDom = defineComponent({
   props: {
     x: {
       type: Number,
-      required: true,
+      default: 0,
     },
     y: {
       type: Number,
-      required: true,
+      default: 0,
     },
     width: {
       type: Number,
-      required: true,
+      default: 0,
     },
     height: {
       type: Number,
-      required: true,
+      default: 0,
     },
     absolute: {
       type: Boolean,
@@ -118,10 +118,10 @@ export const FreeDom = defineComponent({
       SceneContext?.register(uuid, context);
       await nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
-      _rect.width = rect.width;
-      _rect.height = rect.height;
-      _rect.x = props.x ?? 0;
-      _rect.y = props.y ?? 0;
+      _rect.width = _rect.width || rect.width;
+      _rect.height = _rect.height || rect.height;
+      _rect.x = _rect.x || 0;
+      _rect.y = _rect.y || 0;
       trigger();
       emitPos();
     });
@@ -154,7 +154,6 @@ export const FreeDom = defineComponent({
     const isActive = shallowRef(true);
 
     function onMousedownDot (evt: MouseEvent, dot: string) {
-      console.log('click');
       evt.stopPropagation();
       evt.preventDefault();
       if (isMove.value) return;
