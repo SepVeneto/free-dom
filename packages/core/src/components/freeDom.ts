@@ -14,7 +14,7 @@ import {
 
 import { useNormalizeStyle, useResize } from '../hooks';
 
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, useThrottleFn } from '@vueuse/core';
 import { EventBus, SceneToken, SceneTokenContext } from '../util';
 import { v4 as uuidv4 } from 'uuid';
 import { IPos } from './freeDomWrap';
@@ -94,6 +94,8 @@ export const FreeDom = defineComponent({
       height: 0,
     });
 
+    const triggerThrottle = useThrottleFn(trigger);
+
     const context = {
       _rect,
       trigger,
@@ -106,13 +108,14 @@ export const FreeDom = defineComponent({
     function parseNum (val: number | string) {
       return typeof val === 'number' ? val : parseFloat(val);
     }
-
+    let init = false;
     watchEffect(() => {
       _rect.width = props.width;
       _rect.height = props.height;
       _rect.x = props.x;
       _rect.y = props.y;
-      trigger()
+      init && triggerThrottle();
+      init = true;
     });
 
     onMounted(async () => {
@@ -126,7 +129,6 @@ export const FreeDom = defineComponent({
       trigger();
       emitPos();
     });
-
     function trigger () {
       const { x, y, width, height } = _rect;
       _style.value = {
