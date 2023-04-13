@@ -19,6 +19,9 @@
       opacity: 1;
     }
   }
+  &.is-scale {
+    transition: none !important;
+  }
 }
 .free-dom__widget-dot {
   opacity: 0;

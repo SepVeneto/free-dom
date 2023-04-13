@@ -286,6 +286,7 @@ export const FreeDom = defineComponent({
       dots,
       active,
       isAbsolute,
+      isScale,
       handlerType,
 
       getDotPos,
@@ -323,6 +324,7 @@ export const FreeDom = defineComponent({
         {
           class: [
             'free-dom__widget-wrapper',
+            { 'is-scale': this.isScale },
             { 'is-absolute': this.isAbsolute },
             { 'can-move': this.canMove },
             { 'is-active': this.active },
@@ -342,6 +344,7 @@ export const FreeDom = defineComponent({
         ref: 'widgetRef',
         class: [
           'free-dom__widget-wrapper',
+          { 'is-scale': this.isScale },
           { 'is-absolute': this.isAbsolute },
           { 'can-move': this.canMove },
           { 'is-active': this.active },
