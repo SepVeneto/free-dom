@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "vue-demi-switch 3 && vitepress dev docs",
-    "release": "pnpm build && bumpp package.json --commit --push --tag && pnpm -r publish --access public",
+    "release": "pnpm build && pnpm publish --access public",
     "test": "vitest"
   },
   "keywords": [],
