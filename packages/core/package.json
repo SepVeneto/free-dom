@@ -1,6 +1,6 @@
 {
   "name": "@sepveneto/free-dom",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "vue-demi-switch 3 && vitepress dev docs",
-    "release": "pnpm build && pnpm publish --access public",
+    "release": "bumpp package.json --commit --push --tag",
     "test": "vitest"
   },
   "keywords": [],

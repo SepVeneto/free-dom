@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vue-demi-switch 3 && vitepress dev packages",
     "build:core": "pnpm -C packages/core build",
+    "release": "pnpm -C packages/core release",
     "docs:build": "pnpm build:core && vitepress build packages",
     "test": "vitest"
   },
