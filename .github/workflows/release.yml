@@ -36,6 +36,6 @@ jobs:
           branch: docs
           folder: packages/.vitepress/dist
 
-      - run: npx changelogithub
+      - run: npx changelogithub --from v0.0.7 --to v0.2.0
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
