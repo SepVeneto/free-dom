@@ -69,12 +69,17 @@ vue2.6及以下
 ```html
 <template>
   <free-scene style="width: 600px; height: 400px;" move scale>
-    <free-dom :custom-style.sync="style">测试文本</free-dom>
+    <free-dom
+      :width.sync="rect.width"
+      :height.sync="rect.height"
+      :x.sync="rect.x"
+      :y.sync="rect.y"
+    >测试文本</free-dom>
   </free-scene>
 </template>
 <script>
-import { freeDom, freeScene } from 'free-dom'
-import 'free-dom/dist/theme.css'
+import { freeDom, freeScene } from '@sepveneto/free-dom'
+import '@sepveneto/free-dom/css'
 export default {
   components: {
     freeDom,
@@ -82,7 +87,7 @@ export default {
   },
   data() {
     return {
-      style: {}
+      rect: {}
     }
   }
 }
@@ -93,15 +98,20 @@ vue2.7及以上
 ```html
 <template>
   <free-scene style="width: 600px; height: 400px;" move scale>
-    <free-dom v-model:custom-style="style">测试文本</free-dom>
+    <free-dom
+      v-model:width="rect.width"
+      v-model:height="rect.height"
+      v-model:x="rect.x"
+      v-model:y="rect.y"
+    >测试文本</free-dom>
   </free-scene>
 </template>
 <script setup>
-import { freeDom, freeScene } from 'free-dom'
-import 'free-dom/dist/theme.css'
+import { freeDom, freeScene } from '@sepveneto/free-dom'
+import '@sepveneto/free-dom/css'
 import { ref } from 'vue'
 
-const style = ref({ tranform: 'translate(50px, 50px)' })
+const rect = ref({ })
 </script>
 ```
 
@@ -114,21 +124,29 @@ const style = ref({ tranform: 'translate(50px, 50px)' })
 | scale | boolean,Array | false | 是否允许缩放，可以通过数组控制缩放的方向 |
 | preview | boolean | false | 屏蔽移动和缩放操作 |
 | diff | number | 3 | 自动吸附的像素距离 |
+| absolute | boolean | true | 拖拽元素是否脱离文档流　|
+| handler | 'dot' \| 'mark' | 'dot' | 拖拽锚点的样式　|
+| diagonal | boolean | true | 是否锁定纵横比 |
 
 ### FreeDom
 | 属性 | 类型 | 默认值 | 说明 |
 | ---- | ----- | --- | ----- |
-| custom-style | css properties | - | 通过`translate`,`width`,`height`控制dom的位置和大小 |
+| width |　宽度 | - | 不设置会自动计算 |
+| height | 高度 | - | 不设置会自动计算 |
+| x | 坐标x | 0 | - |
+| y | 坐标y  | - | - |
 | limitWidth | number | - | 限制dom的可操作区域 |
 | limitHeight | number | - | 限制dom的可操作区域 |
 | move | boolean | false | 是否允许移动 |
 | scale | boolean,Array | false | 是否允许缩放，可以通过数组控制缩放的方向 |
 | preview | boolean | false | 屏蔽移动和缩放操作 |
 | diff | number | 3 | 自动吸附的像素距离 |
+| absolute | boolean | true | 拖拽元素是否脱离文档流　|
+| handler | 'dot' \| 'mark' | 'dot' | 拖拽锚点的样式　|
+| diagonal | boolean | true | 是否锁定纵横比 |
 
 | 事件 | 参数 | 说明 |
 | --- | ---- | ---- |
-| update:custom-style | css properties | 直接返回样式，不需要做转换 |
 | select | { x: number, y: number, width: number, height: number } | 当dom被选中时触发，参数包含相关的位置大小信息（`preview`时不会触发）
 
 ## 注意事项
