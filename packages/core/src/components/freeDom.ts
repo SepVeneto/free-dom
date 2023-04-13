@@ -112,6 +112,7 @@ export const FreeDom = defineComponent({
       _rect.height = props.height;
       _rect.x = props.x;
       _rect.y = props.y;
+      trigger()
     });
 
     onMounted(async () => {
