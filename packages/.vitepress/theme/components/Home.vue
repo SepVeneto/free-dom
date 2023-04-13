@@ -11,7 +11,7 @@
   <template v-if="!preview">
     <free-scene
       move
-      :scale="['lt', 'lb', 'rt', 'rb']"
+      scale
       style="
         width: 600px;
         height: 400px;
@@ -22,12 +22,19 @@
       <free-dom
         v-for="(item, index) in domList"
         :key="index"
-        v-model:custom-style="item.style"
+        v-model:x="item.x"
+        v-model:y="item.y"
+        v-model:width="item.width"
+        v-model:height="item.height"
+        :scale="['rb']"
+        :style="item.style"
+        handler="mark"
         @select="handleSelect"
       >
         <span>{{ item.text }}{{ index }}</span>
       </free-dom>
     </free-scene>
+    <pre>{{ domList }}</pre>
   </template>
 </template>
 
@@ -37,12 +44,17 @@ import 'free-dom/index.css';
 import { CSSProperties, ref } from 'vue-demi';
 type Dom = {
   text: string
-  style: Partial<CSSProperties>
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  style?: CSSProperties
 }
 const preview = ref(false);
 const domList = ref<Dom[]>([
   {
     text: '测试文本',
+    x: 50,
     style: { color: '#d1239d' },
   },
   {

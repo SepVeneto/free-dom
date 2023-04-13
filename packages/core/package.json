@@ -29,15 +29,6 @@
     "uuid": "^9.0.0",
     "vue-demi": "latest"
   },
-  "peerDependencies": {
-    "@vue/composition-api": "^1.0.0-rc.1",
-    "vue": "^2.0.0 || >=3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@vue/composition-api": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@types/uuid": "^8.3.4",
     "bumpp": "^8.2.1",

@@ -7,12 +7,24 @@ const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const;
 type IDot = typeof Dots[number]
 
 export const freeDomWrapProps = {
+  absolute: {
+    type: Boolean,
+    default: undefined,
+  },
   preview: Boolean,
   move: Boolean,
   scale: [Boolean, Array] as PropType<IDot[] | boolean>,
   diff: {
     type: Number,
     default: 3,
+  },
+  handler: {
+    type: String as PropType<'dot' | 'mark'>,
+    default: undefined,
+  },
+  diagonal: {
+    type: Boolean,
+    default: undefined,
   },
 };
 
