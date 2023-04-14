@@ -31,7 +31,9 @@
         handler="mark"
         @select="handleSelect"
       >
-        <span>{{ item.text }}{{ index }}</span>
+        <div>
+          <span>{{ item.text }}{{ index }}</span>
+        </div>
       </free-dom>
     </free-scene>
     <pre>{{ domList }}</pre>
