@@ -127,6 +127,7 @@ const rect = ref({ })
 | absolute | boolean | true | 拖拽元素是否脱离文档流　|
 | handler | 'dot' \| 'mark' | 'dot' | 拖拽锚点的样式　|
 | diagonal | boolean | true | 是否锁定纵横比 |
+| grid | [number, number] | - | x,y轴自动吸附的值 |
 
 ### FreeDom
 | 属性 | 类型 | 默认值 | 说明 |
@@ -144,6 +145,7 @@ const rect = ref({ })
 | absolute | boolean | true | 拖拽元素是否脱离文档流　|
 | handler | 'dot' \| 'mark' | 'dot' | 拖拽锚点的样式　|
 | diagonal | boolean | true | 是否锁定纵横比 |
+| grid | [number, number] | - | x,y轴自动吸附的值 |
 
 | 事件 | 参数 | 说明 |
 | --- | ---- | ---- |

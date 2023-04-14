@@ -67,6 +67,10 @@ export const FreeDom = defineComponent({
       type: Boolean,
       default: undefined,
     },
+    grid: {
+      type: Object as PropType<[number, number]>,
+      default: undefined,
+    },
   },
   emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
   setup (props, { emit }) {
@@ -77,6 +81,7 @@ export const FreeDom = defineComponent({
     const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
     const isAbsolute = computed(() => props.absolute ?? SceneContext?.absolute ?? true);
     const handlerType = computed(() => props.handler ?? SceneContext?.handler ?? 'dot');
+    const snapGrid = computed(() => props.grid ?? SceneContext?.grid);
 
     const diagonal = computed(() => props.diagonal ?? SceneContext?.diagonal ?? true);
 
@@ -164,7 +169,7 @@ export const FreeDom = defineComponent({
       active.value = true;
 
       const { clientX, clientY } = evt;
-      useResize(clientX, clientY, _rect, dot, diagonal.value, {
+      useResize(clientX, clientY, _rect, dot, diagonal.value, snapGrid.value, {
         onMove () {
           if (!checkValid(_rect)) return;
           EventBus.emit('move', uuid);

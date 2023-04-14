@@ -26,6 +26,10 @@ export const freeDomWrapProps = {
     type: Boolean,
     default: undefined,
   },
+  grid: {
+    type: Object as PropType<[number, number]>,
+    default: undefined,
+  },
 };
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>

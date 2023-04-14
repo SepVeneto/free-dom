@@ -1,5 +1,5 @@
 import { UnwrapNestedRefs } from 'vue-demi';
-import { clamp } from '../util';
+import { clamp, snapToGrid } from '../util';
 
 const MIN_SIZE = 20;
 
@@ -9,6 +9,7 @@ export function useResize (
   rect: UnwrapNestedRefs<any>,
   dot: string,
   diagonal: boolean,
+  snapGrid?: [number, number],
   callbacks?: any,
 ) {
   const isT = dot ? /t/.test(dot) : false;
@@ -21,8 +22,11 @@ export function useResize (
 
   const move = (mouseEvt: MouseEvent) => {
     const { clientX, clientY } = mouseEvt;
-    const deltaX = clientX - startX;
-    const deltaY = clientY - startY;
+    let deltaX = clientX - startX;
+    let deltaY = clientY - startY;
+    if (Array.isArray(snapGrid)) {
+      [deltaX, deltaY] = snapToGrid(snapGrid, deltaX, deltaY);
+    }
 
     const rate = cWidth / cHeight;
     const newWidth = cWidth + (isL ? -deltaX : isR ? deltaX : 0);
