@@ -71,6 +71,14 @@ export const FreeDom = defineComponent({
       type: Object as PropType<[number, number]>,
       default: undefined,
     },
+    onDragStart: {
+      type: Function,
+      default: undefined,
+    },
+    onDragEnd: {
+      type: Function,
+      default: undefined,
+    },
   },
   emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
   setup (props, { emit }) {
@@ -168,6 +176,9 @@ export const FreeDom = defineComponent({
       isScale.value = true;
       active.value = true;
 
+      const shouldUpdate = props.onDragStart?.();
+      if (shouldUpdate === false) return;
+
       const { clientX, clientY } = evt;
       useResize(clientX, clientY, _rect, dot, diagonal.value, snapGrid.value, {
         onMove () {
@@ -176,6 +187,8 @@ export const FreeDom = defineComponent({
           trigger();
         },
         onUp () {
+          props.onDragEnd?.();
+
           isScale.value = false;
           EventBus.emit('moveup', uuid);
           emitPos();
@@ -229,6 +242,10 @@ export const FreeDom = defineComponent({
       if (isScale.value || !canMove.value) return;
       isMove.value = true;
       active.value = true;
+
+      const shouldUpdate = props.onDragStart?.();
+      if (shouldUpdate === false) return;
+
       const pos = getStyle(_style.value);
       const move = (mouseEvt: MouseEvent) => {
         const { clientX, clientY } = mouseEvt;
@@ -244,6 +261,8 @@ export const FreeDom = defineComponent({
         trigger();
       };
       const up = () => {
+        props.onDragEnd?.();
+
         isMove.value = false;
         EventBus.emit('moveup', uuid);
         document.removeEventListener('mousemove', move);
