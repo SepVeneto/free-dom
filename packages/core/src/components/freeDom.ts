@@ -10,7 +10,6 @@ import {
   ref,
   reactive,
   isVue2, shallowRef, watchEffect,
-  cloneVNode,
 } from 'vue-demi';
 
 import { useNormalizeStyle, useResize } from '../hooks';
@@ -323,28 +322,13 @@ export const FreeDom = defineComponent({
       })
       : null;
 
-    const defaultSlots =
+    const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
         : this.$slots.default;
-    if (!defaultSlots) {
-      console.error('[free-dom] must have a default slot');
-      return null;
-    }
-    if (defaultSlots.length > 1) {
-      console.error('[free-dom] must have only one default slot');
-      return null;
-    }
-    const defaultSlot = defaultSlots[0];
-    const node = cloneVNode(defaultSlot);
-    if (Array.isArray(node.children)) {
-      node.children = [...node.children, ...dots!];
-    } else {
-      console.error('[free-dom] generate resiable handles failed');
-    }
     if (isVue2) {
       return h(
-        node,
+        'section',
         {
           class: [
             'free-dom__widget-wrapper',
@@ -359,10 +343,11 @@ export const FreeDom = defineComponent({
             mousedown: this.onMousedown,
           },
         },
+        [dots, defaultSlot],
       );
     }
     return h(
-      node,
+      'section',
       {
         ref: 'widgetRef',
         class: [
@@ -375,6 +360,7 @@ export const FreeDom = defineComponent({
         style: this.wrapStyle,
         onMousedown: this.onMousedown,
       },
+      [defaultSlot, dots],
     );
   },
 });
