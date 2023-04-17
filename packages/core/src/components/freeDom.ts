@@ -27,19 +27,19 @@ export const FreeDom = defineComponent({
   props: {
     x: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     y: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     width: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     height: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     absolute: {
       type: Boolean,
@@ -123,10 +123,10 @@ export const FreeDom = defineComponent({
     }
     let init = false;
     watchEffect(() => {
-      _rect.width = props.width;
-      _rect.height = props.height;
-      _rect.x = props.x;
-      _rect.y = props.y;
+      props.width && (_rect.width = props.width);
+      props.height && (_rect.height = props.height);
+      props.x && (_rect.x = props.x);
+      props.y && (_rect.y = props.y);
       init && triggerThrottle();
       init = true;
     });
