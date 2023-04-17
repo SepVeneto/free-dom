@@ -10,11 +10,12 @@ import {
   ref,
   reactive,
   isVue2, shallowRef, watchEffect,
+  watch,
 } from 'vue-demi';
 
 import { useNormalizeStyle, useResize } from '../hooks';
 
-import { onClickOutside, useThrottleFn } from '@vueuse/core';
+import { onClickOutside, useThrottleFn, useElementBounding } from '@vueuse/core';
 import { EventBus, SceneToken, SceneTokenContext } from '../util';
 import { v4 as uuidv4 } from 'uuid';
 import { IPos } from './freeDomWrap';
@@ -131,12 +132,33 @@ export const FreeDom = defineComponent({
       init = true;
     });
 
+    const rectBound = useElementBounding(widgetRef);
+
+    const unwatchHeight = watch(rectBound.height, (height) => {
+      if (height) {
+        _rect.height = height;
+        unwatchHeight();
+      }
+    });
+    const unwatchWidth = watch(rectBound.width, (width) => {
+      if (width) {
+        _rect.width = width;
+        unwatchWidth();
+      }
+    });
+
     onMounted(async () => {
       SceneContext?.register(uuid, context);
       await nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
       _rect.width = _rect.width || rect.width;
+      if (_rect.width) {
+        unwatchWidth();
+      }
       _rect.height = _rect.height || rect.height;
+      if (_rect.height) {
+        unwatchHeight();
+      }
       _rect.x = _rect.x || 0;
       _rect.y = _rect.y || 0;
       trigger();
