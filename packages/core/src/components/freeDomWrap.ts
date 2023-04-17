@@ -34,10 +34,10 @@ export const freeDomWrapProps = {
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
 export type IPos = {
-  x: number
-  y: number
-  width: number
-  height: number
+  x?: number
+  y?: number
+  width?: number
+  height?: number
 }
 export type INodeInfo = {
   _rect: IPos
@@ -61,7 +61,10 @@ export const FreeDomWrap = defineComponent({
     }
     function checkValid (pos: IPos) {
       const { x, y, width, height } = pos;
-      return x >= 0 && x + width <= rect.width.value && y >= 0 && y + height <= rect.height.value;
+      return x! >= 0 &&
+      x! + width! <= rect.width.value &&
+      y! >= 0 &&
+      y! + height! <= rect.height.value;
     }
 
     provide(

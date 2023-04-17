@@ -1,6 +1,5 @@
 import {
   CSSProperties,
-  // nextTick,
   onMounted,
   PropType,
   defineComponent,
@@ -14,7 +13,7 @@ import {
 
 import { useNormalizeStyle, useResize } from '../hooks';
 
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, useElementSize } from '@vueuse/core';
 import { EventBus, SceneToken, SceneTokenContext } from '../util';
 import { v4 as uuidv4 } from 'uuid';
 import { IPos } from './freeDomWrap';
@@ -27,19 +26,19 @@ export const FreeDom = defineComponent({
   props: {
     x: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     y: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     width: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     height: {
       type: Number,
-      default: 0,
+      default: undefined,
     },
     absolute: {
       type: Boolean,
@@ -100,12 +99,7 @@ export const FreeDom = defineComponent({
     const isScale = ref(false);
     const isMove = ref(false);
 
-    const _rect = reactive({
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-    });
+    const _rect = reactive<IPos>({});
 
     const context = {
       _rect,
@@ -116,9 +110,17 @@ export const FreeDom = defineComponent({
       active.value = false;
     });
 
-    function parseNum (val: number | string) {
-      return typeof val === 'number' ? val : parseFloat(val);
-    }
+    let rectSize: {width: number, height: number} | null = reactive(useElementSize(widgetRef));
+    let autoWidth = true;
+    let autoHeight = true;
+    const unwatch = watch(rectSize, ({ width, height }) => {
+      if (autoWidth && width) {
+        _rect.width = width;
+      }
+      if (autoHeight && height) {
+        _rect.height = height;
+      }
+    });
     watch(
       [
         () => props.width,
@@ -126,23 +128,26 @@ export const FreeDom = defineComponent({
         () => props.x,
         () => props.y,
       ],
-      () => {
-        _rect.width = props.width;
-        _rect.height = props.height;
-        _rect.x = props.x;
-        _rect.y = props.y;
+      ([width, height, x, y]) => {
+        autoWidth = width === _rect.width;
+        autoHeight = height === _rect.height;
+        if (!autoHeight && !autoWidth) {
+          unwatch();
+          rectSize = null;
+        }
+        width && (_rect.width = width);
+        height && (_rect.height = height);
+        x && (_rect.x = x);
+        y && (_rect.y = y);
         trigger();
       }, { immediate: true });
 
     onMounted(async () => {
       SceneContext?.register(uuid, context);
-      const rect = widgetRef.value.getBoundingClientRect();
-      _rect.width = _rect.width || rect.width;
-      _rect.height = _rect.height || rect.height;
-      _rect.x = _rect.x || 0;
-      _rect.y = _rect.y || 0;
+      const { offsetTop, offsetLeft } = widgetRef.value;
+      _rect.x = _rect.x || offsetLeft;
+      _rect.y = _rect.y || offsetTop;
       trigger();
-      emitPos();
     });
     function trigger () {
       const { x, y, width, height } = _rect;
@@ -206,8 +211,7 @@ export const FreeDom = defineComponent({
     }
 
     function getDotPos (dot: string): CSSProperties {
-      if (!_style.value) return {};
-      const { width, height } = _style.value;
+      const { width, height } = _rect;
       const isL = /l/.test(dot);
       const isR = /r/.test(dot);
       const isT = /t/.test(dot);
@@ -248,11 +252,11 @@ export const FreeDom = defineComponent({
       const shouldUpdate = props.onDragStart?.();
       if (shouldUpdate === false) return;
 
-      const pos = getStyle(_style.value);
+      const pos = { ..._rect };
       const move = (mouseEvt: MouseEvent) => {
         const { clientX, clientY } = mouseEvt;
-        const x = clientX - evt.clientX + pos.x;
-        const y = clientY - evt.clientY + pos.y;
+        const x = clientX - evt.clientX + pos.x!;
+        const y = clientY - evt.clientY + pos.y!;
 
         _rect.x = x;
         _rect.y = y;
@@ -280,31 +284,13 @@ export const FreeDom = defineComponent({
         return SceneContext.checkValid(rect);
       } else if (props.limitWidth && props.limitHeight) {
         const { x, y, width, height } = rect;
-        return x >= 0 && x + width <= props.limitWidth && y >= 0 && y + height <= props.limitHeight;
+        return x! >= 0 &&
+          x! + width! <= props.limitWidth &&
+          y! >= 0 &&
+          y! + height! <= props.limitHeight;
       } else {
         return true;
       }
-    }
-    function getStyle (style: CSSProperties) {
-      const { transform, width, height } = style;
-      const { x, y } = getPos(transform);
-      return {
-        x: x ? Number(x) : 0,
-        y: y ? Number(y) : 0,
-        width: parseFloat(width as string),
-        height: parseFloat(height as string),
-      };
-    }
-    function getPos (transform?: string) {
-      if (!transform) {
-        return {
-          x: 0,
-          y: 0,
-        };
-      }
-      const posRegexp = /translate\(([.0-9]+)px[, ]+([.0-9]+)px\)/;
-      const [, x, y] = posRegexp.exec(transform!) ?? [];
-      return { x: parseNum(x), y: parseNum(y) };
     }
 
     return {
