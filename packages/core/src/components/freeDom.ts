@@ -1,6 +1,6 @@
 import {
   CSSProperties,
-  nextTick,
+  // nextTick,
   onMounted,
   PropType,
   defineComponent,
@@ -9,12 +9,12 @@ import {
   inject,
   ref,
   reactive,
-  isVue2, shallowRef, watchEffect,
+  isVue2, shallowRef, watch,
 } from 'vue-demi';
 
 import { useNormalizeStyle, useResize } from '../hooks';
 
-import { onClickOutside, useThrottleFn } from '@vueuse/core';
+import { onClickOutside } from '@vueuse/core';
 import { EventBus, SceneToken, SceneTokenContext } from '../util';
 import { v4 as uuidv4 } from 'uuid';
 import { IPos } from './freeDomWrap';
@@ -83,7 +83,7 @@ export const FreeDom = defineComponent({
   emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
   setup (props, { emit }) {
     const active = ref(false);
-    const SceneContext = inject<SceneTokenContext>(SceneToken);
+    const SceneContext = inject<SceneTokenContext>(SceneToken, undefined);
     const _preview = computed(() => SceneContext?.preview || props.preview);
     const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale));
     const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
@@ -107,8 +107,6 @@ export const FreeDom = defineComponent({
       height: 0,
     });
 
-    const triggerThrottle = useThrottleFn(trigger);
-
     const context = {
       _rect,
       trigger,
@@ -121,19 +119,23 @@ export const FreeDom = defineComponent({
     function parseNum (val: number | string) {
       return typeof val === 'number' ? val : parseFloat(val);
     }
-    let init = false;
-    watchEffect(() => {
-      _rect.width = props.width;
-      _rect.height = props.height;
-      _rect.x = props.x;
-      _rect.y = props.y;
-      init && triggerThrottle();
-      init = true;
-    });
+    watch(
+      [
+        () => props.width,
+        () => props.height,
+        () => props.x,
+        () => props.y,
+      ],
+      () => {
+        _rect.width = props.width;
+        _rect.height = props.height;
+        _rect.x = props.x;
+        _rect.y = props.y;
+        trigger();
+      }, { immediate: true });
 
     onMounted(async () => {
       SceneContext?.register(uuid, context);
-      await nextTick();
       const rect = widgetRef.value.getBoundingClientRect();
       _rect.width = _rect.width || rect.width;
       _rect.height = _rect.height || rect.height;
