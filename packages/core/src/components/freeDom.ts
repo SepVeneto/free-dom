@@ -137,16 +137,16 @@ export const FreeDom = defineComponent({
         }
         width && (_rect.width = width);
         height && (_rect.height = height);
-        x && (_rect.x = x);
-        y && (_rect.y = y);
+        x != null && (_rect.x = x);
+        y != null && (_rect.y = y);
         trigger();
       }, { immediate: true });
 
     onMounted(async () => {
       SceneContext?.register(uuid, context);
       const { offsetTop, offsetLeft } = widgetRef.value;
-      _rect.x = _rect.x || offsetLeft;
-      _rect.y = _rect.y || offsetTop;
+      _rect.x = _rect.x == null ? offsetLeft : _rect.x;
+      _rect.y = _rect.y == null ? offsetTop : _rect.y;
       trigger();
     });
     function trigger () {
