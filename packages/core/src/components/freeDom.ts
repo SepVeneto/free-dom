@@ -233,8 +233,8 @@ export const FreeDom = defineComponent({
       }
       // TODO: 如果是mark需要另外计算不同位置的坐标，以保证显示在虚线框内部
       return {
-        top: handlerType.value === 'dot' ? top : (top as number - 3) + 'px',
-        left: handlerType.value === 'dot' ? left : (left as number - 3) + 'px',
+        top: `${handlerType.value === 'dot' ? top : (top as number - 3)}px`,
+        left: `${handlerType.value === 'dot' ? left : (left as number - 3)}px`,
         cursor:
           dot
             .split('')
