@@ -17,6 +17,8 @@
         height: 400px;
         border: 1px solid #999;
         position: relative;
+        padding: 10px;
+        margin: 20px;
       "
     >
       <free-dom
@@ -26,9 +28,7 @@
         v-model:y="item.y"
         v-model:width="item.width"
         v-model:height="item.height"
-        :scale="['rb']"
         :style="item.style"
-        handler="mark"
         @select="handleSelect"
       >
         <div>
@@ -57,9 +57,12 @@ const domList = ref<Dom[]>([
   {
     text: '测试文本',
     x: 50,
+    y: 0,
     style: { color: '#d1239d' },
   },
   {
+    x: 0,
+    y: 0,
     text: '测试文本',
     style: { fontSize: '24px' },
   },
