@@ -17,7 +17,6 @@
         height: 400px;
         border: 1px solid #999;
         position: relative;
-        padding: 10px;
         margin: 20px;
       "
     >
