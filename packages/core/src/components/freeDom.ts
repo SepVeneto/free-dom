@@ -1,24 +1,27 @@
-import {
+import type {
   CSSProperties,
-  onMounted,
   PropType,
+} from 'vue-demi'
+import {
+  computed,
   defineComponent,
   h,
-  computed,
   inject,
-  ref,
+  isVue2,
+  onMounted,
   reactive,
-  isVue2, shallowRef, watch,
-} from 'vue-demi';
+  ref, shallowRef, watch,
+} from 'vue-demi'
 
-import { useNormalizeStyle, useResize } from '../hooks';
+import { useNormalizeStyle, useResize } from '../hooks'
 
-import { onClickOutside, useElementSize } from '@vueuse/core';
-import { EventBus, SceneToken, SceneTokenContext } from '../util';
-import { v4 as uuidv4 } from 'uuid';
-import { IPos } from './freeDomWrap';
+import { onClickOutside, useElementSize } from '@vueuse/core'
+import type { SceneTokenContext } from '../util'
+import { EventBus, SceneToken } from '../util'
+import { v4 as uuidv4 } from 'uuid'
+import type { IPos } from './freeDomWrap'
 
-const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const;
+const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]
 
 export const FreeDom = defineComponent({
@@ -80,47 +83,47 @@ export const FreeDom = defineComponent({
     },
   },
   emits: ['update:x', 'update:y', 'update:width', 'update:height', 'select'],
-  setup (props, { emit }) {
-    const active = ref(false);
-    const SceneContext = inject<SceneTokenContext>(SceneToken, undefined);
-    const _preview = computed(() => SceneContext?.preview || props.preview);
-    const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale));
-    const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move));
-    const isAbsolute = computed(() => props.absolute ?? SceneContext?.absolute ?? true);
-    const handlerType = computed(() => props.handler ?? SceneContext?.handler ?? 'dot');
-    const snapGrid = computed(() => props.grid ?? SceneContext?.grid);
+  setup(props, { emit }) {
+    const active = ref(false)
+    const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
+    const _preview = computed(() => SceneContext?.preview || props.preview)
+    const canScale = computed(() => !_preview.value && (SceneContext?.scale || props.scale))
+    const canMove = computed(() => !_preview.value && (SceneContext?.move || props.move))
+    const isAbsolute = computed(() => props.absolute ?? SceneContext?.absolute ?? true)
+    const handlerType = computed(() => props.handler ?? SceneContext?.handler ?? 'dot')
+    const snapGrid = computed(() => props.grid ?? SceneContext?.grid)
 
-    const diagonal = computed(() => props.diagonal ?? SceneContext?.diagonal ?? true);
+    const diagonal = computed(() => props.diagonal ?? SceneContext?.diagonal ?? true)
 
-    const widgetRef = shallowRef();
-    const _style = ref<Partial<CSSProperties>>({});
-    const wrapStyle = useNormalizeStyle(_style);
-    const uuid = uuidv4();
-    const isScale = ref(false);
-    const isMove = ref(false);
+    const widgetRef = shallowRef()
+    const _style = ref<Partial<CSSProperties>>({})
+    const wrapStyle = useNormalizeStyle(_style)
+    const uuid = uuidv4()
+    const isScale = ref(false)
+    const isMove = ref(false)
 
-    const _rect = reactive<IPos>({});
+    const _rect = reactive<IPos>({})
 
     const context = {
       _rect,
       trigger,
-    };
+    }
 
     onClickOutside(widgetRef, () => {
-      active.value = false;
-    });
+      active.value = false
+    })
 
-    let rectSize: {width: number, height: number} | null = reactive(useElementSize(widgetRef));
-    let autoWidth = true;
-    let autoHeight = true;
+    let rectSize: {width: number, height: number} | null = reactive(useElementSize(widgetRef))
+    let autoWidth = true
+    let autoHeight = true
     const unwatch = watch(rectSize, ({ width, height }) => {
       if (autoWidth && width) {
-        _rect.width = width;
+        _rect.width = width
       }
       if (autoHeight && height) {
-        _rect.height = height;
+        _rect.height = height
       }
-    });
+    })
     watch(
       [
         () => props.width,
@@ -129,106 +132,106 @@ export const FreeDom = defineComponent({
         () => props.y,
       ],
       ([width, height, x, y]) => {
-        autoWidth = width === _rect.width;
-        autoHeight = height === _rect.height;
+        autoWidth = width === _rect.width
+        autoHeight = height === _rect.height
         if (!autoHeight && !autoWidth) {
-          unwatch();
-          rectSize = null;
+          unwatch()
+          rectSize = null
         }
-        width && (_rect.width = width);
-        height && (_rect.height = height);
-        x != null && (_rect.x = x);
-        y != null && (_rect.y = y);
-        trigger();
-      }, { immediate: true });
+        width && (_rect.width = width)
+        height && (_rect.height = height)
+        x != null && (_rect.x = x)
+        y != null && (_rect.y = y)
+        trigger()
+      }, { immediate: true })
 
     onMounted(async () => {
-      SceneContext?.register(uuid, context);
-      const { offsetTop, offsetLeft } = widgetRef.value;
-      _rect.x = _rect.x == null ? offsetLeft : _rect.x;
-      _rect.y = _rect.y == null ? offsetTop : _rect.y;
-      trigger();
-    });
-    function trigger () {
-      const { x, y, width, height } = _rect;
+      SceneContext?.register(uuid, context)
+      const { offsetTop, offsetLeft } = widgetRef.value
+      _rect.x = _rect.x == null ? offsetLeft : _rect.x
+      _rect.y = _rect.y == null ? offsetTop : _rect.y
+      trigger()
+    })
+    function trigger() {
+      const { x, y, width, height } = _rect
       _style.value = {
         transform: `translate(${x}px, ${y}px)`,
         width,
         height,
-      };
+      }
     }
 
     const _dots = computed(() => {
       return SceneContext && Array.isArray(SceneContext.scale)
         ? SceneContext.scale
-        : props.scale;
-    });
+        : props.scale
+    })
 
     const dots = computed(() => {
-      if (!isActive.value) return [];
-      return Array.isArray(_dots.value) ? _dots.value : Dots;
-    });
+      if (!isActive.value) return []
+      return Array.isArray(_dots.value) ? _dots.value : Dots
+    })
     const direct = {
       l: 'w',
       r: 'e',
       t: 'n',
       b: 's',
-    };
-    const isActive = shallowRef(true);
+    }
+    const isActive = shallowRef(true)
 
-    function onMousedownDot (evt: MouseEvent, dot: string) {
-      evt.stopPropagation();
-      evt.preventDefault();
-      if (isMove.value) return;
-      isScale.value = true;
-      active.value = true;
+    function onMousedownDot(evt: MouseEvent, dot: string) {
+      evt.stopPropagation()
+      evt.preventDefault()
+      if (isMove.value) return
+      isScale.value = true
+      active.value = true
 
-      const shouldUpdate = props.onDragStart?.();
-      if (shouldUpdate === false) return;
+      const shouldUpdate = props.onDragStart?.()
+      if (shouldUpdate === false) return
 
-      const { clientX, clientY } = evt;
+      const { clientX, clientY } = evt
       useResize(clientX, clientY, _rect, dot, diagonal.value, snapGrid.value, {
-        onMove () {
-          if (!checkValid(_rect)) return;
-          EventBus.emit('move', uuid);
-          trigger();
+        onMove() {
+          if (!checkValid(_rect)) return
+          EventBus.emit('move', uuid)
+          trigger()
         },
-        onUp () {
-          props.onDragEnd?.();
+        onUp() {
+          props.onDragEnd?.()
 
-          isScale.value = false;
-          EventBus.emit('moveup', uuid);
-          emitPos();
+          isScale.value = false
+          EventBus.emit('moveup', uuid)
+          emitPos()
         },
-      });
+      })
     }
 
-    function emitPos () {
-      emit('update:x', _rect.x);
-      emit('update:y', _rect.y);
-      emit('update:width', _rect.width);
-      emit('update:height', _rect.height);
+    function emitPos() {
+      emit('update:x', _rect.x)
+      emit('update:y', _rect.y)
+      emit('update:width', _rect.width)
+      emit('update:height', _rect.height)
     }
 
-    function getDotPos (dot: string): CSSProperties {
-      const { width, height } = _rect;
-      const isL = /l/.test(dot);
-      const isR = /r/.test(dot);
-      const isT = /t/.test(dot);
+    function getDotPos(dot: string): CSSProperties {
+      const { width, height } = _rect
+      const isL = /l/.test(dot)
+      const isR = /r/.test(dot)
+      const isT = /t/.test(dot)
       // const isB = /b/.test(dot);
 
-      let left, top;
+      let left, top
 
       if (dot.length === 2) {
-        left = isL ? 0 : width;
-        top = isT ? 0 : height;
+        left = isL ? 0 : width
+        top = isT ? 0 : height
       } else {
         if (isL || isR) {
-          left = isL ? 0 : width;
-          top = Number(height) / 2;
+          left = isL ? 0 : width
+          top = Number(height) / 2
         } else {
-          left = Number(width) / 2;
-          top = isT ? 0 : height;
+          left = Number(width) / 2
+          top = isT ? 0 : height
         }
       }
       // TODO: 如果是mark需要另外计算不同位置的坐标，以保证显示在虚线框内部
@@ -241,55 +244,55 @@ export const FreeDom = defineComponent({
             .reverse()
             .map((item) => direct[item as keyof typeof direct])
             .join('') + '-resize',
-      };
+      }
     }
-    function onMousedown (evt: MouseEvent) {
-      evt.stopPropagation();
-      if (isScale.value || !canMove.value) return;
-      isMove.value = true;
-      active.value = true;
+    function onMousedown(evt: MouseEvent) {
+      evt.stopPropagation()
+      if (isScale.value || !canMove.value) return
+      isMove.value = true
+      active.value = true
 
-      const shouldUpdate = props.onDragStart?.();
-      if (shouldUpdate === false) return;
+      const shouldUpdate = props.onDragStart?.()
+      if (shouldUpdate === false) return
 
-      const pos = { ..._rect };
+      const pos = { ..._rect }
       const move = (mouseEvt: MouseEvent) => {
-        const { clientX, clientY } = mouseEvt;
-        const x = clientX - evt.clientX + pos.x!;
-        const y = clientY - evt.clientY + pos.y!;
+        const { clientX, clientY } = mouseEvt
+        const x = clientX - evt.clientX + pos.x!
+        const y = clientY - evt.clientY + pos.y!
 
-        _rect.x = x;
-        _rect.y = y;
-        _rect.width = pos.width;
-        _rect.height = pos.height;
-        if (!checkValid(_rect)) return;
-        EventBus.emit('move', uuid);
-        trigger();
-      };
+        _rect.x = x
+        _rect.y = y
+        _rect.width = pos.width
+        _rect.height = pos.height
+        if (!checkValid(_rect)) return
+        EventBus.emit('move', uuid)
+        trigger()
+      }
       const up = () => {
-        props.onDragEnd?.();
+        props.onDragEnd?.()
 
-        isMove.value = false;
-        EventBus.emit('moveup', uuid);
-        document.removeEventListener('mousemove', move);
-        document.removeEventListener('mouseup', up);
-        emitPos();
-        emit('select', _rect);
-      };
-      document.addEventListener('mousemove', move);
-      document.addEventListener('mouseup', up);
+        isMove.value = false
+        EventBus.emit('moveup', uuid)
+        document.removeEventListener('mousemove', move)
+        document.removeEventListener('mouseup', up)
+        emitPos()
+        emit('select', _rect)
+      }
+      document.addEventListener('mousemove', move)
+      document.addEventListener('mouseup', up)
     }
-    function checkValid (rect: IPos) {
+    function checkValid(rect: IPos) {
       if (SceneContext) {
-        return SceneContext.checkValid(rect);
+        return SceneContext.checkValid(rect)
       } else if (props.limitWidth && props.limitHeight) {
-        const { x, y, width, height } = rect;
+        const { x, y, width, height } = rect
         return x! >= 0 &&
           x! + width! <= props.limitWidth &&
           y! >= 0 &&
-          y! + height! <= props.limitHeight;
+          y! + height! <= props.limitHeight
       } else {
-        return true;
+        return true
       }
     }
 
@@ -307,9 +310,9 @@ export const FreeDom = defineComponent({
       getDotPos,
       onMousedown,
       onMousedownDot,
-    };
+    }
   },
-  render () {
+  render() {
     const dots = this.canScale
       ? this.dots.map((dot) => {
         if (isVue2) {
@@ -319,20 +322,20 @@ export const FreeDom = defineComponent({
             on: {
               mousedown: (evt: MouseEvent) => this.onMousedownDot(evt, dot),
             },
-          });
+          })
         }
         return h('div', {
           class: this.handlerType === 'dot' ? 'free-dom__widget-dot' : 'free-dom__resizable-handler',
           style: this.getDotPos(dot),
           onMousedown: (evt: MouseEvent) => this.onMousedownDot(evt, dot),
-        });
+        })
       })
-      : null;
+      : null
 
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
-        : this.$slots.default;
+        : this.$slots.default
     if (isVue2) {
       return h(
         'section',
@@ -351,7 +354,7 @@ export const FreeDom = defineComponent({
           },
         },
         [dots, defaultSlot],
-      );
+      )
     }
     return h(
       'section',
@@ -368,6 +371,6 @@ export const FreeDom = defineComponent({
         onMousedown: this.onMousedown,
       },
       [defaultSlot, dots],
-    );
+    )
   },
-});
+})

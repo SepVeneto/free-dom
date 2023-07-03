@@ -14,11 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sepveneto/eslint-config": "^0.9.0",
     "@vueuse/core": "^9.2.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "@sepveneto/eslint-config": "^0.4.0",
     "@types/node": "^18.7.18",
     "eslint": "^8.32.0",
     "sass": "^1.54.9",
