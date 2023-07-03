@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import Components from 'unplugin-vue-components/vite';
+import { defineConfig } from 'vite'
+import { resolve } from 'path'
+import Components from 'unplugin-vue-components/vite'
 
 export default defineConfig({
   plugins: [
@@ -12,11 +12,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'free-dom': resolve(__dirname, './core/dist'),
+      'free-dom': resolve(__dirname, './core/src'),
     },
     dedupe: ['vue', 'vue-demi'],
   },
   optimizeDeps: {
     exclude: ['vue-demi'],
   },
-});
+})

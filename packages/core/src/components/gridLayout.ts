@@ -1,6 +1,7 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue'
-import { computed, defineComponent, h } from 'vue'
-import { FreeDom } from './freeDom'
+import { defineComponent, h, provide } from 'vue'
+import { GridItem } from './gridItem'
+import { gridLayoutContextKey } from './tokens'
 
 export type GridLayoutItem = {
   i: string | number
@@ -39,30 +40,27 @@ export const GridLayout = defineComponent({
   emits: ['update:modelValue'],
 
   setup(props) {
-    const cellWidth = computed(() => props.width / props.cols)
+    provide(gridLayoutContextKey, props)
     function getLayoutItem(key: GridLayoutKey) {
       const item = props.modelValue.find(item => item.i === key)
       return item
     }
-    function wrapGridItem(node: VNode) {
+
+    function processItem(node: VNode) {
       const key = node.key
-      if (!key) {
-        return
-      }
+      if (!key) return
       const config = getLayoutItem(key)
       if (!config) return
-      return h(
-        FreeDom,
-        {
-          width: cellWidth.value * config.w,
-          height: props.rowHeight * config.h,
-        },
-        () => node,
-      )
+      return h(GridItem, {
+        x: config.x,
+        y: config.y,
+        width: config.w,
+        height: config.h,
+      }, () => node)
     }
 
     return {
-      wrapGridItem,
+      processItem,
     }
   },
 
@@ -72,6 +70,6 @@ export const GridLayout = defineComponent({
         ? this.$slots.default()
         : this.$slots.default ||
       []
-    return h('div', [defaultSlot.map(this.wrapGridItem)])
+    return h('div', [defaultSlot.map(this.processItem)])
   },
 })
