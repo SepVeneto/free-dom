@@ -2,7 +2,7 @@ import { computed, defineComponent, h, inject } from 'vue'
 import type { PropType } from 'vue'
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
-import { useDefaultSlots } from '../hooks'
+import { useDefaultSlot } from '../hooks'
 
 const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]
@@ -16,7 +16,7 @@ const resizeBox = defineComponent({
     },
   },
   setup(props) {
-    const children = useDefaultSlots()
+    const { slots } = useDefaultSlot()
     const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
     const canScale = computed(() => (SceneContext?.scale || props.scale))
     const dots = computed(() => {
@@ -28,13 +28,16 @@ const resizeBox = defineComponent({
 
     return {
       dots,
-      children,
+      slots,
     }
   },
   render() {
     return h('div', {
       class: 'resize-box',
-    }, [this.children?.map(node => h(node)), this.dots.map(dot => h('i', { class: 'free-dom__widget-dot' }))])
+    }, [
+      this.slots?.map(node => h(node)),
+      this.dots.map(dot => h('i', { class: 'free-dom__widget-dot' })),
+    ])
   },
 })
 

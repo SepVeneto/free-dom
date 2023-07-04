@@ -1,4 +1,4 @@
-import { useDefaultSlots } from '../hooks'
+import { useDefaultSlot } from '../hooks'
 import { defineComponent, h } from 'vue'
 import FreedomCore from './freeDomCore'
 import ResizeBox from './resizeBox'
@@ -6,16 +6,15 @@ import ResizeBox from './resizeBox'
 const freeDom = defineComponent({
   name: 'FreeDom',
   setup() {
-    const children = useDefaultSlots()
+    const { slots } = useDefaultSlot()
 
     return {
-      children,
+      slots,
     }
   },
   render() {
-    const node = this.children?.[0] || null
-    console.log(this.children)
-    const resizeNode = h(ResizeBox, {}, () => node)
+    // console.log(this.children)
+    const resizeNode = h(ResizeBox, {}, () => this.slots)
     return h(FreedomCore, {
       class: 'draggable',
       stopFn: (e, node) => {

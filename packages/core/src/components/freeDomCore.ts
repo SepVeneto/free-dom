@@ -1,6 +1,6 @@
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, onUnmounted, ref } from 'vue'
-import { useDefaultSlots } from '../hooks'
+import { useDefaultSlot } from '../hooks'
 
 function noop() { /** pass */ }
 
@@ -18,12 +18,13 @@ const freeDomCore = defineComponent({
   },
   emits: ['start'],
   setup(props, { emit }) {
-    const children = useDefaultSlots()
+    const { only } = useDefaultSlot()
     const lastX = ref()
     const lastY = ref()
     const dragging = ref(false)
     const domRef = ref()
-    const ownerDoc = computed<Document>(() => (domRef.value.$el || domRef.value).ownerDocument)
+    const node = computed<HTMLElement | undefined>(() => domRef.value?.$el || domRef.value)
+    const ownerDoc = computed(() => node.value?.ownerDocument)
 
     onUnmounted(() => {
       if (!ownerDoc.value) return
@@ -60,15 +61,15 @@ const freeDomCore = defineComponent({
     }
     function _handleDragstart(evt: MouseEvent) {
       emit('start', evt)
-
+      console.log(node.value)
       lastX.value = evt.clientX
       lastY.value = evt.clientY
       dragging.value = true
 
       if (props.userSelectHack) _addUserSelectStyle(ownerDoc.value)
 
-      ownerDoc.value.addEventListener('mousemove', _handleDrag)
-      ownerDoc.value.addEventListener('mouseup', _handleDragStop)
+      ownerDoc.value?.addEventListener('mousemove', _handleDrag)
+      ownerDoc.value?.addEventListener('mouseup', _handleDragStop)
     }
     function _handleDragStop(evt: MouseEvent) {
       const node = { x: evt.clientX, y: evt.clientY }
@@ -79,8 +80,8 @@ const freeDomCore = defineComponent({
       dragging.value = false
       lastX.value = NaN
       lastY.value = NaN
-      ownerDoc.value.removeEventListener('mousemove', _handleDrag)
-      ownerDoc.value.removeEventListener('mouseup', _handleDragStop)
+      ownerDoc.value?.removeEventListener('mousemove', _handleDrag)
+      ownerDoc.value?.removeEventListener('mouseup', _handleDragStop)
     }
     function _handleDrag(evt: MouseEvent) {
       lastX.value = evt.clientX
@@ -88,16 +89,15 @@ const freeDomCore = defineComponent({
     }
 
     return {
-      children,
+      only,
       domRef,
       mousedownFn,
       mouseupFn,
     }
   },
   render() {
-    const node = this.children?.[0] || null
-    return node
-      ? h(node, {
+    return this.only
+      ? h(this.only, {
         ref: 'domRef',
         onMousedown: this.mousedownFn,
         onMouseup: this.mouseupFn,

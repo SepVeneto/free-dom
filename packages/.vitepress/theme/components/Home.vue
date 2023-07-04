@@ -1,7 +1,7 @@
 <template>
   <pre>{{ layout }}</pre>
   <FreeDom>
-    <!-- <Test /> -->
+    <Test />
     <span>a</span>
   </FreeDom>
 </template>
