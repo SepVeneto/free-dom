@@ -1,6 +1,16 @@
+.grid-layout__item {
+  background: #ccc;
+  border: 1px solid black;
+}
+.grid-layout__placeholder {
+  background: red;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;  
+}
 .free-dom__widget-wrapper {
   display: inline-block;
-  border: 1px dashed transparent;
+  // border: 1px dashed transparent;
   transition: border-color 0.3s;
   box-sizing: content-box;
   user-select: none;

@@ -3,15 +3,14 @@ import { FreeDom } from './freeDom'
 
 import { gridLayoutContextKey } from './tokens'
 
+export type GridItemInfo = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 const gridItemProps = {
-  cols: {
-    type: Number,
-    required: true,
-  },
-  rowHeight: {
-    type: Number,
-    required: true,
-  },
   x: {
     type: Number,
     required: true as const,
@@ -29,10 +28,12 @@ const gridItemProps = {
     required: true as const,
   },
 }
+const gridItemEmits = ['dragMove']
 
 export const GridItem = defineComponent({
   name: 'GridItem',
   props: gridItemProps,
+  emits: gridItemEmits,
 
   setup(props) {
     const gridLayoutContext = inject(gridLayoutContextKey)
@@ -40,8 +41,8 @@ export const GridItem = defineComponent({
       throw new Error('TODO')
     }
     const cellWidth = computed(() => gridLayoutContext.width / gridLayoutContext.cols)
-    const x = computed(() => props.x * cellWidth.value)
-    const y = computed(() => props.y * props.height)
+    const x = computed(() => props.x * (cellWidth.value + gridLayoutContext.margin[0]))
+    const y = computed(() => props.y * (props.height + gridLayoutContext.margin[1]))
     const width = computed(() => props.width * cellWidth.value)
     const height = computed(() => gridLayoutContext.rowHeight * props.height)
 
@@ -63,6 +64,11 @@ export const GridItem = defineComponent({
       y: this.y,
       width: this.width,
       height: this.height,
+      move: true,
+      sync: false,
+      onDragMove: (rect) => {
+        this.$emit('dragMove', rect)
+      },
     }, () => defaultSlot)
   },
 })

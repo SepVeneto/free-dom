@@ -1,19 +1,14 @@
 <template>
-  <gridLayout v-model="layout">
-    <div key="a">
-      a
-    </div>
-    <div key="b">
-      b
-    </div>
-    <div key="c">
-      c
-    </div>
-  </gridLayout>
+  <pre>{{ layout }}</pre>
+  <FreeDom>
+    <!-- <Test /> -->
+    <span>a</span>
+  </FreeDom>
 </template>
 
 <script lang="ts" setup>
-import { gridLayout } from 'free-dom'
+import Test from './Test.vue'
+import { FreeDom, gridLayout } from 'free-dom'
 import 'free-dom/style/index.scss'
 import { ref } from 'vue'
 

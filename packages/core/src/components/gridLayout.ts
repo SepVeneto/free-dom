@@ -1,7 +1,9 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue'
-import { defineComponent, h, provide } from 'vue'
+import { defineComponent, h, provide, ref } from 'vue'
 import { GridItem } from './gridItem'
+import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
+import { moveElement } from '../util'
 
 export type GridLayoutItem = {
   i: string | number
@@ -31,6 +33,10 @@ const gridLayoutProps = {
     type: Number,
     default: 1200,
   },
+  margin: {
+    type: Array as PropType<number[]>,
+    default: () => ([0, 0]),
+  },
 }
 export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
 
@@ -39,28 +45,75 @@ export const GridLayout = defineComponent({
   props: gridLayoutProps,
   emits: ['update:modelValue'],
 
-  setup(props) {
+  setup(props, { emit }) {
     provide(gridLayoutContextKey, props)
+
+    const activeDrag = ref<GridItemInfo | null>(null)
+
     function getLayoutItem(key: GridLayoutKey) {
       const item = props.modelValue.find(item => item.i === key)
       return item
     }
-
     function processItem(node: VNode) {
       const key = node.key
       if (!key) return
       const config = getLayoutItem(key)
       if (!config) return
+      console.log('render', config.x, config.y)
       return h(GridItem, {
         x: config.x,
         y: config.y,
         width: config.w,
         height: config.h,
+        dragEndFn: (rect) => {
+          const { x, y } = rect
+          const layout = moveElement(
+            props.modelValue,
+            config,
+            x,
+            y,
+          )
+          emit('update:modelValue', layout)
+          activeDrag.value = null
+        },
+        dragStartFn: () => {
+          /** pass */
+        },
+        onDragMove: (rect) => {
+          const placeholder = {
+            x: config.x,
+            y: config.y,
+            width: config.w,
+            height: config.h,
+          }
+          const { x, y } = rect
+          const layout = moveElement(
+            props.modelValue,
+            config,
+            x,
+            y,
+          )
+          emit('update:modelValue', layout)
+          activeDrag.value = placeholder
+        },
       }, () => node)
+    }
+    function placeholder() {
+      if (!activeDrag.value) return null
+      const { x, y, width, height } = activeDrag.value
+      return h(GridItem, {
+        class: 'grid-layout__placeholder',
+        x,
+        y,
+        width,
+        height,
+        move: false,
+      })
     }
 
     return {
       processItem,
+      placeholder,
     }
   },
 
@@ -70,6 +123,9 @@ export const GridLayout = defineComponent({
         ? this.$slots.default()
         : this.$slots.default ||
       []
-    return h('div', [defaultSlot.map(this.processItem)])
+    return h('div', [
+      defaultSlot.map(this.processItem),
+      this.placeholder(),
+    ])
   },
 })

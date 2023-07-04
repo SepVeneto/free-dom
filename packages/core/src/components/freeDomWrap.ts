@@ -46,7 +46,6 @@ export type IPos = {
 }
 export type INodeInfo = {
   _rect: IPos
-  trigger: () => void
 }
 export type INode = {
   uuid: string
