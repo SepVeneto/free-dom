@@ -1,7 +1,15 @@
 <template>
   <pre>{{ layout }}</pre>
-  <FreeDom>
+  <FreeDom
+    :width="300"
+    :height="300"
+  >
     <Test />
+  </FreeDom>
+  <FreeDom
+    :width="300"
+    :height="300"
+  >
     <span>a</span>
   </FreeDom>
 </template>
@@ -22,3 +30,9 @@ const layout = ref([
   { i: 'c', x: 4, y: 0, w: 1, h: 2 },
 ])
 </script>
+
+<style>
+.vp-doc {
+  position: static !important;
+}
+</style>

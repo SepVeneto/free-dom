@@ -1,8 +1,20 @@
 import type { PropType } from 'vue'
-import { computed, defineComponent, h, onUnmounted, ref } from 'vue'
-import { useDefaultSlot } from '../hooks'
+import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue'
+import { useCoreData, useDefaultSlot } from '../hooks'
 
 function noop() { /** pass */ }
+
+export type CoreData = {
+  node: HTMLElement
+  x: number
+  y: number
+  lastX: number
+  lastY: number
+  deltaX: number
+  deltaY: number
+}
+
+export type CoreFnCallback = (evt: MouseEvent, coreData: CoreData) => void
 
 const freeDomCore = defineComponent({
   name: 'FreeDomCore',
@@ -11,20 +23,27 @@ const freeDomCore = defineComponent({
       type: Boolean,
       default: true,
     },
+    startFn: {
+      type: Function as PropType<CoreFnCallback>,
+      default: noop,
+    },
     stopFn: {
-      type: Function as PropType<(evt: MouseEvent, node: { x: number, y: number }) => boolean | void>,
+      type: Function as PropType<CoreFnCallback>,
+      default: noop,
+    },
+    dragFn: {
+      type: Function as PropType<CoreFnCallback>,
       default: noop,
     },
   },
   emits: ['start'],
-  setup(props, { emit }) {
+  setup(props) {
     const { only } = useDefaultSlot()
-    const lastX = ref()
-    const lastY = ref()
     const dragging = ref(false)
     const domRef = ref()
     const node = computed<HTMLElement | undefined>(() => domRef.value?.$el || domRef.value)
     const ownerDoc = computed(() => node.value?.ownerDocument)
+    const { lastX, lastY, create } = useCoreData(node)
 
     onUnmounted(() => {
       if (!ownerDoc.value) return
@@ -60,10 +79,13 @@ const freeDomCore = defineComponent({
       }
     }
     function _handleDragstart(evt: MouseEvent) {
-      emit('start', evt)
-      console.log(node.value)
-      lastX.value = evt.clientX
-      lastY.value = evt.clientY
+      const { x, y } = _offsetFormat(evt)
+
+      const coreEvent = create(x, y)
+      props.startFn(evt, coreEvent)
+
+      lastX.value = x
+      lastY.value = y
       dragging.value = true
 
       if (props.userSelectHack) _addUserSelectStyle(ownerDoc.value)
@@ -72,8 +94,10 @@ const freeDomCore = defineComponent({
       ownerDoc.value?.addEventListener('mouseup', _handleDragStop)
     }
     function _handleDragStop(evt: MouseEvent) {
-      const node = { x: evt.clientX, y: evt.clientY }
-      props.stopFn(evt, node)
+      const { x, y } = _offsetFormat(evt)
+
+      const coreEvent = create(x, y)
+      props.stopFn(evt, coreEvent)
 
       if (props.userSelectHack) _removeUserSelectStyle(ownerDoc.value)
 
@@ -84,8 +108,24 @@ const freeDomCore = defineComponent({
       ownerDoc.value?.removeEventListener('mouseup', _handleDragStop)
     }
     function _handleDrag(evt: MouseEvent) {
-      lastX.value = evt.clientX
-      lastY.value = evt.clientY
+      const { x, y } = _offsetFormat(evt)
+
+      const coreEvent = create(x, y)
+      props.dragFn(evt, coreEvent)
+
+      lastX.value = x
+      lastY.value = y
+    }
+    function _offsetFormat(evt: MouseEvent) {
+      const parent = node.value?.offsetParent || ownerDoc.value!.body
+
+      const isBody = parent === parent.ownerDocument.body
+      const parentRect = isBody ? { left: 0, top: 0 } : parent.getBoundingClientRect()
+
+      const x = evt.clientX + parent.scrollLeft - parentRect.left
+      const y = evt.clientY + parent.scrollTop - parentRect.top
+
+      return { x, y }
     }
 
     return {
@@ -99,8 +139,8 @@ const freeDomCore = defineComponent({
     return this.only
       ? h(this.only, {
         ref: 'domRef',
-        onMousedown: this.mousedownFn,
-        onMouseup: this.mouseupFn,
+        onMousedown: withModifiers(this.mousedownFn, ['stop']),
+        onMouseup: withModifiers(this.mouseupFn, ['stop']),
       })
       : null
   },
