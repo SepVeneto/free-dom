@@ -3,6 +3,7 @@ import { defineComponent, h, provide, reactive, ref, shallowRef, toRefs } from '
 import { useElementBounding } from '@vueuse/core'
 import { SceneToken } from '../util'
 import markLine from './markLine'
+import { useEventBus } from '../hooks'
 
 const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]
@@ -48,7 +49,7 @@ export type INodeInfo = {
   _rect: IPos
 }
 export type INode = {
-  uuid: string
+  uuid: number
   node: INodeInfo
 }
 
@@ -56,11 +57,12 @@ export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
   setup(props) {
+    const eventBus = useEventBus()
     const rectRef = shallowRef(null)
     const rect = useElementBounding(rectRef)
     const nodes = ref<INode[]>([])
 
-    function register(uuid: string, node: INodeInfo) {
+    function register(uuid: number, node: INodeInfo) {
       nodes.value.push({ uuid, node })
     }
     function checkValid(pos: IPos) {
@@ -79,6 +81,9 @@ export const FreeDomWrap = defineComponent({
 
         register,
         checkValid,
+        on: eventBus.on,
+        off: eventBus.off,
+        emit: eventBus.emit,
       }),
     )
 

@@ -1,6 +1,6 @@
-import { useDefaultSlot, useDraggableData } from '../hooks'
+import { useDefaultSlot, useDraggableData, useSceneContext } from '../hooks'
 import type { PropType } from 'vue'
-import { computed, defineComponent, h, ref } from 'vue'
+import { computed, defineComponent, h, reactive, ref } from 'vue'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -53,9 +53,26 @@ const freeDom = defineComponent({
     const { x, y, create } = useDraggableData()
     const width = ref(props.width)
     const height = ref(props.height)
+    const deltaX = ref(0)
+    const deltaY = ref(0)
+
+    const context = {
+      _rect: reactive({
+        x,
+        y,
+        width,
+        height,
+        deltaX,
+        deltaY,
+      }),
+      trigger: () => { /* TODO */ },
+    }
+
+    const sceneContext = useSceneContext(context)
 
     const style = computed(() => {
       return {
+        position: 'absolute',
         width: `${width.value}px`,
         height: `${height.value}px`,
         transform: `translate(${x.value}px, ${y.value}px)`,
@@ -66,13 +83,17 @@ const freeDom = defineComponent({
       const dragData = create(coreData)
       x.value = dragData.x
       y.value = dragData.y
+      deltaX.value = dragData.deltaX
+      deltaY.value = dragData.deltaY
 
       props.dargFn(evt, dragData)
+      sceneContext?.emit('move')
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
       const dragData = create(coreData)
 
       props.dragStopFn(evt, dragData)
+      sceneContext?.emit('moveup')
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h }) => {

@@ -1,16 +1,16 @@
 <template>
   <pre>{{ layout }}</pre>
-  <FreeScene>
+  <FreeScene style="width: 1000px; height: 500px; border: 1px solid black; position: relative;">
     <FreeDom
-      :width="300"
-      :height="300"
+      :width="100"
+      :height="100"
       lock-aspect-ratio
     >
       <Test />
     </FreeDom>
     <FreeDom
-      :width="300"
-      :height="300"
+      :width="100"
+      :height="100"
     >
       <span>a</span>
     </FreeDom>

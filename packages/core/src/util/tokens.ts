@@ -1,8 +1,16 @@
-import { FreeDomWrapProps, INode, INodeInfo, IPos } from '../components/freeDomWrap';
-export const SceneToken = Symbol('Scene');
+import type { FreeDomWrapProps, INode, INodeInfo, IPos } from '../components/freeDomWrap'
+import type {
+  EventBusEmitHandle,
+  EventBusOffHandle,
+  EventBusOnHandle,
+} from '../hooks'
+export const SceneToken = Symbol('Scene')
 
 export type SceneTokenContext = {
   nodes: INode[]
-  register: (uuid: string, node: INodeInfo) => void
+  register: (uuid: number, node: INodeInfo) => void
   checkValid: (pos: IPos) => boolean
+  on: EventBusOnHandle
+  off: EventBusOffHandle
+  emit: EventBusEmitHandle
 } & FreeDomWrapProps | undefined

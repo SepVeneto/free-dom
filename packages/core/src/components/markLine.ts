@@ -1,5 +1,5 @@
 import { defineComponent, h, inject, onBeforeUnmount, reactive, ref, shallowRef } from 'vue-demi'
-import { EventBus, SceneToken } from '../util'
+import { SceneToken } from '../util'
 
 const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
 type LineType = typeof lineType[number]
@@ -10,6 +10,8 @@ export default defineComponent({
     const lines = shallowRef(lineType)
     const diff = ref(SceneContext.diff)
     const nodes = SceneContext.nodes as any[]
+    const offsetX = ref(0)
+    const offsetY = ref(0)
 
     const lineStatus = reactive({
       xt: {
@@ -38,7 +40,7 @@ export default defineComponent({
       },
     })
 
-    EventBus.on('move', async (uuid: string) => {
+    SceneContext?.on('move', async (uuid: number) => {
       const current = nodes.find(node => node.uuid === uuid)?.node ?? {}
       clearStatus()
       nodes.forEach((node: any) => {
@@ -46,6 +48,8 @@ export default defineComponent({
         const _current = normalize(current._rect)
         const _target = normalize(node.node._rect)
 
+        // lock y
+        console.log(_current.top, _target.top)
         if (isNearly(_current.top, _target.top)) {
           lineStatus.xt = {
             show: true,
@@ -53,6 +57,7 @@ export default defineComponent({
           }
           current._rect.y = _target.top
         }
+        console.log(_current.top, _target.top, lineStatus.xt)
         if (isNearly(_current.bottom, _target.top)) {
           lineStatus.xt = {
             show: true,
@@ -81,6 +86,7 @@ export default defineComponent({
           }
           current._rect.y = _target.bottom - _current.height
         }
+        // lock x
         if (isNearly(_current.left, _target.left)) {
           lineStatus.yl = {
             show: true,
@@ -118,11 +124,11 @@ export default defineComponent({
         }
       })
     })
-    EventBus.on('moveup', clearStatus)
+    SceneContext?.on('moveup', clearStatus)
 
     onBeforeUnmount(() => {
-      EventBus.off('move')
-      EventBus.off('moveup')
+      SceneContext?.off('move')
+      SceneContext?.off('moveup')
     })
 
     function clearStatus() {
@@ -133,8 +139,10 @@ export default defineComponent({
       lineStatus.yc.show = false
       lineStatus.yr.show = false
     }
-    function normalize(rect: { x: number, y: number, width: number, height: number }) {
+    function normalize(rect: { x: number, y: number, width: number, height: number, deltaX: number, deltaY: number }) {
       return {
+        deltaX: rect.deltaX,
+        deltaY: rect.deltaY,
         top: rect.y,
         bottom: rect.y + rect.height,
         left: rect.x,
