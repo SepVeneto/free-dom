@@ -1,22 +1,25 @@
 <template>
   <pre>{{ layout }}</pre>
-  <FreeDom
-    :width="300"
-    :height="300"
-  >
-    <Test />
-  </FreeDom>
-  <FreeDom
-    :width="300"
-    :height="300"
-  >
-    <span>a</span>
-  </FreeDom>
+  <FreeScene>
+    <FreeDom
+      :width="300"
+      :height="300"
+      lock-aspect-ratio
+    >
+      <Test />
+    </FreeDom>
+    <FreeDom
+      :width="300"
+      :height="300"
+    >
+      <span>a</span>
+    </FreeDom>
+  </FreeScene>
 </template>
 
 <script lang="ts" setup>
 import Test from './Test.vue'
-import { FreeDom, gridLayout } from 'free-dom'
+import { FreeDom, FreeScene, gridLayout } from 'free-dom'
 import 'free-dom/style/index.scss'
 import { ref } from 'vue'
 

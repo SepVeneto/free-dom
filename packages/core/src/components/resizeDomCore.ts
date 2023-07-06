@@ -1,5 +1,5 @@
-import { computed, defineComponent, h, inject } from 'vue'
-import type { CSSProperties, PropType } from 'vue'
+import { computed, defineComponent, h, inject, shallowRef } from 'vue'
+import type { PropType } from 'vue'
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
 import { useDefaultSlot } from '../hooks'
@@ -8,12 +8,7 @@ import type { CoreFnCallback } from './freeDomCore'
 
 const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]
-const DIRECT = {
-  l: 'w',
-  r: 'e',
-  t: 'n',
-  b: 's',
-}
+
 export type ResizeData = {
   node: HTMLElement
   width: number
@@ -54,18 +49,18 @@ const resizeBox = defineComponent({
       type: Function as PropType<ResizeFnCallback>,
       default: noop,
     },
+    lockAspectRatio: Boolean,
   },
   setup(props) {
     const { slots } = useDefaultSlot()
     const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
-    const canScale = computed(() => (SceneContext?.scale || props.scale))
-    const handlerType = computed(() => SceneContext?.handler || props.handler)
     const dots = computed(() => {
       const _dots = SceneContext && Array.isArray(SceneContext.scale)
         ? SceneContext.scale
         : props.scale
       return Array.isArray(_dots) ? _dots : Dots
     })
+    const lastRect = shallowRef<DOMRect | undefined>()
 
     // function getDotPos(dot: string): CSSProperties {
     //   const { width, height } = _rect
@@ -100,26 +95,61 @@ const resizeBox = defineComponent({
     //         .join('') + '-resize',
     //   }
     // }
+    function runConstraints(width: number, height: number) {
+      const { lockAspectRatio } = props
+      if (!lockAspectRatio) return [width, height]
+
+      if (lockAspectRatio) {
+        const ratio = props.width / props.height
+        const deltaW = width - props.width
+        const deltaH = height - props.height
+
+        if (Math.abs(deltaW) > Math.abs(deltaH * ratio)) {
+          height = width / ratio
+        } else {
+          width = height * ratio
+        }
+      }
+
+      return [width, height]
+    }
 
     function handleResize(
       handleName: 'resize' | 'start' | 'stop',
       axis: IDot,
     ): CoreFnCallback {
       return (evt, { node, deltaX, deltaY }) => {
+        if (handleName === 'start') lastRect.value = undefined
+
+        const canDragX = axis !== 't' && axis !== 'b'
+        const canDragY = axis !== 'l' && axis !== 'r'
+
+        const axisH = axis[0]
+        const axisV = axis[axis.length - 1]
+
         const handleRect = node.getBoundingClientRect()
 
-        const width = props.width + deltaX
-        const height = props.height + deltaY
+        lastRect.value = handleRect
+
+        if (axisH === 'l') deltaX = -deltaX
+        if (axisV === 't') deltaY = -deltaY
+
+        let width = props.width + (canDragX ? deltaX : 0)
+        let height = props.height + (canDragY ? deltaY : 0)
+
+        // 这里不加分号会导致语法错误
+        ;[width, height] = runConstraints(width, height)
 
         const sizeChanged = width !== props.width || height !== props.height
 
         const fnName = `${handleName}Fn` as const
         const cb = typeof props[fnName] === 'function' ? props[fnName] : null
-        const shouldSkipCb = handleName !== 'resize' && !sizeChanged
+        const shouldSkipCb = handleName === 'resize' && !sizeChanged
         if (cb && !shouldSkipCb) {
-          console.log('resize', width, height)
           cb(evt, { node, width, height, handle: axis })
         }
+
+        if (handleName === 'stop') lastRect.value = undefined
       }
     }
 

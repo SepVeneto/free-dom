@@ -140,7 +140,7 @@ const freeDomCore = defineComponent({
       ? h(this.only, {
         ref: 'domRef',
         onMousedown: withModifiers(this.mousedownFn, ['stop']),
-        onMouseup: withModifiers(this.mouseupFn, ['stop']),
+        onMouseup: this.mouseupFn,
       })
       : null
   },
