@@ -44,6 +44,8 @@ const freeDomCore = defineComponent({
     const node = computed<HTMLElement | undefined>(() => domRef.value?.$el || domRef.value)
     const ownerDoc = computed(() => node.value?.ownerDocument)
     const { lastX, lastY, create } = useCoreData(node)
+    let parentNode: Element
+    let parentRect: { left: number, top: number }
 
     onUnmounted(() => {
       if (!ownerDoc.value) return
@@ -120,7 +122,12 @@ const freeDomCore = defineComponent({
       const parent = node.value?.offsetParent || ownerDoc.value!.body
 
       const isBody = parent === parent.ownerDocument.body
-      const parentRect = isBody ? { left: 0, top: 0 } : parent.getBoundingClientRect()
+
+      // 缓存父组件的位置信息，优化移动坐标的计算速度
+      if (!parentNode || parentNode !== parent) {
+        parentNode = parent
+        parentRect = isBody ? { left: 0, top: 0 } : parent.getBoundingClientRect()
+      }
 
       const x = evt.clientX + parent.scrollLeft - parentRect.left
       const y = evt.clientY + parent.scrollTop - parentRect.top

@@ -40,7 +40,7 @@ export default defineComponent({
       },
     })
 
-    SceneContext?.on('move', async (uuid: number) => {
+    const runConstraints = (uuid: number) => {
       const current = nodes.find(node => node.uuid === uuid)?.node ?? {}
       clearStatus()
       nodes.forEach((node: any) => {
@@ -49,7 +49,6 @@ export default defineComponent({
         const _target = normalize(node.node._rect)
 
         // lock y
-        console.log(_current.top, _target.top)
         if (isNearly(_current.top, _target.top)) {
           lineStatus.xt = {
             show: true,
@@ -57,7 +56,6 @@ export default defineComponent({
           }
           current._rect.y = _target.top
         }
-        console.log(_current.top, _target.top, lineStatus.xt)
         if (isNearly(_current.bottom, _target.top)) {
           lineStatus.xt = {
             show: true,
@@ -123,7 +121,9 @@ export default defineComponent({
           current._rect.x = _target.right - _current.width
         }
       })
-    })
+    }
+
+    SceneContext?.on('move', runConstraints)
     SceneContext?.on('moveup', clearStatus)
 
     onBeforeUnmount(() => {

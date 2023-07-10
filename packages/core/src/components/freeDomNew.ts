@@ -8,7 +8,7 @@ import ResizeDomCore from './resizeDomCore'
 
 function noop() { /* noop */ }
 
-type ResizeFnCallback = (evt: MouseEvent, resizeData: Omit<ResizeData, 'handle'>) => void
+type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 
 const freeDom = defineComponent({
   name: 'FreeDom',
@@ -55,6 +55,7 @@ const freeDom = defineComponent({
     const height = ref(props.height)
     const deltaX = ref(0)
     const deltaY = ref(0)
+    const dragData = ref()
 
     const context = {
       _rect: reactive({
@@ -70,37 +71,50 @@ const freeDom = defineComponent({
 
     const sceneContext = useSceneContext(context)
 
-    const style = computed(() => {
-      return {
-        position: 'absolute',
-        width: `${width.value}px`,
-        height: `${height.value}px`,
-        transform: `translate(${x.value}px, ${y.value}px)`,
-      }
-    })
+    const style = computed(() => ({
+      position: 'absolute',
+      width: `${width.value}px`,
+      height: `${height.value}px`,
+      transform: `translate(${x.value}px, ${y.value}px)`,
+    }))
 
     const onDrag: CoreFnCallback = (evt, coreData) => {
-      const dragData = create(coreData)
-      x.value = dragData.x
-      y.value = dragData.y
-      deltaX.value = dragData.deltaX
-      deltaY.value = dragData.deltaY
+      const data = dragData.value = create(coreData)
+      x.value = data.x
+      y.value = data.y
+      deltaX.value = data.deltaX
+      deltaY.value = data.deltaY
 
-      props.dargFn(evt, dragData)
+      props.dargFn(evt, data)
       sceneContext?.emit('move')
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
-      const dragData = create(coreData)
+      const data = dragData.value = create(coreData)
 
-      props.dragStopFn(evt, dragData)
+      props.dragStopFn(evt, data)
       sceneContext?.emit('moveup')
     }
 
-    const onResize: ResizeFnCallback = (evt, { node, width: w, height: h }) => {
+    const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
+      const offsetW = -(w - width.value)
+      const offsetH = -(h - height.value)
+
+      const axisH = axis[0]
+      const axisV = axis[axis.length - 1]
+
       width.value = w
       height.value = h
 
-      props.resizeFn(evt, { node, width: w, height: h })
+      // 补偿向上或左缩放时原点的位置
+      if (axisH === 'l') {
+        x.value += offsetW
+      }
+      if (axisV === 't') {
+        y.value += offsetH
+      }
+
+      props.resizeFn(evt, { node, width: w, height: h, handle: axis })
+      sceneContext?.emit('move')
     }
 
     return {
