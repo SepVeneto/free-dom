@@ -40,7 +40,7 @@ const gridLayoutProps = {
 }
 export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
 
-export const GridLayout = defineComponent({
+const GridLayout = defineComponent({
   name: 'GridLayout',
   props: gridLayoutProps,
   emits: ['update:modelValue'],
@@ -59,7 +59,6 @@ export const GridLayout = defineComponent({
       if (!key) return
       const config = getLayoutItem(key)
       if (!config) return
-      console.log('render', config.x, config.y)
       return h(GridItem, {
         x: config.x,
         y: config.y,
@@ -79,14 +78,14 @@ export const GridLayout = defineComponent({
         dragStartFn: () => {
           /** pass */
         },
-        onDragMove: (rect) => {
+        dragFn: (evt, data) => {
           const placeholder = {
             x: config.x,
             y: config.y,
             width: config.w,
             height: config.h,
           }
-          const { x, y } = rect
+          const { x, y } = data
           const layout = moveElement(
             props.modelValue,
             config,
@@ -129,3 +128,5 @@ export const GridLayout = defineComponent({
     ])
   },
 })
+
+export default GridLayout

@@ -36,7 +36,6 @@ const freeDomCore = defineComponent({
       default: noop,
     },
   },
-  emits: ['start'],
   setup(props) {
     const { only } = useDefaultSlot()
     const dragging = ref(false)

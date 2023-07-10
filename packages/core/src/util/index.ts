@@ -24,6 +24,8 @@ export function moveElement(
   if (typeof x === 'number') config.x = x
   if (typeof y === 'number') config.y = y
 
+  // TODO: 碰撞检测
+
   config.x = oldX
   config.y = oldY
   return layout
