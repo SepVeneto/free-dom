@@ -64,7 +64,7 @@ const GridLayout = defineComponent({
         y: config.y,
         width: config.w,
         height: config.h,
-        dragEndFn: (rect) => {
+        dragEndFn: (evt, rect) => {
           const { x, y } = rect
           const layout = moveElement(
             props.modelValue,

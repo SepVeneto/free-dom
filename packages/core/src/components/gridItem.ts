@@ -4,6 +4,7 @@ import FreeDomCore from './freeDomCore'
 import ResizeDomCore from './resizeDomCore'
 import { useDefaultSlot } from '../hooks'
 import type { ResizeFnCallback } from './resizeDomCore'
+import { calcXY } from '../util'
 
 import { gridLayoutContextKey } from './tokens'
 
@@ -67,7 +68,7 @@ export const GridItem = defineComponent({
     })
     const y = computed(() => {
       if (!dragging.value) {
-        return props.y * (props.height + gridLayoutContext.margin[1])
+        return props.y * (props.height * gridLayoutContext.rowHeight + gridLayoutContext.margin[1])
       } else {
         return dragging.value.y
       }
@@ -100,11 +101,13 @@ export const GridItem = defineComponent({
       const dragY = dragging.value.y + deltaY
 
       dragging.value = { x: dragX, y: dragY }
-      props.dragFn(evt, coreData)
+      const { x, y } = calcXY(props, dragX, dragY, cellWidth.value, props.width, props.height)
+      props.dragFn(evt, { x, y })
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
       dragging.value = undefined
-      props.dragEndFn(evt, coreData)
+      const { x, y } = calcXY(props, coreData.x, coreData.y, cellWidth.value, props.width, props.height)
+      props.dragEndFn(evt, { x, y })
     }
 
     const onResize: ResizeFnCallback = (evt, coreData) => {
