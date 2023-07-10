@@ -10,8 +10,6 @@ export default defineComponent({
     const lines = shallowRef(lineType)
     const diff = ref(SceneContext.diff)
     const nodes = SceneContext.nodes as any[]
-    const offsetX = ref(0)
-    const offsetY = ref(0)
 
     const lineStatus = reactive({
       xt: {

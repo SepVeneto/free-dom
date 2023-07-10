@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import type { CoreData } from '../components/freeDomCore'
+import type { FreeDomProps } from '../components/freeDomNew'
 
-export function useDraggableData() {
-  const x = ref(0)
-  const y = ref(0)
+export function useDraggableData(props: FreeDomProps) {
+  const x = ref(props.x)
+  const y = ref(props.y)
 
   function create(coreData: CoreData) {
     return {

@@ -1,6 +1,6 @@
 import { useDefaultSlot, useDraggableData, useSceneContext } from '../hooks'
-import type { PropType } from 'vue'
-import { computed, defineComponent, h, reactive, ref } from 'vue'
+import type { ExtractPropTypes, PropType } from 'vue'
+import { computed, defineComponent, h, reactive, ref, watchEffect } from 'vue'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -10,52 +10,72 @@ function noop() { /* noop */ }
 
 type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 
+export const freeDomProps = {
+  x: {
+    type: Number,
+    default: 0,
+  },
+  y: {
+    type: Number,
+    default: 0,
+  },
+  width: {
+    type: Number,
+    required: true as const,
+  },
+  height: {
+    type: Number,
+    required: true as const,
+  },
+  lockAspectRatio: Boolean,
+  dragStartFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  dragStopFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  dargFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  resizeStartFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+  resizeFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+  resizeStopFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+}
+export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
+
 const freeDom = defineComponent({
   name: 'FreeDom',
-  props: {
-    width: {
-      type: Number,
-      required: true,
-    },
-    height: {
-      type: Number,
-      required: true,
-    },
-    lockAspectRatio: Boolean,
-    dragStartFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    dragStopFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    dargFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    resizeStartFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-    resizeFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-    resizeStopFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-  },
-  emits: ['update:width', 'update:height'],
-  setup(props) {
+  props: freeDomProps,
+  emits: ['update:width', 'update:height', 'update:x', 'update:y'],
+  setup(props, { emit }) {
     const { slots } = useDefaultSlot()
-    const { x, y, create } = useDraggableData()
+    const { x, y, create } = useDraggableData(props)
     const width = ref(props.width)
     const height = ref(props.height)
     const deltaX = ref(0)
     const deltaY = ref(0)
     const dragData = ref()
+
+    watchEffect(() => {
+      width.value = props.width
+      height.value = props.height
+    })
+    watchEffect(() => {
+      x.value = props.x
+      y.value = props.y
+    })
 
     const context = {
       _rect: reactive({
@@ -93,6 +113,9 @@ const freeDom = defineComponent({
 
       props.dragStopFn(evt, data)
       sceneContext?.emit('moveup')
+
+      emit('update:x', x.value)
+      emit('update:y', y.value)
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
@@ -116,6 +139,10 @@ const freeDom = defineComponent({
       props.resizeFn(evt, { node, width: w, height: h, handle: axis })
       sceneContext?.emit('move')
     }
+    const onResizeStop: ResizeFnCallback = () => {
+      emit('update:width', width.value)
+      emit('update:height', height.value)
+    }
 
     return {
       slots,
@@ -125,6 +152,7 @@ const freeDom = defineComponent({
       onDrag,
       onDragStop,
       onResize,
+      onResizeStop,
     }
   },
   render() {
@@ -135,6 +163,7 @@ const freeDom = defineComponent({
       height: this.h,
       lockAspectRatio: this.lockAspectRatio,
       resizeFn: this.onResize,
+      stopFn: this.onResizeStop,
     }, () => this.slots)
     return h(FreeDomCore, {
       class: 'draggable',
