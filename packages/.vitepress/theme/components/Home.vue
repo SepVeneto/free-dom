@@ -1,15 +1,18 @@
 <template>
-  <pre>{{ layout }}</pre>
-  <!-- <pre>{{ demo }}</pre> -->
+  <div style="display: flex; width: 1200px;">
+    <pre style="flex-basis: 200px; flex-shrink: 0;">{{ layout }}</pre>
+    <!-- <pre>{{ demo }}</pre> -->
 
-  <GridLayout
-    v-model="layout"
-    style="position: relative; height: 200px;"
-  >
-    <span key="a">a</span>
-    <span key="b">b</span>
-    <span key="c">c</span>
-  </GridLayout>
+    <GridLayout
+      v-model="layout"
+      :width="1000"
+      style="position: relative; height: 200px; flex: 1;"
+    >
+      <span key="a">a</span>
+      <span key="b">b</span>
+      <span key="c">c</span>
+    </GridLayout>
+  </div>
   <FreeScene style="width: 1000px; height: 500px; border: 1px solid black; position: relative;">
     <FreeDom
       :width="100"

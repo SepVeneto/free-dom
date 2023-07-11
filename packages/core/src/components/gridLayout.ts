@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue'
-import { defineComponent, h, provide, ref } from 'vue'
+import { defineComponent, h, provide, ref, watchEffect } from 'vue'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
@@ -46,12 +46,17 @@ const GridLayout = defineComponent({
   emits: ['update:modelValue'],
 
   setup(props, { emit }) {
+    const layout = ref<GridLayoutConfig>(JSON.parse(JSON.stringify(props.modelValue)))
     provide(gridLayoutContextKey, props)
+
+    watchEffect(() => {
+      layout.value = JSON.parse(JSON.stringify(props.modelValue))
+    })
 
     const activeDrag = ref<GridItemInfo | null>(null)
 
     function getLayoutItem(key: GridLayoutKey) {
-      const item = props.modelValue.find(item => item.i === key)
+      const item = layout.value.find(item => item.i === key)
       return item
     }
     function processItem(node: VNode) {
@@ -66,19 +71,25 @@ const GridLayout = defineComponent({
         height: config.h,
         dragEndFn: (evt, rect) => {
           const { x, y } = rect
-          const layout = moveElement(
-            props.modelValue,
+          const isUserAction = true
+          const _layout = moveElement(
+            layout.value,
             config,
             x,
             y,
+            isUserAction,
           )
-          emit('update:modelValue', layout)
+          layout.value = _layout
+          // emit('update:modelValue', layout.map(item => ({ ...item, moved: false })))
+          emit('update:modelValue', layout.value.map(item => ({ ...item, moved: false })))
           activeDrag.value = null
         },
         dragStartFn: () => {
           /** pass */
         },
         dragFn: (evt, data) => {
+          const config = getLayoutItem(key)
+          if (!config) return
           const placeholder = {
             x: config.x,
             y: config.y,
@@ -86,13 +97,18 @@ const GridLayout = defineComponent({
             height: config.h,
           }
           const { x, y } = data
-          const layout = moveElement(
-            props.modelValue,
+          const isUserAction = true
+          console.log('trigger drag')
+          const _layout = moveElement(
+            layout.value,
             config,
             x,
             y,
+            isUserAction,
           )
-          emit('update:modelValue', layout)
+          // emit('update:modelValue', layout.map(item => ({ ...JSON.parse(JSON.stringify(item)), moved: false })))
+          layout.value = _layout.map(item => ({ ...JSON.parse(JSON.stringify(item)), moved: false }))
+          emit('update:modelValue', layout.value)
           activeDrag.value = placeholder
         },
       }, () => node)

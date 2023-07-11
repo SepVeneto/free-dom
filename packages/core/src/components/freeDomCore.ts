@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue'
+import { computed, defineComponent, h, onUnmounted, ref } from 'vue'
 import { useCoreData, useDefaultSlot } from '../hooks'
 
 function noop() { /** pass */ }
@@ -80,6 +80,7 @@ const freeDomCore = defineComponent({
       }
     }
     function _handleDragstart(evt: MouseEvent) {
+      if (!evt.target || !(evt.target instanceof node.value!.ownerDocument.defaultView!.Node)) return
       const { x, y } = _offsetFormat(evt)
 
       const coreEvent = create(x, y)
@@ -95,6 +96,7 @@ const freeDomCore = defineComponent({
       ownerDoc.value?.addEventListener('mouseup', _handleDragStop)
     }
     function _handleDragStop(evt: MouseEvent) {
+      if (!dragging.value) return
       const { x, y } = _offsetFormat(evt)
 
       const coreEvent = create(x, y)
@@ -145,7 +147,7 @@ const freeDomCore = defineComponent({
     return this.only
       ? h(this.only, {
         ref: 'domRef',
-        onMousedown: withModifiers(this.mousedownFn, ['stop']),
+        onMousedown: this.mousedownFn,
         onMouseup: this.mouseupFn,
       })
       : null

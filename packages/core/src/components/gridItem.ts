@@ -4,7 +4,7 @@ import FreeDomCore from './freeDomCore'
 import ResizeDomCore from './resizeDomCore'
 import { useDefaultSlot } from '../hooks'
 import type { ResizeFnCallback } from './resizeDomCore'
-import { calcXY } from '../util'
+import { calcXY, clamp } from '../util'
 
 import { gridLayoutContextKey } from './tokens'
 
@@ -75,12 +75,22 @@ export const GridItem = defineComponent({
     })
     const width = computed(() => props.width * cellWidth.value)
     const height = computed(() => gridLayoutContext.rowHeight * props.height)
-    const style = computed(() => ({
-      position: 'absolute',
-      width: `${width.value}px`,
-      height: `${height.value}px`,
-      transform: `translate(${x.value}px, ${y.value}px)`,
-    }))
+    const style = computed(() => {
+      const pos = { x: 0, y: 0 }
+      if (dragging.value) {
+        pos.x = Math.round(dragging.value.x)
+        pos.y = Math.round(dragging.value.y)
+      } else {
+        pos.x = Math.round(cellWidth.value * props.x)
+        pos.y = Math.round(gridLayoutContext.rowHeight * props.y)
+      }
+      return {
+        position: 'absolute',
+        width: `${width.value}px`,
+        height: `${height.value}px`,
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+      }
+    })
     const dragging = ref<{ x: number, y: number }>()
 
     const onDragStart: CoreFnCallback = (evt, { x, y, node }) => {
@@ -91,6 +101,7 @@ export const GridItem = defineComponent({
         x: clientRect.left - parentRect.left + node.offsetParent!.scrollLeft,
         y: clientRect.top - parentRect.top + node.offsetParent!.scrollTop,
       }
+      console.log('start', dragging.value.x, dragging.value.y)
     }
     const onDrag: CoreFnCallback = (evt, coreData) => {
       if (!dragging.value) {
@@ -100,13 +111,30 @@ export const GridItem = defineComponent({
       const dragX = dragging.value.x + deltaX
       const dragY = dragging.value.y + deltaY
 
+      // TODO: bounded
+      // if (true) {
+      //   const { offsetParent } = coreData.node
+      //   if (offsetParent) {
+      //     const bottomBoundary = offsetParent.clientHeight - props.height * gridLayoutContext.rowHeight
+      //     dragX = clamp(dragX, 0, bottomBoundary)
+      //     const rightBoundary = gridLayoutContext.width - props.width * cellWidth.value
+      //     dragY = clamp(dragY, 0, rightBoundary)
+      //   }
+      // }
+
       dragging.value = { x: dragX, y: dragY }
       const { x, y } = calcXY(props, dragX, dragY, cellWidth.value, props.width, props.height)
       props.dragFn(evt, { x, y })
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
+      console.log('stop', coreData)
+      if (!dragging.value) {
+        throw new Error('onDragStop called before onDratStart')
+      }
+      const { x: _x, y: _y } = dragging.value
+      const { x, y } = calcXY(props, _x, _y, cellWidth.value, props.width, props.height)
+      console.log('stop', x, y)
       dragging.value = undefined
-      const { x, y } = calcXY(props, coreData.x, coreData.y, cellWidth.value, props.width, props.height)
       props.dragEndFn(evt, { x, y })
     }
 
