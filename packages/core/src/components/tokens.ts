@@ -1,6 +1,6 @@
 import type { InjectionKey } from 'vue'
-import type { GridLayoutProps } from './gridLayout'
+import type { useLayout } from './useLayout'
 
-export type GridLayoutContext = GridLayoutProps
+export type GridLayoutContext = ReturnType<typeof useLayout>
 
 export const gridLayoutContextKey: InjectionKey<GridLayoutContext> = Symbol('gridLayoutContext')

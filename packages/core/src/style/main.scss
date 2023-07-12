@@ -121,3 +121,10 @@
   background-repeat: no-repeat;
   box-sizing: border-box;
 }
+
+.grid-layout-item {
+  transition: transform 0.2s linear;
+  &.draggable {
+    transition: none;
+  }
+}

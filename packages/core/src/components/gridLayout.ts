@@ -1,9 +1,9 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue'
-import { defineComponent, h, provide, ref, watchEffect } from 'vue'
+import { defineComponent, h, provide, ref } from 'vue'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
-import { moveElement } from '../util'
+import { useLayout } from './useLayout'
 
 export type GridLayoutItem = {
   i: string | number
@@ -11,6 +11,8 @@ export type GridLayoutItem = {
   y: number
   w: number
   h: number
+  moved?: boolean
+  static?: boolean
 }
 export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
@@ -46,23 +48,16 @@ const GridLayout = defineComponent({
   emits: ['update:modelValue'],
 
   setup(props, { emit }) {
-    const layout = ref<GridLayoutConfig>(JSON.parse(JSON.stringify(props.modelValue)))
-    provide(gridLayoutContextKey, props)
+    const layout = useLayout(props)
 
-    watchEffect(() => {
-      layout.value = JSON.parse(JSON.stringify(props.modelValue))
-    })
+    provide(gridLayoutContextKey, layout)
 
     const activeDrag = ref<GridItemInfo | null>(null)
 
-    function getLayoutItem(key: GridLayoutKey) {
-      const item = layout.value.find(item => item.i === key)
-      return item
-    }
     function processItem(node: VNode) {
       const key = node.key
       if (!key) return
-      const config = getLayoutItem(key)
+      const config = layout.getItem(String(key))
       if (!config) return
       return h(GridItem, {
         x: config.x,
@@ -71,24 +66,15 @@ const GridLayout = defineComponent({
         height: config.h,
         dragEndFn: (evt, rect) => {
           const { x, y } = rect
-          const isUserAction = true
-          const _layout = moveElement(
-            layout.value,
-            config,
-            x,
-            y,
-            isUserAction,
-          )
-          layout.value = _layout
-          // emit('update:modelValue', layout.map(item => ({ ...item, moved: false })))
-          emit('update:modelValue', layout.value.map(item => ({ ...item, moved: false })))
+          const _layout = layout.moveTo(config, x, y)
+          emit('update:modelValue', _layout)
           activeDrag.value = null
         },
         dragStartFn: () => {
           /** pass */
         },
         dragFn: (evt, data) => {
-          const config = getLayoutItem(key)
+          const config = layout.getItem(String(key))
           if (!config) return
           const placeholder = {
             x: config.x,
@@ -97,18 +83,8 @@ const GridLayout = defineComponent({
             height: config.h,
           }
           const { x, y } = data
-          const isUserAction = true
-          console.log('trigger drag')
-          const _layout = moveElement(
-            layout.value,
-            config,
-            x,
-            y,
-            isUserAction,
-          )
-          // emit('update:modelValue', layout.map(item => ({ ...JSON.parse(JSON.stringify(item)), moved: false })))
-          layout.value = _layout.map(item => ({ ...JSON.parse(JSON.stringify(item)), moved: false }))
-          emit('update:modelValue', layout.value)
+          layout.moveTo(config, x, y)
+
           activeDrag.value = placeholder
         },
       }, () => node)
@@ -129,6 +105,7 @@ const GridLayout = defineComponent({
     return {
       processItem,
       placeholder,
+      layout,
     }
   },
 
