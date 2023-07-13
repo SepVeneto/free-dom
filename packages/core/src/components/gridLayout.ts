@@ -39,6 +39,14 @@ const gridLayoutProps = {
     type: Array as PropType<number[]>,
     default: () => ([0, 0]),
   },
+  isDraggable: {
+    type: Boolean,
+    default: true,
+  },
+  isResizable: {
+    type: Boolean,
+    default: true,
+  },
 }
 export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
 
@@ -64,6 +72,8 @@ const GridLayout = defineComponent({
         y: config.y,
         width: config.w,
         height: config.h,
+        isDraggable: props.isDraggable,
+        isResizable: props.isResizable,
         dragEndFn: (evt, rect) => {
           const { x, y } = rect
           const _layout = layout.moveTo(config, x, y)
@@ -74,7 +84,6 @@ const GridLayout = defineComponent({
           /** pass */
         },
         dragFn: (evt, data) => {
-          const config = layout.getItem(String(key))
           if (!config) return
           const placeholder = {
             x: config.x,
@@ -86,6 +95,24 @@ const GridLayout = defineComponent({
           layout.moveTo(config, x, y)
 
           activeDrag.value = placeholder
+        },
+        resizeFn: (evt, data) => {
+          const placeholder = {
+            x: config.x,
+            y: config.y,
+            width: config.w,
+            height: config.h,
+          }
+
+          activeDrag.value = placeholder
+          const { w, h } = data
+          // console.log(w, h)
+          layout.resizeTo(config, w, h)
+        },
+        resizeStopFn: (evt, data) => {
+          const { w, h } = data
+          layout.resizeTo(config, w, h)
+          activeDrag.value = null
         },
       }, () => node)
     }

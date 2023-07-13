@@ -2,6 +2,7 @@ import { computed, ref, shallowRef, watchEffect } from 'vue'
 import type { GridLayoutConfig, GridLayoutProps } from './gridLayout'
 import type { GridItemProps } from './gridItem'
 import type { CoreFnCallback } from './freeDomCore'
+import type { ResizeFnCallback } from './resizeDomCore'
 import { clamp } from '../util'
 
 export function useLayout(props: GridLayoutProps) {
@@ -27,8 +28,8 @@ export function useLayout(props: GridLayoutProps) {
     y?: number,
     isUserAction?: boolean,
   ) {
-    let layout = getFull()
-    if (config.y === y && config.x === x) return layout
+    let _layout = layout.value
+    if (config.y === y && config.x === x) return _layout
 
     console.log(
       `Moving element ${config.i} to [${String(x)},${String(y)}] from [${config.x},${config.y}]`,
@@ -41,12 +42,12 @@ export function useLayout(props: GridLayoutProps) {
     if (typeof y === 'number') config.y = y
     config.moved = true
 
-    const _layout = _sortLayoutItems(layout)
+    const sortable = _sortLayoutItems(_layout)
 
     // const moveup = typeof y === 'number' && oldY >= y
 
     // TODO: 碰撞检测
-    const collisions = _layout.filter(l => _collides(l, config))
+    const collisions = sortable.filter(l => _collides(l, config))
     // const hasCollsions = collisions.length > 0
 
     collisions.forEach(collision => {
@@ -66,20 +67,20 @@ export function useLayout(props: GridLayoutProps) {
           i: '-1',
         }
 
-        if (!_getFirstCollision(layout, fakeItem)) {
+        if (!_getFirstCollision(_layout, fakeItem)) {
           console.log(
             `Doing reverse collision on ${collision.i} up to [${fakeItem.x},${fakeItem.y}].`,
           )
-          layout = _moveElement(collision, undefined, collision.y, isUserAction)
+          _layout = _moveElement(collision, undefined, collision.y, isUserAction)
           return
         }
       }
-      layout = _moveElement(collision, undefined, collision.y + 1, isUserAction)
+      _layout = _moveElement(collision, undefined, collision.y + 1, isUserAction)
     })
 
     // config.x = oldX
     // config.y = oldY
-    return layout
+    return _layout
   }
 
   function moveTo(item: GridLayoutConfig[number], x?: number, y?: number) {
@@ -87,6 +88,11 @@ export function useLayout(props: GridLayoutProps) {
     const _layout = _moveElement(item, x, y, isUserAction)
     layout.value = _normalize(_layout)
     return layout.value
+  }
+  function resizeTo(item: GridLayoutConfig[number], w: number, h: number) {
+    item.w = w
+    item.h = h
+    layout.value = _normalize([...layout.value])
   }
 
   // 以在y轴上的距离升序排列
@@ -204,6 +210,7 @@ export function useLayout(props: GridLayoutProps) {
     margin,
 
     moveTo,
+    resizeTo,
     getItem,
     getFull,
   }
@@ -212,25 +219,39 @@ export function useLayout(props: GridLayoutProps) {
 export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof useLayout>) {
   const { cellWidth, margin, rowHeight, cols } = layout
   const dragging = ref<{ x: number, y: number }>()
+  const resizing = ref<{ width: number, height: number}>()
+
   const x = computed(() => {
     if (!dragging.value) {
       return props.x * (cellWidth.value + margin.value[0])
     } else {
-      return dragging.value.x
+      return Math.round(dragging.value.x)
     }
   })
   const y = computed(() => {
     if (!dragging.value) {
       return props.y * (props.height * rowHeight.value + margin.value[1])
     } else {
-      return dragging.value.y
+      return Math.round(dragging.value.y)
+    }
+  })
+  const width = computed(() => {
+    if (!resizing.value) {
+      return Math.round(cellWidth.value * props.width)
+    } else {
+      return Math.round(resizing.value.width)
+    }
+  })
+  const height = computed(() => {
+    if (!resizing.value) {
+      return Math.round(rowHeight.value * props.height)
+    } else {
+      return Math.round(resizing.value.height)
     }
   })
 
-  const width = computed(() => props.width * cellWidth.value)
-  const height = computed(() => rowHeight.value * props.height)
   const style = computed(() => {
-    const pos = { x: 0, y: 0 }
+    const pos = { x: 0, y: 0, width: 0, height: 0 }
     if (dragging.value) {
       pos.x = Math.round(dragging.value.x)
       pos.y = Math.round(dragging.value.y)
@@ -254,7 +275,6 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
       x: clientRect.left - parentRect.left + node.offsetParent!.scrollLeft,
       y: clientRect.top - parentRect.top + node.offsetParent!.scrollTop,
     }
-    console.log('start', dragging.value.x, dragging.value.y)
   }
   const onDrag: CoreFnCallback = (evt, coreData) => {
     if (!dragging.value) {
@@ -276,27 +296,50 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
     // }
 
     dragging.value = { x: dragX, y: dragY }
-    const { x, y } = calcXY(dragX, dragY)
+    const { x, y } = _calcXY(dragX, dragY)
     props.dragFn(evt, { x, y })
   }
-  const onDragStop: CoreFnCallback = (evt, coreData) => {
-    console.log('stop', coreData)
+  const onDragStop: CoreFnCallback = (evt) => {
     if (!dragging.value) {
       throw new Error('onDragStop called before onDratStart')
     }
     const { x: _x, y: _y } = dragging.value
-    const { x, y } = calcXY(_x, _y)
-    console.log('stop', x, y)
+    const { x, y } = _calcXY(_x, _y)
     dragging.value = undefined
     props.dragEndFn(evt, { x, y })
   }
 
-  function calcXY(left: number, top: number) {
+  const onResizeStart: ResizeFnCallback = (evt, { width, height }) => {
+    resizing.value = { width, height }
+  }
+  const onResize: ResizeFnCallback = (evt, coreData) => {
+    const { width, height } = coreData
+    const { w, h } = _calcWH(width, height)
+    resizing.value = { width, height }
+
+    props.resizeFn(evt, { w, h })
+  }
+  const onResizeStop: ResizeFnCallback = (evt, coreData) => {
+    resizing.value = undefined
+    const { width, height } = coreData
+    const { w, h } = _calcWH(width, height)
+    props.resizeStopFn(evt, { w, h })
+  }
+
+  function _calcXY(left: number, top: number) {
     let x = Math.round(left / cellWidth.value)
     let y = Math.round(top / rowHeight.value)
     x = clamp(x, 0, cols.value - props.width)
     y = clamp(y, 0, Infinity - props.height)
     return { x, y }
+  }
+  function _calcWH(width: number, height: number) {
+    let w = Math.round(width / cellWidth.value)
+    let h = Math.round(height / rowHeight.value)
+    w = clamp(w, 0, cols.value - props.x)
+    h = clamp(h, 0, Infinity - props.y)
+
+    return { w, h }
   }
 
   return {
@@ -305,10 +348,14 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
     width,
     height,
     dragging,
+    resizing,
     style,
 
     onDragStart,
     onDrag,
     onDragStop,
+    onResizeStart,
+    onResize,
+    onResizeStop,
   }
 }
