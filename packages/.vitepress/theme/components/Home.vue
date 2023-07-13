@@ -6,11 +6,20 @@
     <GridLayout
       v-model="layout"
       :width="width"
-      style="flex: 1;"
+      style="flex: 1; background: #ddd;"
     >
-      <span key="a">a</span>
-      <span key="b">b</span>
-      <span key="c">c</span>
+      <span
+        key="a"
+        class="grid-item"
+      >a</span>
+      <span
+        key="b"
+        class="grid-item"
+      >b</span>
+      <span
+        key="c"
+        class="grid-item"
+      >c</span>
     </GridLayout>
   </div>
   <FreeScene style="width: 1000px; height: 500px; border: 1px solid black; position: relative;">
@@ -50,8 +59,6 @@ const demo = ref({
 })
 const width = ref(1000)
 
-setTimeout(() => { width.value = 500 }, 1000)
-
 const layout = ref([
   { i: 'a', x: 0, y: 0, w: 1, h: 2 },
   { i: 'b', x: 1, y: 0, w: 3, h: 2 },
@@ -62,5 +69,11 @@ const layout = ref([
 <style>
 .vp-doc {
   position: static !important;
+}
+.grid-item {
+  background: #fff;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 </style>

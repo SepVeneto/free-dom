@@ -10,11 +10,14 @@ export function useLayout(props: GridLayoutProps) {
   watchEffect(() => {
     layout.value = props.modelValue
   })
-  const cellWidth = computed(() => props.width / props.cols)
+  const cellWidth = computed(() => (
+    (props.width - margin.value[0] * (cols.value - 1) - (containerPadding.value?.[0] || margin.value[0]) * 2)) / props.cols,
+  )
   const cols = computed(() => props.cols)
   const rowHeight = computed(() => props.rowHeight)
   const margin = computed(() => props.margin)
   const maxRows = computed(() => props.maxRows)
+  const containerPadding = computed(() => props.containerPadding)
 
   function getItem(key: string) {
     return layout.value.find(item => item.i === key)
@@ -176,7 +179,11 @@ export function useLayout(props: GridLayoutProps) {
     if (!props.autoHeight) return
     const rows = _calBottom(layout.value)
 
-    return `${rows * props.rowHeight}px`
+    return `${
+      rows * props.rowHeight +
+      margin.value[1] * (rows - 1) +
+      (containerPadding.value?.[1] || margin.value[1]) * 2
+    }px`
   }
 
   const heightWidth = { x: 'w', y: 'h' } as const
@@ -217,6 +224,7 @@ export function useLayout(props: GridLayoutProps) {
     rowHeight,
     margin,
     maxRows,
+    containerPadding,
 
     calContainerHeight,
     moveTo,
@@ -227,53 +235,47 @@ export function useLayout(props: GridLayoutProps) {
 }
 
 export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof useLayout>) {
-  const { cellWidth, margin, rowHeight, cols, maxRows } = layout
+  const { cellWidth, margin, rowHeight, cols, maxRows, containerPadding: cPadding } = layout
   const dragging = ref<{ x: number, y: number }>()
   const resizing = ref<{ width: number, height: number}>()
 
+  const containerPadding = computed(() => cPadding.value || margin.value)
+
   const x = computed(() => {
     if (!dragging.value) {
-      return props.x * (cellWidth.value + margin.value[0])
+      return Math.round(props.x * (cellWidth.value + margin.value[0]) + containerPadding.value[0])
     } else {
       return Math.round(dragging.value.x)
     }
   })
   const y = computed(() => {
     if (!dragging.value) {
-      return props.y * (props.height * rowHeight.value + margin.value[1])
+      return Math.round(props.y * (rowHeight.value + margin.value[1]) + containerPadding.value[1])
     } else {
       return Math.round(dragging.value.y)
     }
   })
   const width = computed(() => {
     if (!resizing.value) {
-      return Math.round(cellWidth.value * props.width)
+      return Math.round(cellWidth.value * props.width + Math.max(0, props.width - 1) * margin.value[0])
     } else {
       return Math.round(resizing.value.width)
     }
   })
   const height = computed(() => {
     if (!resizing.value) {
-      return Math.round(rowHeight.value * props.height)
+      return Math.round(rowHeight.value * props.height + Math.max(0, props.height - 1) * margin.value[1])
     } else {
       return Math.round(resizing.value.height)
     }
   })
 
   const style = computed(() => {
-    const pos = { x: 0, y: 0, width: 0, height: 0 }
-    if (dragging.value) {
-      pos.x = Math.round(dragging.value.x)
-      pos.y = Math.round(dragging.value.y)
-    } else {
-      pos.x = Math.round(layout.cellWidth.value * props.x)
-      pos.y = Math.round(layout.rowHeight.value * props.y)
-    }
     return {
       position: 'absolute',
       width: `${width.value}px`,
       height: `${height.value}px`,
-      transform: `translate(${pos.x}px, ${pos.y}px)`,
+      transform: `translate(${x.value}px, ${y.value}px)`,
     }
   })
 
@@ -337,15 +339,15 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
   }
 
   function _calcXY(left: number, top: number) {
-    let x = Math.round(left / cellWidth.value)
-    let y = Math.round(top / rowHeight.value)
+    let x = Math.round((left - margin.value[0]) / (cellWidth.value + margin.value[0]))
+    let y = Math.round((top - margin.value[1]) / (rowHeight.value + margin.value[1]))
     x = clamp(x, 0, cols.value - props.width)
     y = clamp(y, 0, maxRows.value - props.height)
     return { x, y }
   }
   function _calcWH(width: number, height: number) {
-    let w = Math.round(width / cellWidth.value)
-    let h = Math.round(height / rowHeight.value)
+    let w = Math.round((width + margin.value[0]) / (cellWidth.value + margin.value[0]))
+    let h = Math.round((height + margin.value[1]) / (rowHeight.value + margin.value[1]))
     w = clamp(w, 0, cols.value - props.x)
     h = clamp(h, 0, maxRows.value - props.y)
 

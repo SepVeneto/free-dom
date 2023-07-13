@@ -37,7 +37,7 @@ const gridLayoutProps = {
   },
   rowHeight: {
     type: Number,
-    default: 30,
+    default: 150,
   },
   width: {
     type: Number,
@@ -45,7 +45,11 @@ const gridLayoutProps = {
   },
   margin: {
     type: Array as PropType<number[]>,
-    default: () => ([0, 0]),
+    default: () => ([10, 10]),
+  },
+  containerPadding: {
+    type: Array as PropType<number[]>,
+    default: undefined,
   },
   isDraggable: {
     type: Boolean,

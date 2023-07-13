@@ -1,5 +1,6 @@
 .vv-grid-layout {
   position: relative;
+  transition: height 0.2s;
 }
 .grid-layout__item {
   background: #ccc;
