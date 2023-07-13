@@ -82,7 +82,6 @@ export const GridItem = defineComponent({
       width,
       height,
       dragging,
-      resizing,
       style,
 
       onDragStart,
@@ -98,7 +97,7 @@ export const GridItem = defineComponent({
       return h(ResizeDomCore, {
         width: width.value,
         height: height.value,
-        a: resizing.value || 'test',
+        scale: ['rb'],
         startFn: onResizeStart,
         resizeFn: onResize,
         stopFn: onResizeStop,
