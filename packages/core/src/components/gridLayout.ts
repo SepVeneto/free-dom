@@ -23,9 +23,17 @@ const gridLayoutProps = {
     required: true,
     default: () => ([]),
   },
+  autoHeight: {
+    type: Boolean,
+    default: true,
+  },
   cols: {
     type: Number,
     default: 12,
+  },
+  maxRows: {
+    type: Number,
+    default: Infinity,
   },
   rowHeight: {
     type: Number,
@@ -142,7 +150,12 @@ const GridLayout = defineComponent({
         ? this.$slots.default()
         : this.$slots.default ||
       []
-    return h('div', [
+    return h('div', {
+      class: 'vv-grid-layout',
+      style: {
+        height: this.layout.calContainerHeight(),
+      },
+    }, [
       defaultSlot.map(this.processItem),
       this.placeholder(),
     ])

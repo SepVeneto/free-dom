@@ -14,6 +14,7 @@ export function useLayout(props: GridLayoutProps) {
   const cols = computed(() => props.cols)
   const rowHeight = computed(() => props.rowHeight)
   const margin = computed(() => props.margin)
+  const maxRows = computed(() => props.maxRows)
 
   function getItem(key: string) {
     return layout.value.find(item => item.i === key)
@@ -171,6 +172,13 @@ export function useLayout(props: GridLayoutProps) {
     return max
   }
 
+  function calContainerHeight() {
+    if (!props.autoHeight) return
+    const rows = _calBottom(layout.value)
+
+    return `${rows * props.rowHeight}px`
+  }
+
   const heightWidth = { x: 'w', y: 'h' } as const
   function resolveCompactionCollision(
     layout: GridLayoutConfig,
@@ -208,7 +216,9 @@ export function useLayout(props: GridLayoutProps) {
     cols,
     rowHeight,
     margin,
+    maxRows,
 
+    calContainerHeight,
     moveTo,
     resizeTo,
     getItem,
@@ -217,7 +227,7 @@ export function useLayout(props: GridLayoutProps) {
 }
 
 export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof useLayout>) {
-  const { cellWidth, margin, rowHeight, cols } = layout
+  const { cellWidth, margin, rowHeight, cols, maxRows } = layout
   const dragging = ref<{ x: number, y: number }>()
   const resizing = ref<{ width: number, height: number}>()
 
@@ -330,14 +340,14 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
     let x = Math.round(left / cellWidth.value)
     let y = Math.round(top / rowHeight.value)
     x = clamp(x, 0, cols.value - props.width)
-    y = clamp(y, 0, Infinity - props.height)
+    y = clamp(y, 0, maxRows.value - props.height)
     return { x, y }
   }
   function _calcWH(width: number, height: number) {
     let w = Math.round(width / cellWidth.value)
     let h = Math.round(height / rowHeight.value)
     w = clamp(w, 0, cols.value - props.x)
-    h = clamp(h, 0, Infinity - props.y)
+    h = clamp(h, 0, maxRows.value - props.y)
 
     return { w, h }
   }

@@ -1,3 +1,6 @@
+.vv-grid-layout {
+  position: relative;
+}
 .grid-layout__item {
   background: #ccc;
   border: 1px solid black;
@@ -120,6 +123,9 @@
   background-position: bottom right;
   background-repeat: no-repeat;
   box-sizing: border-box;
+}
+.free-dom--disabled {
+  display: none;
 }
 
 .grid-layout-item {

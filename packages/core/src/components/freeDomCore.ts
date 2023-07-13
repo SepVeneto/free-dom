@@ -1,6 +1,7 @@
 import type { PropType } from 'vue-demi'
 import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
+import type { ExtractPropTypes } from 'vue'
 
 function noop() { /** pass */ }
 
@@ -15,28 +16,31 @@ export type CoreData = {
 }
 
 export type CoreFnCallback = (evt: MouseEvent, coreData: CoreData) => void
+export const freeDomCoreProps = {
+  userSelectHack: {
+    type: Boolean,
+    default: true,
+  },
+  startFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  stopFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  dragFn: {
+    type: Function as PropType<CoreFnCallback>,
+    default: noop,
+  },
+  disabled: Boolean,
+}
+
+export type FreeDomCoreProps = ExtractPropTypes<typeof freeDomCoreProps>
 
 const freeDomCore = defineComponent({
   name: 'FreeDomCore',
-  props: {
-    userSelectHack: {
-      type: Boolean,
-      default: true,
-    },
-    startFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    stopFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    dragFn: {
-      type: Function as PropType<CoreFnCallback>,
-      default: noop,
-    },
-    disabled: Boolean,
-  },
+  props: freeDomCoreProps,
   setup(props) {
     const { only } = useDefaultSlot()
     const dragging = ref(false)

@@ -5,8 +5,8 @@
 
     <GridLayout
       v-model="layout"
-      :width="1000"
-      style="position: relative; height: 200px; flex: 1;"
+      :width="width"
+      style="flex: 1;"
     >
       <span key="a">a</span>
       <span key="b">b</span>
@@ -48,6 +48,9 @@ const demo = ref({
   width: 100,
   height: 100,
 })
+const width = ref(1000)
+
+setTimeout(() => { width.value = 500 }, 1000)
 
 const layout = ref([
   { i: 'a', x: 0, y: 0, w: 1, h: 2 },

@@ -98,6 +98,9 @@ export const GridItem = defineComponent({
         width: width.value,
         height: height.value,
         scale: ['rb'],
+        dragOpts: {
+          disabled: !props.isResizable,
+        },
         startFn: onResizeStart,
         resizeFn: onResize,
         stopFn: onResizeStop,
