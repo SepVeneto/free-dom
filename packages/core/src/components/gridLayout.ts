@@ -1,5 +1,5 @@
-import type { ExtractPropTypes, PropType, VNode } from 'vue'
-import { defineComponent, h, provide, ref } from 'vue'
+import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
+import { defineComponent, h, provide, ref } from 'vue-demi'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'

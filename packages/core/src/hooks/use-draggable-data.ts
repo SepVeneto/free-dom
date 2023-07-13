@@ -1,6 +1,6 @@
-import { ref } from 'vue'
+import { ref } from 'vue-demi'
 import type { CoreData } from '../components/freeDomCore'
-import type { FreeDomProps } from '../components/freeDomNew'
+import type { FreeDomProps } from '../components/freeDom'
 
 export function useDraggableData(props: FreeDomProps) {
   const x = ref(props.x)

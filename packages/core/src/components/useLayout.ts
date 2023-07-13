@@ -1,4 +1,4 @@
-import { computed, ref, shallowRef, watchEffect } from 'vue'
+import { computed, ref, shallowRef, watchEffect } from 'vue-demi'
 import type { GridLayoutConfig, GridLayoutProps } from './gridLayout'
 import type { GridItemProps } from './gridItem'
 import type { CoreFnCallback } from './freeDomCore'

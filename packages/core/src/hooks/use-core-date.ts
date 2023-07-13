@@ -1,5 +1,5 @@
-import { ref, unref } from 'vue'
-import type { Ref } from 'vue'
+import { ref, unref } from 'vue-demi'
+import type { Ref } from 'vue-demi'
 
 type Node = (HTMLElement | undefined) | Ref<HTMLElement | undefined>
 

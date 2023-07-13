@@ -1,5 +1,5 @@
-import { computed, defineComponent, h, inject, shallowRef } from 'vue'
-import type { PropType } from 'vue'
+import { computed, defineComponent, h, inject, shallowRef } from 'vue-demi'
+import type { PropType } from 'vue-demi'
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
 import { useDefaultSlot } from '../hooks'

@@ -1,5 +1,5 @@
-import type { PropType } from 'vue'
-import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue'
+import type { PropType } from 'vue-demi'
+import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
 
 function noop() { /** pass */ }

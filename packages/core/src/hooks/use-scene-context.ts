@@ -1,6 +1,6 @@
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
-import { inject, onMounted } from 'vue'
+import { inject, onMounted } from 'vue-demi'
 import type { INodeInfo } from '../components/freeDomWrap'
 
 let id = 0
