@@ -133,5 +133,6 @@
   transition: transform 0.2s;
   &.grid-layout-item--draggable {
     transition: none;
+    z-index: 1;
   }
 }

@@ -39,8 +39,8 @@ export function useLayout(props: GridLayoutProps) {
       `Moving element ${config.i} to [${String(x)},${String(y)}] from [${config.x},${config.y}]`,
     )
 
-    // const oldX = config.x
-    // const oldY = config.y
+    const oldX = config.x
+    const oldY = config.y
 
     if (typeof x === 'number') config.x = x
     if (typeof y === 'number') config.y = y
@@ -52,7 +52,14 @@ export function useLayout(props: GridLayoutProps) {
 
     // TODO: 碰撞检测
     const collisions = sortable.filter(l => _collides(l, config))
-    // const hasCollsions = collisions.length > 0
+    const hasCollsions = collisions.length > 0
+
+    if (hasCollsions && !props.collision) {
+      config.x = oldX
+      config.y = oldY
+      config.moved = false
+      return _layout
+    }
 
     collisions.forEach(collision => {
       console.log(
@@ -94,8 +101,30 @@ export function useLayout(props: GridLayoutProps) {
     return layout.value
   }
   function resizeTo(item: GridLayoutConfig[number], w: number, h: number) {
-    item.w = w
-    item.h = h
+    let hasCollisions = false
+    if (!props.collision) {
+      const collisions = layout.value.filter(l => _collides(l, { ...item, w, h }))
+      hasCollisions = collisions.length > 0
+
+      // 禁用碰撞时，如果缩放位置周围有其它元素
+      if (hasCollisions) {
+        let leastX = Infinity
+        let leastY = Infinity
+        // 记录下离缩放位置最近的元素的坐标
+        collisions.forEach(collision => {
+          if (collision.x > item.x) leastX = Math.min(collision.x, leastX)
+          if (collision.y > item.y) leastY = Math.min(collision.y, leastY)
+        })
+        // 缩放元素的宽高 = 最近的碰撞元素的坐标 - 缩放元素的坐标
+        // 即填满两坐标之间的区域
+        if (Number.isFinite(leastX)) item.w = leastX - item.x
+        if (Number.isFinite(leastY)) item.h = leastY - item.y
+      }
+    }
+    if (!hasCollisions) {
+      item.w = w
+      item.h = h
+    }
     layout.value = _normalize([...layout.value])
   }
 
@@ -134,8 +163,10 @@ export function useLayout(props: GridLayoutProps) {
     layout.forEach((item, index) => {
       let l = JSON.parse(JSON.stringify(item))
 
-      l = _normalizeItem(compareWith, l, layout)
-      compareWith.push(l)
+      if (!l.static) {
+        l = _normalizeItem(compareWith, l, layout)
+        compareWith.push(l)
+      }
 
       _layout[index] = l
       l.moved = false
@@ -148,17 +179,21 @@ export function useLayout(props: GridLayoutProps) {
     l: GridLayoutConfig[number],
     layout: GridLayoutConfig,
   ) {
-    l.y = Math.min(_calBottom(compareWith), l.y)
+    // 这里与react-grid-layout不同
+    // 直接通过判断是否允许碰撞来决定是否需要在水平方向上对齐
+    if (props.collision) {
+      l.y = Math.min(_calBottom(compareWith), l.y)
 
-    while (l.y > 0 && !_getFirstCollision(compareWith, l)) {
-      --l.y
+      while (l.y > 0 && !_getFirstCollision(compareWith, l)) {
+        --l.y
+      }
     }
 
     let collides
     // 存在即使被碰撞网格高度大于1个单位的情况
     // 因此即使下移一格，当前拖曳元素仍然可能处于碰撞状态
     while (
-      (collides = _getFirstCollision(compareWith, l))
+      (collides = _getFirstCollision(compareWith, l)) && props.collision
     ) {
       resolveCompactionCollision(layout, l, collides.y + collides.h, 'y')
     }

@@ -59,6 +59,7 @@ const gridLayoutProps = {
     type: Boolean,
     default: true,
   },
+  collision: Boolean,
 }
 export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
 
@@ -118,7 +119,6 @@ const GridLayout = defineComponent({
 
           activeDrag.value = placeholder
           const { w, h } = data
-          // console.log(w, h)
           layout.resizeTo(config, w, h)
         },
         resizeStopFn: (evt, data) => {
