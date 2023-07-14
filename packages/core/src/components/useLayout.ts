@@ -1,5 +1,5 @@
 import { computed, ref, shallowRef, watchEffect } from 'vue-demi'
-import type { GridLayoutConfig, GridLayoutProps } from './gridLayout'
+import type { GridLayoutConfig, GridLayoutItem, GridLayoutProps } from './gridLayout'
 import type { GridItemProps } from './gridItem'
 import type { CoreFnCallback } from './freeDomCore'
 import type { ResizeFnCallback } from './resizeDomCore'
@@ -27,13 +27,15 @@ export function useLayout(props: GridLayoutProps) {
   }
 
   function _moveElement(
+    layout: GridLayoutConfig,
     config: GridLayoutConfig[number],
     x?: number,
     y?: number,
     isUserAction?: boolean,
+    preventCollision?: boolean,
   ) {
-    let _layout = layout.value
-    if (config.y === y && config.x === x) return _layout
+    if (config.static) return layout
+    if (config.y === y && config.x === x) return layout
 
     console.log(
       `Moving element ${config.i} to [${String(x)},${String(y)}] from [${config.x},${config.y}]`,
@@ -46,7 +48,7 @@ export function useLayout(props: GridLayoutProps) {
     if (typeof y === 'number') config.y = y
     config.moved = true
 
-    const sortable = _sortLayoutItems(_layout)
+    const sortable = _sortLayoutItems(layout)
 
     // const moveup = typeof y === 'number' && oldY >= y
 
@@ -54,11 +56,11 @@ export function useLayout(props: GridLayoutProps) {
     const collisions = sortable.filter(l => _collides(l, config))
     const hasCollsions = collisions.length > 0
 
-    if (hasCollsions && !props.collision) {
+    if (hasCollsions && !preventCollision) {
       config.x = oldX
       config.y = oldY
       config.moved = false
-      return _layout
+      return layout
     }
 
     collisions.forEach(collision => {
@@ -67,36 +69,74 @@ export function useLayout(props: GridLayoutProps) {
         collision.moved, collision.i)
       if (collision.moved) return
 
-      if (isUserAction) {
-        isUserAction = false
-
-        const fakeItem = {
-          x: collision.x,
-          y: Math.max(config.y - collision.h, 0),
-          w: collision.w,
-          h: collision.h,
-          i: '-1',
-        }
-
-        if (!_getFirstCollision(_layout, fakeItem)) {
-          console.log(
-            `Doing reverse collision on ${collision.i} up to [${fakeItem.x},${fakeItem.y}].`,
-          )
-          _layout = _moveElement(collision, undefined, collision.y, isUserAction)
-          return
-        }
+      if (collision.static) {
+        layout = _moveElementAwayFromCollision(
+          layout,
+          collision,
+          config,
+          isUserAction,
+        )
+      } else {
+        layout = _moveElementAwayFromCollision(
+          layout,
+          config,
+          collision,
+          isUserAction,
+        )
       }
-      _layout = _moveElement(collision, undefined, collision.y + 1, isUserAction)
     })
 
     // config.x = oldX
     // config.y = oldY
-    return _layout
+    return layout
+  }
+
+  function _moveElementAwayFromCollision(
+    layout: GridLayoutConfig,
+    collideWith: GridLayoutItem,
+    itemToMove: GridLayoutItem,
+    isUserAction?: boolean,
+  ) {
+    const preventCollision = collideWith.static
+
+    if (isUserAction) {
+      isUserAction = false
+
+      const fakeItem = {
+        x: itemToMove.x,
+        y: Math.max(collideWith.y - itemToMove.h, 0),
+        w: itemToMove.w,
+        h: itemToMove.h,
+        i: '-1',
+      }
+
+      if (!_getFirstCollision(layout, fakeItem)) {
+        console.log(
+          `Doing reverse collision on ${itemToMove.i} up to [${fakeItem.x},${fakeItem.y}].`,
+        )
+        return _moveElement(
+          layout,
+          itemToMove,
+          undefined,
+          fakeItem.y,
+          isUserAction,
+          preventCollision,
+        )
+      }
+    }
+    return _moveElement(
+      layout,
+      itemToMove,
+      undefined,
+      itemToMove.y + 1,
+      isUserAction,
+      preventCollision,
+    )
   }
 
   function moveTo(item: GridLayoutConfig[number], x?: number, y?: number) {
     const isUserAction = true
-    const _layout = _moveElement(item, x, y, isUserAction)
+    const _layout = _moveElement(layout.value, item, x, y, isUserAction, !props.collision)
     layout.value = _normalize(_layout)
     return layout.value
   }
@@ -156,19 +196,20 @@ export function useLayout(props: GridLayoutProps) {
   }
 
   function _normalize(layout: GridLayoutConfig) {
-    const compareWith: any[] = []
-    layout = _sortLayoutItems(layout)
+    const compareWith: any[] = layout.filter(item => item.static)
+    const sorted = _sortLayoutItems(layout)
     const _layout = new Array(layout.length)
 
-    layout.forEach((item, index) => {
+    sorted.forEach((item, index) => {
       let l = JSON.parse(JSON.stringify(item))
 
       if (!l.static) {
-        l = _normalizeItem(compareWith, l, layout)
+        l = _normalizeItem(compareWith, l, sorted)
         compareWith.push(l)
       }
 
-      _layout[index] = l
+      // 不直接push是为了还原layout的原始顺序
+      _layout[layout.indexOf(sorted[index])] = l
       l.moved = false
     })
     return _layout

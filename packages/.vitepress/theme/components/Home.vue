@@ -6,6 +6,7 @@
     <GridLayout
       v-model="layout"
       :width="width"
+      collision
       style="flex: 1; background: #ddd;"
     >
       <span
@@ -61,7 +62,7 @@ const width = ref(1000)
 
 const layout = ref([
   { i: 'a', x: 0, y: 0, w: 1, h: 2 },
-  { i: 'b', x: 1, y: 0, w: 3, h: 2 },
+  { i: 'b', x: 1, y: 0, w: 3, h: 2, static: true },
   { i: 'c', x: 4, y: 0, w: 1, h: 2 },
 ])
 </script>

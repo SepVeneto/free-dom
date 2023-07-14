@@ -80,13 +80,15 @@ const GridLayout = defineComponent({
       if (!key) return
       const config = layout.getItem(String(key))
       if (!config) return
+      const isDraggable = !config.static && props.isDraggable
+      const isResizable = !config.static && props.isResizable
       return h(GridItem, {
         x: config.x,
         y: config.y,
         width: config.w,
         height: config.h,
-        isDraggable: props.isDraggable,
-        isResizable: props.isResizable,
+        isDraggable,
+        isResizable,
         dragEndFn: (evt, rect) => {
           const { x, y } = rect
           const _layout = layout.moveTo(config, x, y)
