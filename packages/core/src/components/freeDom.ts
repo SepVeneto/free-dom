@@ -1,6 +1,11 @@
-import { useDefaultSlot, useDraggableData, useSceneContext } from '../hooks'
+import {
+  useDefaultSlot,
+  useDraggableData,
+  useResizableData,
+  useSceneContext,
+} from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, reactive, ref, watchEffect } from 'vue-demi'
+import { computed, defineComponent, h, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -25,11 +30,11 @@ export const freeDomProps = {
   },
   width: {
     type: Number,
-    required: true as const,
+    default: undefined,
   },
   height: {
     type: Number,
-    required: true as const,
+    default: undefined,
   },
   lockAspectRatio: Boolean,
   dragStartFn: {
@@ -73,20 +78,10 @@ const freeDom = defineComponent({
   setup(props, { emit }) {
     const { slots: children } = useDefaultSlot()
     const { x, y, create } = useDraggableData(props)
-    const width = ref(props.width)
-    const height = ref(props.height)
+    const { width, height } = useResizableData(props)
     const deltaX = ref(0)
     const deltaY = ref(0)
     const dragData = ref()
-
-    watchEffect(() => {
-      width.value = props.width
-      height.value = props.height
-    })
-    watchEffect(() => {
-      x.value = props.x
-      y.value = props.y
-    })
 
     const context = {
       _rect: reactive({
@@ -127,6 +122,7 @@ const freeDom = defineComponent({
 
       emit('update:x', x.value)
       emit('update:y', y.value)
+      emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
@@ -153,6 +149,7 @@ const freeDom = defineComponent({
     const onResizeStop: ResizeFnCallback = () => {
       emit('update:width', width.value)
       emit('update:height', height.value)
+      emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
     }
 
     return {

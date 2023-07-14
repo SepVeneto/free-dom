@@ -2,10 +2,9 @@ import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
 import { defineComponent, h, inject } from 'vue-demi'
 import FreeDomCore from './freeDomCore'
 import ResizeDomCore from './resizeDomCore'
-import { useDefaultSlot } from '../hooks'
+import { useDefaultSlot, useLayoutItem } from '../hooks'
 
 import { gridLayoutContextKey } from './tokens'
-import { useLayoutItem } from './useLayout'
 
 export type GridItemInfo = {
   x: number

@@ -3,7 +3,7 @@ import { defineComponent, h, provide, ref } from 'vue-demi'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
-import { useLayout } from './useLayout'
+import { useLayout } from '../hooks'
 
 export type GridLayoutItem = {
   i: string | number

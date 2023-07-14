@@ -1,10 +1,17 @@
-import { ref } from 'vue-demi'
+import { ref, watchEffect } from 'vue-demi'
 import type { CoreData } from '../components/freeDomCore'
 import type { FreeDomProps } from '../components/freeDom'
 
 export function useDraggableData(props: FreeDomProps) {
-  const x = ref(props.x)
-  const y = ref(props.y)
+  const x = ref(props.x || props.modelValue.x || 0)
+  const y = ref(props.y || props.modelValue.y || 0)
+
+  watchEffect(() => {
+    x.value = props.x || props.modelValue.x
+  })
+  watchEffect(() => {
+    y.value = props.y || props.modelValue.y
+  })
 
   function create(coreData: CoreData) {
     return {

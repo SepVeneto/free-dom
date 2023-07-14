@@ -1,8 +1,8 @@
 import { computed, ref, shallowRef, watchEffect } from 'vue-demi'
-import type { GridLayoutConfig, GridLayoutItem, GridLayoutProps } from './gridLayout'
-import type { GridItemProps } from './gridItem'
-import type { CoreFnCallback } from './freeDomCore'
-import type { ResizeFnCallback } from './resizeDomCore'
+import type { GridLayoutConfig, GridLayoutItem, GridLayoutProps } from '../components/gridLayout'
+import type { GridItemProps } from '../components/gridItem'
+import type { CoreFnCallback } from '../components/freeDomCore'
+import type { ResizeFnCallback } from '../components/resizeDomCore'
 import { clamp } from '../util'
 
 export function useLayout(props: GridLayoutProps) {
