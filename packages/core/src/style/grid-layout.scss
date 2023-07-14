@@ -1,0 +1,17 @@
+.vv-grid-layout {
+  position: relative;
+  transition: height 0.2s;
+}
+.vv-grid-layout--placeholder {
+  background: var(--vv-grid-layout--placeholder);
+  opacity: var(--vv-grid-layout--placeholder__opacity);
+  transition-duration: 100ms !important;
+  z-index: 2;  
+}
+.vv-grid-layout--item {
+  transition: transform 0.2s;
+  &.vv-grid-layout--item__draggable {
+    transition: none;
+    z-index: 1;
+  }
+}

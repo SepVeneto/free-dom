@@ -164,13 +164,13 @@ export default defineComponent({
   render() {
     const _line = (line: LineType, info: typeof this.lineStatus[LineType]) => h('div', {
       style: { [line.includes('x') ? 'top' : 'left']: info.pos + 'px' },
-      class: [line.includes('x') ? 'free-dom__xline' : 'free-dom__yline', 'free-dom__line'],
+      class: [line.includes('x') ? 'vv-free-dom--xline' : 'vv-free-dom--yline', 'vv-free-dom--line'],
     })
     const _lines = this.lines
       .filter(line => this.lineStatus[line].show)
       .map(line => _line(line, this.lineStatus[line]))
     return h('div', {
-      class: 'free-dom__mark-line',
+      class: 'vv-free-dom--markline',
     }, _lines)
   },
 })

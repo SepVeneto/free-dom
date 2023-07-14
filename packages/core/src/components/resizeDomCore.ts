@@ -132,14 +132,14 @@ const resizeBox = defineComponent({
   },
   render() {
     return h('div', {
-      class: 'resize-box',
+      class: 'vv-resize-dom--box',
     }, [
       this.slots?.map(node => h(node)),
       this.dots.map(dot => h(FreeDomCore, {
         class: [
-          'free-dom--handler',
-          `free-dom--handler__${dot}`,
-          this.dragOpts.disabled && 'free-dom--disabled',
+          'vv-resize-dom--handler',
+          `vv-resize-dom--handler__${dot}`,
+          this.dragOpts.disabled && 'vv-resize-dom--disabled',
         ],
         ...this.dragOpts,
         stopFn: this.handleResize('stop', dot),

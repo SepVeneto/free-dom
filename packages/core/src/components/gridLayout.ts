@@ -132,7 +132,7 @@ const GridLayout = defineComponent({
       if (!activeDrag.value) return null
       const { x, y, width, height } = activeDrag.value
       return h(GridItem, {
-        class: 'grid-layout__placeholder',
+        class: 'vv-grid-layout--placeholder',
         x,
         y,
         width,

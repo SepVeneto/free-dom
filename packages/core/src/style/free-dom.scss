@@ -1,14 +1,14 @@
-.free-dom__line {
-  background: var(--free-dom-line-border);
+.vv-free-dom--line {
+  background: var(--vv-free-dom--line);
   position: absolute;
   z-index: 1000;
 }
-.free-dom__xline {
+.vv-free-dom--xline {
   left: 0;
   width: 100%;
   height: 1px;
 }
-.free-dom__yline {
+.vv-free-dom--yline {
   top: 0;
   width: 1px; 
   height: 100%;

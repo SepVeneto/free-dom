@@ -108,9 +108,9 @@ export const GridItem = defineComponent({
     }
     const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
       class: [
-        dragging.value && 'grid-layout-item--draggable',
-        'grid-layout-item',
-        !props.isDraggable && 'grid-layout-item--disabled',
+        dragging.value && 'vv-grid-layout--item__draggable',
+        'vv-grid-layout--item',
+        !props.isDraggable && 'vv-grid-layout--item__disabled',
       ],
       style: style.value,
       disabled: !props.isDraggable,

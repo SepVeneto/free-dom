@@ -1,7 +1,8 @@
 :root {
-  --free-dom-theme: #4089ef;
-  --free-dom-line: var(--free-dom-theme);
-  --free-dom-dot-border: var(--free-dom-theme);
-  --free-dom-line-border: var(--free-dom-theme);
-  --free-dom-dot-size: 10px;
+  --vv-free-dom--theme: #4089ef;
+  --vv-free-dom--line: var(--vv-free-dom--theme);
+  --free-dom-dot: var(--vv-free-dom--theme);
+
+  --vv-grid-layout--placeholder: crimson;
+  --vv-grid-layout--placeholder__opacity: 0.2;
 }

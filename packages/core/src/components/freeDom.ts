@@ -166,7 +166,7 @@ const freeDom = defineComponent({
       stopFn: this.onResizeStop,
     }, () => this.slots)
     return h(FreeDomCore, {
-      class: 'draggable',
+      class: 'vv-free-dom--draggable',
       style: this.style,
       stopFn: this.onDragStop,
       dragFn: this.onDrag,
