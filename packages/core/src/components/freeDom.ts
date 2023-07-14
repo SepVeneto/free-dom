@@ -108,6 +108,8 @@ const freeDom = defineComponent({
 
     const onDrag: CoreFnCallback = (evt, coreData) => {
       const data = dragData.value = create(coreData)
+      const isValid = sceneContext.check?.({ x: data.x, y: data.y, width: width.value, height: height.value })
+      if (!isValid) return
       x.value = data.x
       y.value = data.y
       deltaX.value = data.deltaX
@@ -134,16 +136,23 @@ const freeDom = defineComponent({
       const axisH = axis[0]
       const axisV = axis[axis.length - 1]
 
-      width.value = w
-      height.value = h
-
+      let _x = x.value
+      let _y = y.value
       // 补偿向上或左缩放时原点的位置
       if (axisH === 'l') {
-        x.value += offsetW
+        _x += offsetW
       }
       if (axisV === 't') {
-        y.value += offsetH
+        _y += offsetH
       }
+
+      const isValid = sceneContext.check?.({ x: _x, y: _y, width: w, height: h })
+      if (!isValid) return
+
+      width.value = w
+      height.value = h
+      x.value = _x
+      y.value = _y
 
       props.resizeFn(evt, { node, width: w, height: h, handle: axis })
       sceneContext?.emit('move')

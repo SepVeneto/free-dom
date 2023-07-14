@@ -7,10 +7,10 @@ export function useDraggableData(props: FreeDomProps) {
   const y = ref(props.y || props.modelValue.y || 0)
 
   watchEffect(() => {
-    x.value = props.x || props.modelValue.x
+    x.value = props.x || props.modelValue.x || 0
   })
   watchEffect(() => {
-    y.value = props.y || props.modelValue.y
+    y.value = props.y || props.modelValue.y || 0
   })
 
   function create(coreData: CoreData) {

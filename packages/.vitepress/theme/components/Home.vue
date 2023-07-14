@@ -23,7 +23,7 @@
       >c</span>
     </GridLayout>
   </div>
-  <FreeScene style="width: 1000px; height: 500px; border: 1px solid black; position: relative;">
+  <FreeScene style="width: 1000px; height: 500px; border: 1px solid black;">
     <FreeDom
       :width="100"
       :height="100"
@@ -32,12 +32,9 @@
       <Test />
     </FreeDom>
     <FreeDom
-      v-model:x="demo.x"
-      v-model:y="demo.y"
-      v-model:width="demo.width"
-      v-model:height="demo.height"
+      v-model="demo"
     >
-      <span>a</span>
+      <pre>{{ demo }}</pre>
     </FreeDom>
   </FreeScene>
 </template>
@@ -55,8 +52,8 @@ defineOptions({
 const demo = ref({
   x: 0,
   y: 0,
-  width: 100,
-  height: 100,
+  w: 100,
+  h: 100,
 })
 const width = ref(1000)
 
