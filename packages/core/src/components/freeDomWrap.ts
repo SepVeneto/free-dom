@@ -22,7 +22,7 @@ export const freeDomWrapProps = {
   scale: [Boolean, Array] as PropType<IDot[] | boolean>,
   diff: {
     type: Number,
-    default: 3,
+    default: 1,
   },
   handler: {
     type: String as PropType<'dot' | 'mark'>,

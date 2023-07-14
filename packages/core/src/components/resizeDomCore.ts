@@ -25,11 +25,11 @@ export const resizeDomCoreProps = {
   },
   width: {
     type: Number,
-    required: true as const,
+    default: undefined,
   },
   height: {
     type: Number,
-    required: true as const,
+    default: undefined,
   },
   scale: {
     type: [Boolean, Array] as PropType<IDot[] | boolean>,
@@ -74,9 +74,9 @@ const resizeDomCore = defineComponent({
       if (!lockAspectRatio) return [width, height]
 
       if (lockAspectRatio) {
-        const ratio = props.width / props.height
-        const deltaW = width - props.width
-        const deltaH = height - props.height
+        const ratio = props.width! / props.height!
+        const deltaW = width - props.width!
+        const deltaH = height - props.height!
 
         if (Math.abs(deltaW) > Math.abs(deltaH * ratio)) {
           height = width / ratio
@@ -108,8 +108,8 @@ const resizeDomCore = defineComponent({
         if (axisH === 'l') deltaX = -deltaX
         if (axisV === 't') deltaY = -deltaY
 
-        let width = props.width + (canDragX ? deltaX : 0)
-        let height = props.height + (canDragY ? deltaY : 0)
+        let width = props.width! + (canDragX ? deltaX : 0)
+        let height = props.height! + (canDragY ? deltaY : 0)
 
         // 这里不加分号会导致语法错误
         ;[width, height] = runConstraints(width, height)

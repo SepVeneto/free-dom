@@ -11,10 +11,10 @@ export function useResizableData(
   const height = ref(props.height || props.modelValue.h || 0)
 
   watchEffect(() => {
-    width.value = props.width || props.modelValue.w || 0
+    width.value = props.width || props.modelValue.w!
   })
   watchEffect(() => {
-    height.value = props.height || props.modelValue.h || 0
+    height.value = props.height || props.modelValue.h!
   })
   onMounted(() => {
     if (!width.value || !height.value) {

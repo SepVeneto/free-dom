@@ -52,8 +52,6 @@ defineOptions({
 const demo = ref({
   x: 0,
   y: 0,
-  w: 100,
-  h: 100,
 })
 const width = ref(1000)
 
