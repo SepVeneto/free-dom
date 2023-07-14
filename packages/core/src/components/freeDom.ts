@@ -4,13 +4,17 @@ import { computed, defineComponent, h, reactive, ref, watchEffect } from 'vue-de
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
-import ResizeDomCore from './resizeDomCore'
+import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
 
 function noop() { /* noop */ }
 
 type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 
 export const freeDomProps = {
+  modelValue: {
+    type: Object as PropType<{ x: number, y: number, w: number, h: number }>,
+    default: () => ({}),
+  },
   x: {
     type: Number,
     default: 0,
@@ -52,15 +56,22 @@ export const freeDomProps = {
     type: Function as PropType<ResizeFnCallback>,
     default: noop,
   },
+  handler: resizeDomCoreProps.handler,
 }
 export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
 
 const freeDom = defineComponent({
   name: 'FreeDom',
   props: freeDomProps,
-  emits: ['update:width', 'update:height', 'update:x', 'update:y'],
+  emits: [
+    'update:width',
+    'update:height',
+    'update:x',
+    'update:y',
+    'update:modelValue',
+  ],
   setup(props, { emit }) {
-    const { slots } = useDefaultSlot()
+    const { slots: children } = useDefaultSlot()
     const { x, y, create } = useDraggableData(props)
     const width = ref(props.width)
     const height = ref(props.height)
@@ -145,7 +156,7 @@ const freeDom = defineComponent({
     }
 
     return {
-      slots,
+      children,
       style,
       w: width,
       h: height,
@@ -164,7 +175,10 @@ const freeDom = defineComponent({
       lockAspectRatio: this.lockAspectRatio,
       resizeFn: this.onResize,
       stopFn: this.onResizeStop,
-    }, () => this.slots)
+    }, {
+      default: () => this.children,
+      handler: this.$slots.handler,
+    })
     return h(FreeDomCore, {
       class: 'vv-free-dom--draggable',
       style: this.style,

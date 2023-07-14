@@ -1,5 +1,5 @@
 import { computed, defineComponent, h, inject, shallowRef } from 'vue-demi'
-import type { PropType } from 'vue-demi'
+import type { ExtractPropTypes, PropType } from 'vue-demi'
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
 import { useDefaultSlot } from '../hooks'
@@ -18,45 +18,48 @@ export type ResizeData = {
 export type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 function noop() { /* noop */ }
 
-const resizeBox = defineComponent({
-  name: 'ResizeDomCore',
-  props: {
-    dragOpts: {
-      type: Object as PropType<Partial<FreeDomCoreProps>>,
-      default: () => ({}),
-    },
-    width: {
-      type: Number,
-      required: true,
-    },
-    height: {
-      type: Number,
-      required: true,
-    },
-    scale: {
-      type: [Boolean, Array] as PropType<IDot[] | boolean>,
-      default: undefined,
-    },
-    handler: {
-      type: String as PropType<'dot' | 'mark'>,
-      default: undefined,
-    },
-    startFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-    stopFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-    resizeFn: {
-      type: Function as PropType<ResizeFnCallback>,
-      default: noop,
-    },
-    lockAspectRatio: Boolean,
+export const resizeDomCoreProps = {
+  dragOpts: {
+    type: Object as PropType<Partial<FreeDomCoreProps>>,
+    default: () => ({}),
   },
-  setup(props) {
-    const { slots } = useDefaultSlot()
+  width: {
+    type: Number,
+    required: true as const,
+  },
+  height: {
+    type: Number,
+    required: true as const,
+  },
+  scale: {
+    type: [Boolean, Array] as PropType<IDot[] | boolean>,
+    default: undefined,
+  },
+  handler: {
+    type: String as PropType<'dot' | 'mark'>,
+    default: undefined,
+  },
+  startFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+  stopFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+  resizeFn: {
+    type: Function as PropType<ResizeFnCallback>,
+    default: noop,
+  },
+  lockAspectRatio: Boolean,
+}
+export type ResizeDomCoreProps = ExtractPropTypes<typeof resizeDomCoreProps>
+
+const resizeDomCore = defineComponent({
+  name: 'ResizeDomCore',
+  props: resizeDomCoreProps,
+  setup(props, { slots }) {
+    const { slots: _slots } = useDefaultSlot()
     const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
     const dots = computed(() => {
       const _dots = SceneContext && Array.isArray(SceneContext.scale)
@@ -123,31 +126,42 @@ const resizeBox = defineComponent({
         if (handleName === 'stop') lastRect.value = undefined
       }
     }
+    function renderResizehandler(axis: IDot) {
+      if (!props.handler && !slots.handler) {
+        return () => h('i', {
+          class: [
+            'vv-resize-dom--handler',
+            `vv-resize-dom--handler__${axis}`,
+          ],
+        })
+      }
+
+      return () => slots.handler?.(axis)
+    }
 
     return {
       dots,
-      slots,
+      children: _slots,
       handleResize,
+      renderResizehandler,
     }
   },
   render() {
     return h('div', {
       class: 'vv-resize-dom--box',
     }, [
-      this.slots?.map(node => h(node)),
+      this.children?.map(node => h(node)),
       this.dots.map(dot => h(FreeDomCore, {
         class: [
-          'vv-resize-dom--handler',
-          `vv-resize-dom--handler__${dot}`,
           this.dragOpts.disabled && 'vv-resize-dom--disabled',
         ],
         ...this.dragOpts,
         stopFn: this.handleResize('stop', dot),
         startFn: this.handleResize('start', dot),
         dragFn: this.handleResize('resize', dot),
-      }, () => h('i'))),
+      }, this.renderResizehandler(dot))),
     ])
   },
 })
 
-export default resizeBox
+export default resizeDomCore
