@@ -17,7 +17,7 @@ type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 
 export const freeDomProps = {
   modelValue: {
-    type: Object as PropType<{ x: number, y: number, w: number, h: number }>,
+    type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
   },
   x: {
@@ -76,12 +76,14 @@ const freeDom = defineComponent({
     'update:modelValue',
   ],
   setup(props, { emit }) {
-    const { slots: children } = useDefaultSlot()
-    const { x, y, create } = useDraggableData(props)
-    const { width, height } = useResizableData(props)
     const deltaX = ref(0)
     const deltaY = ref(0)
     const dragData = ref()
+    const domRef = ref<InstanceType<typeof FreeDomCore>>()
+
+    const { slots: children } = useDefaultSlot()
+    const { x, y, create } = useDraggableData(props)
+    const { width, height } = useResizableData(props, domRef)
 
     const context = {
       _rect: reactive({
@@ -153,6 +155,7 @@ const freeDom = defineComponent({
     }
 
     return {
+      domRef,
       children,
       style,
       w: width,
@@ -177,6 +180,7 @@ const freeDom = defineComponent({
       handler: this.$slots.handler,
     })
     return h(FreeDomCore, {
+      ref: 'domRef',
       class: 'vv-free-dom--draggable',
       style: this.style,
       stopFn: this.onDragStop,
