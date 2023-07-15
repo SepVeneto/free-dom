@@ -10,6 +10,7 @@ import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
+import { clamp } from '../util'
 
 function noop() { /* noop */ }
 
@@ -128,6 +129,18 @@ const freeDom = defineComponent({
       sceneContext.emit('move')
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
+      const newPos = {
+        x: x.value,
+        y: y.value,
+        width: width.value,
+        height: height.value,
+      }
+      const isValid = sceneContext.check?.(newPos)
+      if (!isValid) {
+        x.value = clamp(x.value, 0, sceneContext.width)
+        y.value = clamp(y.value, 0, sceneContext.height)
+      }
+
       handleDragStop(evt, coreData)
 
       sceneContext.emit('moveup')
@@ -166,9 +179,16 @@ const freeDom = defineComponent({
       sceneContext?.emit('move')
     }
     const onResizeStop: ResizeFnCallback = () => {
+      const isValid = sceneContext.check?.({ x: x.value, y: y.value, width: width.value, height: height.value })
+      if (!isValid) {
+        x.value = clamp(x.value, 0, sceneContext.width)
+        y.value = clamp(y.value, 0, sceneContext.height)
+      }
+
       emit('update:width', width.value)
       emit('update:height', height.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
+      sceneContext.emit('moveup')
     }
 
     return {

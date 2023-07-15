@@ -20,5 +20,7 @@ export function useSceneContext(context: INodeInfo) {
   return {
     emit: (name: string) => SceneContext?.emit(name, uuid),
     check,
+    width: SceneContext?.width,
+    height: SceneContext?.height,
   }
 }

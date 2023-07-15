@@ -93,7 +93,6 @@ const resizeDomCore = defineComponent({
         }
       }
 
-      console.log(width, props.minWidth)
       width = Math.max(width, props.minWidth)
       height = Math.max(height, props.minHeight)
       return [width, height]
