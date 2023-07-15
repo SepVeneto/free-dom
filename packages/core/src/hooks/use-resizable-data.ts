@@ -17,26 +17,25 @@ export function useResizableData(
     height.value = getHeight()
   })
   onMounted(() => {
-    if (!width.value || !height.value) {
-      const [_width, _height] = syncSize()
-      width.value = _width
-      height.value = _height
-    }
+    syncSize()
   })
   function getWidth() {
-    return props.width || props.modelValue.w || props.minWidth
+    return props.width || props.modelValue.w
   }
   function getHeight() {
-    return props.height || props.modelValue.h || props.minHeight
+    return props.height || props.modelValue.h
   }
   function syncSize() {
+    if ((props.width && props.height) || (props.modelValue.w && props.modelValue.h)) return
     if (!domRef.value) return [0, 0]
-    const { width, height } = domRef.value.$el.getBoundingClientRect()
-    return [width, height]
+    const { width: w, height: h } = domRef.value.$el.getBoundingClientRect()
+    width.value = Math.max(w, props.minWidth)
+    height.value = Math.max(h, props.minHeight)
   }
 
   return {
     width,
     height,
+    syncSize,
   }
 }

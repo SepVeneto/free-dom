@@ -78,7 +78,7 @@ const freeDom = defineComponent({
     'update:y',
     'update:modelValue',
   ],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
 
     const { slots: children } = useDefaultSlot()
@@ -91,7 +91,7 @@ const freeDom = defineComponent({
       handleDrag,
       handleDragStop,
     } = useDraggableData(props)
-    const { width, height } = useResizableData(props, domRef)
+    const { width, height, syncSize } = useResizableData(props, domRef)
 
     const context = {
       _rect: reactive({
@@ -151,7 +151,9 @@ const freeDom = defineComponent({
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
+      // @ts-expect-error: execute after mounted
       const offsetW = -(w - width.value)
+      // @ts-expect-error: execute after mounted
       const offsetH = -(h - height.value)
 
       const axisH = axis[0]
@@ -190,6 +192,10 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
     }
+
+    expose({
+      syncSize,
+    })
 
     return {
       domRef,
