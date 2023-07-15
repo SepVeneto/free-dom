@@ -1,11 +1,9 @@
-import type { ExtractPropTypes, PropType } from 'vue-demi'
+import type { ExtractPropTypes } from 'vue-demi'
 import { defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
 import { SceneToken } from '../util'
 import markLine from './markLine'
 import { useEventBus } from '../hooks'
-
-const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
-type IDot = typeof Dots[number]
+import { freeDomProps } from './freeDom'
 
 export const freeDomWrapProps = {
   width: {
@@ -16,29 +14,20 @@ export const freeDomWrapProps = {
     type: Number,
     default: undefined,
   },
-  absolute: {
-    type: Boolean,
-    default: undefined,
-  },
-  preview: Boolean,
-  move: Boolean,
-  scale: [Boolean, Array] as PropType<IDot[] | boolean>,
   diff: {
     type: Number,
     default: 3,
   },
-  handler: {
-    type: String as PropType<'dot' | 'mark'>,
-    default: undefined,
-  },
-  diagonal: {
+  showLine: {
     type: Boolean,
-    default: undefined,
+    defautl: true,
   },
-  grid: {
-    type: Object as PropType<[number, number]>,
-    default: undefined,
-  },
+  minWidth: freeDomProps.minWidth,
+  minHeight: freeDomProps.minHeight,
+  lockAspectRatio: freeDomProps.lockAspectRatio,
+  disabledDrag: freeDomProps.disabledDrag,
+  disabledResize: freeDomProps.disabledResize,
+  scale: freeDomProps.scale,
 }
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>

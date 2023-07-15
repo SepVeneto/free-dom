@@ -62,9 +62,11 @@ export const freeDomProps = {
     type: Function as PropType<ResizeFnCallback>,
     default: noop,
   },
-  handler: resizeDomCoreProps.handler,
   minWidth: resizeDomCoreProps.minWidth,
   minHeight: resizeDomCoreProps.minHeight,
+  disabledDrag: Boolean,
+  disabledResize: Boolean,
+  scale: resizeDomCoreProps.scale,
 }
 export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
 
@@ -78,7 +80,7 @@ const freeDom = defineComponent({
     'update:y',
     'update:modelValue',
   ],
-  setup(props, { emit, expose }) {
+  setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
 
     const { slots: children } = useDefaultSlot()
@@ -105,7 +107,7 @@ const freeDom = defineComponent({
       trigger: () => { /* TODO */ },
     }
 
-    const sceneContext = useSceneContext(context)
+    const sceneContext = useSceneContext(context, props)
 
     const style = computed(() => ({
       position: 'absolute',
@@ -193,44 +195,45 @@ const freeDom = defineComponent({
       sceneContext.emit('moveup')
     }
 
+    const resizeNode = () => h(ResizeDomCore, {
+      width: width.value,
+      height: height.value,
+      lockAspectRatio: sceneContext.lockAspectRatio.value,
+      dragOpts: { disabled: sceneContext.disabledResize.value },
+      resizeFn: onResize,
+      stopFn: onResizeStop,
+      minHeight: sceneContext.minHeight.value,
+      minWidth: sceneContext.minWidth.value,
+    }, {
+      default: () => children.value,
+      handler: slots.handler,
+    })
+
     expose({
       syncSize,
     })
 
     return {
       domRef,
-      children,
       style,
-      w: width,
-      h: height,
-      onDrag,
       onDragStop,
-      onResize,
-      onResizeStop,
+      onDrag,
+      resizeNode,
+      disabled: sceneContext.disabledDrag,
     }
   },
   render() {
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
-    const resizeNode = () => h(ResizeDomCore, {
-      width: this.w,
-      height: this.h,
-      lockAspectRatio: this.lockAspectRatio,
-      resizeFn: this.onResize,
-      stopFn: this.onResizeStop,
-      minHeight: this.minHeight,
-      minWidth: this.minWidth,
-    }, {
-      default: () => this.children,
-      handler: this.$slots.handler,
-    })
+
     return h(FreeDomCore, {
       ref: 'domRef',
       class: 'vv-free-dom--draggable',
       style: this.style,
       stopFn: this.onDragStop,
       dragFn: this.onDrag,
-    }, resizeNode)
+      disabled: this.disabled,
+    }, () => this.resizeNode())
   },
 })
 

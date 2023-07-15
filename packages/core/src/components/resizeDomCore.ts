@@ -1,7 +1,5 @@
-import { computed, defineComponent, h, inject, shallowRef } from 'vue-demi'
+import { computed, defineComponent, h, shallowRef } from 'vue-demi'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import type { SceneTokenContext } from '../util'
-import { SceneToken } from '../util'
 import { useDefaultSlot } from '../hooks'
 import FreeDomCore from './freeDomCore'
 import type { CoreFnCallback, FreeDomCoreProps } from './freeDomCore'
@@ -35,10 +33,6 @@ export const resizeDomCoreProps = {
     type: [Boolean, Array] as PropType<IDot[] | boolean>,
     default: undefined,
   },
-  handler: {
-    type: String as PropType<'dot' | 'mark'>,
-    default: undefined,
-  },
   startFn: {
     type: Function as PropType<ResizeFnCallback>,
     default: noop,
@@ -68,11 +62,8 @@ const resizeDomCore = defineComponent({
   props: resizeDomCoreProps,
   setup(props, { slots }) {
     const { slots: _slots } = useDefaultSlot()
-    const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
     const dots = computed(() => {
-      const _dots = SceneContext && Array.isArray(SceneContext.scale)
-        ? SceneContext.scale
-        : props.scale
+      const _dots = props.scale
       return Array.isArray(_dots) ? _dots : Dots
     })
     const lastRect = shallowRef<DOMRect | undefined>()
@@ -137,7 +128,7 @@ const resizeDomCore = defineComponent({
       }
     }
     function renderResizehandler(axis: IDot) {
-      if (!props.handler && !slots.handler) {
+      if (!slots.handler) {
         return () => h('i', {
           class: [
             'vv-resize-dom--handler',
