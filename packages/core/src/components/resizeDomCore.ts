@@ -25,11 +25,11 @@ export const resizeDomCoreProps = {
   },
   width: {
     type: Number,
-    default: undefined,
+    default: 0,
   },
   height: {
     type: Number,
-    default: undefined,
+    default: 0,
   },
   scale: {
     type: [Boolean, Array] as PropType<IDot[] | boolean>,
@@ -51,6 +51,14 @@ export const resizeDomCoreProps = {
     type: Function as PropType<ResizeFnCallback>,
     default: noop,
   },
+  minWidth: {
+    type: Number,
+    default: 50,
+  },
+  minHeight: {
+    type: Number,
+    default: 50,
+  },
   lockAspectRatio: Boolean,
 }
 export type ResizeDomCoreProps = ExtractPropTypes<typeof resizeDomCoreProps>
@@ -71,12 +79,12 @@ const resizeDomCore = defineComponent({
 
     function runConstraints(width: number, height: number) {
       const { lockAspectRatio } = props
-      if (!lockAspectRatio) return [width, height]
+      if (!props.minHeight && !props.minWidth && !lockAspectRatio) return [width, height]
 
       if (lockAspectRatio) {
-        const ratio = props.width! / props.height!
-        const deltaW = width - props.width!
-        const deltaH = height - props.height!
+        const ratio = props.width / props.height
+        const deltaW = width - props.width
+        const deltaH = height - props.height
 
         if (Math.abs(deltaW) > Math.abs(deltaH * ratio)) {
           height = width / ratio
@@ -85,6 +93,9 @@ const resizeDomCore = defineComponent({
         }
       }
 
+      console.log(width, props.minWidth)
+      width = Math.max(width, props.minWidth)
+      height = Math.max(height, props.minHeight)
       return [width, height]
     }
 
@@ -108,8 +119,8 @@ const resizeDomCore = defineComponent({
         if (axisH === 'l') deltaX = -deltaX
         if (axisV === 't') deltaY = -deltaY
 
-        let width = props.width! + (canDragX ? deltaX : 0)
-        let height = props.height! + (canDragY ? deltaY : 0)
+        let width = props.width + (canDragX ? deltaX : 0)
+        let height = props.height + (canDragY ? deltaY : 0)
 
         // 这里不加分号会导致语法错误
         ;[width, height] = runConstraints(width, height)

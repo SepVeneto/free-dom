@@ -62,6 +62,8 @@ export const freeDomProps = {
     default: noop,
   },
   handler: resizeDomCoreProps.handler,
+  minWidth: resizeDomCoreProps.minWidth,
+  minHeight: resizeDomCoreProps.minHeight,
 }
 export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
 
@@ -76,13 +78,18 @@ const freeDom = defineComponent({
     'update:modelValue',
   ],
   setup(props, { emit }) {
-    const deltaX = ref(0)
-    const deltaY = ref(0)
-    const dragData = ref()
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
 
     const { slots: children } = useDefaultSlot()
-    const { x, y, create } = useDraggableData(props)
+    const {
+      x,
+      y,
+      deltaX,
+      deltaY,
+      create,
+      handleDrag,
+      handleDragStop,
+    } = useDraggableData(props)
     const { width, height } = useResizableData(props, domRef)
 
     const context = {
@@ -107,22 +114,21 @@ const freeDom = defineComponent({
     }))
 
     const onDrag: CoreFnCallback = (evt, coreData) => {
-      const data = dragData.value = create(coreData)
-      const isValid = sceneContext.check?.({ x: data.x, y: data.y, width: width.value, height: height.value })
+      const data = create(coreData)
+      const newPos = {
+        x: data.x,
+        y: data.y,
+        width: width.value,
+        height: height.value,
+      }
+      const isValid = sceneContext.check?.(newPos)
       if (!isValid) return
-      x.value = data.x
-      y.value = data.y
-      deltaX.value = data.deltaX
-      deltaY.value = data.deltaY
 
-      props.dargFn(evt, data)
-      sceneContext?.emit('move')
+      handleDrag(evt, data)
+      sceneContext.emit('move')
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
-      const data = dragData.value = create(coreData)
-
-      props.dragStopFn(evt, data)
-      sceneContext?.emit('moveup')
+      handleDragStop(evt, coreData)
 
       emit('update:x', x.value)
       emit('update:y', y.value)
@@ -184,6 +190,8 @@ const freeDom = defineComponent({
       lockAspectRatio: this.lockAspectRatio,
       resizeFn: this.onResize,
       stopFn: this.onResizeStop,
+      minHeight: this.minHeight,
+      minWidth: this.minWidth,
     }, {
       default: () => this.children,
       handler: this.$slots.handler,

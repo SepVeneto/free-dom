@@ -7,14 +7,14 @@ export function useResizableData(
   props: FreeDomProps,
   domRef: Ref<InstanceType<typeof FreeDomCore> | undefined>,
 ) {
-  const width = ref(props.width || props.modelValue.w || 0)
-  const height = ref(props.height || props.modelValue.h || 0)
+  const width = ref(getWidth())
+  const height = ref(getHeight())
 
   watchEffect(() => {
-    width.value = props.width || props.modelValue.w!
+    width.value = getWidth()
   })
   watchEffect(() => {
-    height.value = props.height || props.modelValue.h!
+    height.value = getHeight()
   })
   onMounted(() => {
     if (!width.value || !height.value) {
@@ -23,6 +23,12 @@ export function useResizableData(
       height.value = _height
     }
   })
+  function getWidth() {
+    return props.width || props.modelValue.w || props.minWidth
+  }
+  function getHeight() {
+    return props.height || props.modelValue.h || props.minHeight
+  }
   function syncSize() {
     if (!domRef.value) return [0, 0]
     const { width, height } = domRef.value.$el.getBoundingClientRect()
