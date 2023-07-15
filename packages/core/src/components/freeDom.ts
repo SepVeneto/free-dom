@@ -130,6 +130,8 @@ const freeDom = defineComponent({
     const onDragStop: CoreFnCallback = (evt, coreData) => {
       handleDragStop(evt, coreData)
 
+      sceneContext.emit('moveup')
+
       emit('update:x', x.value)
       emit('update:y', y.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
