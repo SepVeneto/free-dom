@@ -18,6 +18,8 @@ export function useLayout(props: GridLayoutProps) {
   const margin = computed(() => props.margin)
   const maxRows = computed(() => props.maxRows)
   const containerPadding = computed(() => props.containerPadding)
+  const minW = computed(() => props.minW)
+  const minH = computed(() => props.minH)
 
   function getItem(key: string) {
     return layout.value.find(item => item.i === key)
@@ -301,6 +303,8 @@ export function useLayout(props: GridLayoutProps) {
     margin,
     maxRows,
     containerPadding,
+    minW,
+    minH,
 
     calContainerHeight,
     moveTo,
@@ -344,6 +348,14 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
     } else {
       return Math.round(resizing.value.height)
     }
+  })
+  const minWidth = computed(() => {
+    const minW = layout.minW.value
+    return Math.round(cellWidth.value * minW + Math.max(0, minW - 1) * margin.value[0])
+  })
+  const minHeight = computed(() => {
+    const minH = layout.minH.value
+    return Math.round(rowHeight.value * minH + Math.max(0, minH - 1) * margin.value[1])
   })
 
   const style = computed(() => {
@@ -438,6 +450,8 @@ export function useLayoutItem(props: GridItemProps, layout: ReturnType<typeof us
     dragging,
     resizing,
     style,
+    minWidth,
+    minHeight,
 
     onDragStart,
     onDrag,

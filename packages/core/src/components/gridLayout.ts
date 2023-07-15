@@ -35,6 +35,14 @@ const gridLayoutProps = {
     type: Number,
     default: Infinity,
   },
+  minW: {
+    type: Number,
+    default: 1,
+  },
+  minH: {
+    type: Number,
+    default: 1,
+  },
   rowHeight: {
     type: Number,
     default: 150,

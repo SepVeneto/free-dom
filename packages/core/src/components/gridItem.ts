@@ -82,6 +82,8 @@ export const GridItem = defineComponent({
       height,
       dragging,
       style,
+      minWidth,
+      minHeight,
 
       onDragStart,
       onDrag,
@@ -100,6 +102,8 @@ export const GridItem = defineComponent({
         dragOpts: {
           disabled: !props.isResizable,
         },
+        minWidth: minWidth.value,
+        minHeight: minHeight.value,
         startFn: onResizeStart,
         resizeFn: onResize,
         stopFn: onResizeStop,
