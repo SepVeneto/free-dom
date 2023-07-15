@@ -1,9 +1,8 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { defineComponent, h, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
+import { defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
 import { SceneToken } from '../util'
 import markLine from './markLine'
 import { useEventBus } from '../hooks'
-import { onMounted, watchEffect } from 'vue'
 
 const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]

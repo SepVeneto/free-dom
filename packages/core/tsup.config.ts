@@ -1,5 +1,5 @@
-import { defineConfig } from 'tsup';
-import sassPlugin from 'esbuild-plugin-sass';
+import { defineConfig } from 'tsup'
+import sassPlugin from 'esbuild-plugin-sass'
 
 export default defineConfig({
   entry: ['./src/*.ts'],
@@ -7,4 +7,4 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   dts: true,
   esbuildPlugins: [sassPlugin()],
-});
+})

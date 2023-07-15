@@ -1,7 +1,6 @@
-import type { PropType } from 'vue-demi'
+import type { ExtractPropTypes, PropType } from 'vue-demi'
 import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
-import type { ExtractPropTypes } from 'vue'
 
 function noop() { /** pass */ }
 
