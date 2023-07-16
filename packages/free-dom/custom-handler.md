@@ -46,6 +46,7 @@ const pos = ref({x: 0, y: 0})
   &--t {
     top: -4px;
     left: 50%;
+    margin-left: -4px;
     cursor: ns-resize;
   }
   &--l {
@@ -61,6 +62,7 @@ const pos = ref({x: 0, y: 0})
   &--b {
     left: 50%;
     bottom: -4px;
+    margin-left: -4px;
     cursor: ns-resize;
   }
   &--lt {

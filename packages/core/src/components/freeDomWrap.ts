@@ -1,5 +1,5 @@
 import type { ExtractPropTypes } from 'vue-demi'
-import { defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
+import { computed, defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
 import { SceneToken } from '../util'
 import markLine from './markLine'
 import { useEventBus } from '../hooks'
@@ -16,7 +16,7 @@ export const freeDomWrapProps = {
   },
   diff: {
     type: Number,
-    default: 3,
+    default: 2,
   },
   showLine: {
     type: Boolean,
@@ -98,9 +98,14 @@ export const FreeDomWrap = defineComponent({
         emit: eventBus.emit,
       }),
     )
+    const style = computed(() => ({
+      width: `${props.width}px`,
+      height: `${props.height}px`,
+    }))
 
     return {
       rectRef,
+      style,
     }
   },
   render() {
@@ -112,6 +117,7 @@ export const FreeDomWrap = defineComponent({
     return h('section', {
       ref: 'rectRef',
       class: 'vv-free-dom--scene',
+      style: this.style,
     }, [defaultSlot, h(markLine)])
   },
 })

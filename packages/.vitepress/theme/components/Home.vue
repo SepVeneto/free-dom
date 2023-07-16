@@ -34,7 +34,7 @@
     <FreeDom
       v-model="demo"
     >
-      <pre>{{ demo }}</pre>
+      <pre style="font-size: 32px;">{{ demo }}</pre>
     </FreeDom>
   </FreeScene>
 </template>

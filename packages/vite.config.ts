@@ -9,6 +9,17 @@ export default defineConfig({
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
       transformer: 'vue3',
     }),
+    {
+      name: 'transform-markdown',
+      enforce: 'pre',
+      transform(code, id) {
+        if (!id.endsWith('.md') || id.endsWith('index.md')) return
+        const exampleId = id.split('/').splice(-2)[0]
+        code += `\n<script setup>const demos = import.meta.globEager('../examples/${exampleId}/*.vue'); console.log('demos', demos);</script>`
+        console.log(code)
+        return code
+      },
+    },
   ],
   resolve: {
     alias: {

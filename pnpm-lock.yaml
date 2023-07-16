@@ -10,6 +10,9 @@ importers:
       '@vueuse/core':
         specifier: ^9.2.0
         version: 9.11.1(vue@3.3.4)
+      markdown-it-container:
+        specifier: ^3.0.0
+        version: 3.0.0
       vue-demi:
         specifier: '*'
         version: 0.13.11(vue@3.3.4)
@@ -34,7 +37,7 @@ importers:
         version: 3.2.5(@types/node@18.11.18)(sass@1.57.1)
       vitepress:
         specifier: 1.0.0-beta.5
-        version: 1.0.0-beta.5(@types/node@18.11.18)(sass@1.57.1)(search-insights@2.7.0)
+        version: 1.0.0-beta.5(@types/node@18.11.18)(sass@1.57.1)
       vitest:
         specifier: ^0.23.4
         version: 0.23.4(sass@1.57.1)
@@ -75,10 +78,10 @@ importers:
 
 packages:
 
-  /@algolia/autocomplete-core@1.9.3(algoliasearch@4.18.0)(search-insights@2.7.0):
+  /@algolia/autocomplete-core@1.9.3(algoliasearch@4.18.0):
     resolution: {integrity: sha512-009HdfugtGCdC4JdXUbVJClA0q0zh24yyePn+KUGk3rP7j8FEe/m5Yo/z65gn6nP/cM39PxpzqKrL7A6fP6PPw==}
     dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.9.3(algoliasearch@4.18.0)(search-insights@2.7.0)
+      '@algolia/autocomplete-plugin-algolia-insights': 1.9.3(algoliasearch@4.18.0)
       '@algolia/autocomplete-shared': 1.9.3(algoliasearch@4.18.0)
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -86,13 +89,12 @@ packages:
       - search-insights
     dev: true
 
-  /@algolia/autocomplete-plugin-algolia-insights@1.9.3(algoliasearch@4.18.0)(search-insights@2.7.0):
+  /@algolia/autocomplete-plugin-algolia-insights@1.9.3(algoliasearch@4.18.0):
     resolution: {integrity: sha512-a/yTUkcO/Vyy+JffmAnTWbr4/90cLzw+CC3bRbhnULr/EM0fGNvM13oQQ14f2moLMcVDyAx/leczLlAOovhSZg==}
     peerDependencies:
       search-insights: '>= 1 < 3'
     dependencies:
       '@algolia/autocomplete-shared': 1.9.3(algoliasearch@4.18.0)
-      search-insights: 2.7.0
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
@@ -260,10 +262,10 @@ packages:
     resolution: {integrity: sha512-2Pu9HDg/uP/IT10rbQ+4OrTQuxIWdKVUEdcw9/w7kZJv9NeHS6skJx1xuRiFyoGKwAzcHXnLp7csE99sj+O1YA==}
     dev: true
 
-  /@docsearch/js@3.5.1(search-insights@2.7.0):
+  /@docsearch/js@3.5.1:
     resolution: {integrity: sha512-EXi8de5njxgP6TV3N9ytnGRLG9zmBNTEZjR4VzwPcpPLbZxxTLG2gaFyJyKiFVQxHW/DPlMrDJA3qoRRGEkgZw==}
     dependencies:
-      '@docsearch/react': 3.5.1(search-insights@2.7.0)
+      '@docsearch/react': 3.5.1
       preact: 10.16.0
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -273,7 +275,7 @@ packages:
       - search-insights
     dev: true
 
-  /@docsearch/react@3.5.1(search-insights@2.7.0):
+  /@docsearch/react@3.5.1:
     resolution: {integrity: sha512-t5mEODdLzZq4PTFAm/dvqcvZFdPDMdfPE5rJS5SC8OUq9mPzxEy6b+9THIqNM9P0ocCb4UC5jqBrxKclnuIbzQ==}
     peerDependencies:
       '@types/react': '>= 16.8.0 < 19.0.0'
@@ -287,7 +289,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      '@algolia/autocomplete-core': 1.9.3(algoliasearch@4.18.0)(search-insights@2.7.0)
+      '@algolia/autocomplete-core': 1.9.3(algoliasearch@4.18.0)
       '@algolia/autocomplete-preset-algolia': 1.9.3(algoliasearch@4.18.0)
       '@docsearch/css': 3.5.1
       algoliasearch: 4.18.0
@@ -674,7 +676,7 @@ packages:
     dependencies:
       '@sepveneto/eslint-config-vue': 0.9.0(@typescript-eslint/parser@5.60.1)(eslint@8.32.0)(typescript@4.9.5)
       '@typescript-eslint/eslint-plugin': 5.60.1(@typescript-eslint/parser@5.60.1)(eslint@8.32.0)(typescript@4.9.5)
-      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@5.0.2)
+      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
       eslint: 8.32.0
       eslint-plugin-eslint-comments: 3.2.0(eslint@8.32.0)
       eslint-plugin-html: 7.1.0
@@ -752,7 +754,7 @@ packages:
         optional: true
     dependencies:
       '@eslint-community/regexpp': 4.5.1
-      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@5.0.2)
+      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
       '@typescript-eslint/scope-manager': 5.60.1
       '@typescript-eslint/type-utils': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
       '@typescript-eslint/utils': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
@@ -784,26 +786,6 @@ packages:
       debug: 4.3.4
       eslint: 8.32.0
       typescript: 4.9.5
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/parser@5.60.1(eslint@8.32.0)(typescript@5.0.2):
-    resolution: {integrity: sha512-pHWlc3alg2oSMGwsU/Is8hbm3XFbcrb6P5wIxcQW9NsYBfnrubl/GhVVD/Jm/t8HXhA2WncoIRfBtnCgRGV96Q==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/scope-manager': 5.60.1
-      '@typescript-eslint/types': 5.60.1
-      '@typescript-eslint/typescript-estree': 5.60.1(typescript@5.0.2)
-      debug: 4.3.4
-      eslint: 8.32.0
-      typescript: 5.0.2
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -858,27 +840,6 @@ packages:
       semver: 7.3.8
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/typescript-estree@5.60.1(typescript@5.0.2):
-    resolution: {integrity: sha512-hkX70J9+2M2ZT6fhti5Q2FoU9zb+GeZK2SLP1WZlvUDqdMbEKhexZODD1WodNRyO8eS+4nScvT0dts8IdaBzfw==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/types': 5.60.1
-      '@typescript-eslint/visitor-keys': 5.60.1
-      debug: 4.3.4
-      globby: 11.1.0
-      is-glob: 4.0.3
-      semver: 7.3.8
-      tsutils: 3.21.0(typescript@5.0.2)
-      typescript: 5.0.2
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -1988,7 +1949,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@5.0.2)
+      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -2034,7 +1995,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@5.0.2)
+      '@typescript-eslint/parser': 5.60.1(eslint@8.32.0)(typescript@4.9.5)
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -2903,6 +2864,10 @@ packages:
     resolution: {integrity: sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==}
     dev: true
 
+  /markdown-it-container@3.0.0:
+    resolution: {integrity: sha512-y6oKTq4BB9OQuY/KLfk/O3ysFhB3IMYoIWhGJEidXt1NQFocFK2sA2t0NYZAMyMShAGL6x5OPIbrmXPIqaN9rw==}
+    dev: false
+
   /mdn-data@2.0.14:
     resolution: {integrity: sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow==}
     dev: true
@@ -3350,11 +3315,6 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /search-insights@2.7.0:
-    resolution: {integrity: sha512-GLbVaGgzYEKMvuJbHRhLi1qoBFnjXZGZ6l4LxOYPCp4lI2jDRB3jPU9/XNhMwv6kvnA9slTreq6pvK+b3o3aqg==}
-    engines: {node: '>=8.16.0'}
-    dev: true
-
   /semver@5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
@@ -3670,16 +3630,6 @@ packages:
       typescript: 4.9.5
     dev: false
 
-  /tsutils@3.21.0(typescript@5.0.2):
-    resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
-    engines: {node: '>= 6'}
-    peerDependencies:
-      typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
-    dependencies:
-      tslib: 1.14.1
-      typescript: 5.0.2
-    dev: false
-
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -3723,6 +3673,7 @@ packages:
     resolution: {integrity: sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==}
     engines: {node: '>=12.20'}
     hasBin: true
+    dev: true
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
@@ -3866,12 +3817,12 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitepress@1.0.0-beta.5(@types/node@18.11.18)(sass@1.57.1)(search-insights@2.7.0):
+  /vitepress@1.0.0-beta.5(@types/node@18.11.18)(sass@1.57.1):
     resolution: {integrity: sha512-/RjqqRsSEKkzF6HhK5e5Ij+bZ7ETb9jNCRRgIMm10gJ+ZLC3D1OqkE465lEqCeJUgt2HZ6jmWjDqIBfrJSpv7w==}
     hasBin: true
     dependencies:
       '@docsearch/css': 3.5.1
-      '@docsearch/js': 3.5.1(search-insights@2.7.0)
+      '@docsearch/js': 3.5.1
       '@vitejs/plugin-vue': 4.2.3(vite@4.4.0-beta.3)(vue@3.3.4)
       '@vue/devtools-api': 6.5.0
       '@vueuse/core': 10.2.1(vue@3.3.4)

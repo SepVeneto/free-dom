@@ -16,6 +16,7 @@
   "dependencies": {
     "@sepveneto/eslint-config": "^0.9.0",
     "@vueuse/core": "^9.2.0",
+    "markdown-it-container": "^3.0.0",
     "vue-demi": "*"
   },
   "devDependencies": {
