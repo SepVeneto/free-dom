@@ -31,7 +31,7 @@ export function useResizableData(
 
     // 确保css样式表解析完成重新渲染，同时字体文件加载完成
     await nextTick()
-    await document.fonts.ready
+    // await document.fonts.ready
 
     const { width: w, height: h } = window.getComputedStyle(domRef.value.$el)
     width.value = Math.max(Math.ceil(parseFloat(w)), props.minWidth)
