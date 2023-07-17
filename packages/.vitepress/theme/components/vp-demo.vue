@@ -3,19 +3,15 @@
     <component
       :is="demo"
       v-if="demo"
+      style="border: 1px solid black; width: 100%; height: 500px;"
     />
-    <div class="language-vue">
-      <button
-        title="Copy Code"
-        class="copy"
-      /><span class="lang">vue</span>
-      {{ decodeURIComponent(source) }}
-    </div>
+    <slot name="source" />
   </ClientOnly>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 const props = defineProps<{
   source: string,
   demos: Record<string, any>,

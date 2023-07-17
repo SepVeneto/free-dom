@@ -15,8 +15,7 @@ export default defineConfig({
       transform(code, id) {
         if (!id.endsWith('.md') || id.endsWith('index.md')) return
         const exampleId = id.split('/').splice(-2)[0]
-        code += `\n<script setup>const demos = import.meta.globEager('../examples/${exampleId}/*.vue'); console.log('demos', demos);</script>`
-        console.log(code)
+        code += `\n<script setup>const demos = import.meta.globEager('../examples/${exampleId}/*.vue')</script>`
         return code
       },
     },

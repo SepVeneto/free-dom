@@ -1,8 +1,5 @@
 <template>
-  <FreeScene
-    :width="500"
-    :height="500"
-  >
+  <FreeScene>
     <FreeDom v-model="pos1">
       <span>测试文本1</span>
     </FreeDom>
