@@ -29,8 +29,8 @@ export function useResizableData(
     if ((props.width && props.height) || (props.modelValue.w && props.modelValue.h)) return
     if (!domRef.value) return [0, 0]
     const { width: w, height: h } = domRef.value.$el.getBoundingClientRect()
-    width.value = Math.max(w, props.minWidth)
-    height.value = Math.max(h, props.minHeight)
+    width.value = Math.max(Math.ceil(w), props.minWidth)
+    height.value = Math.max(Math.ceil(h), props.minHeight)
   }
 
   return {

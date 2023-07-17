@@ -21,7 +21,8 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   })
 
   function check(pos: IPos) {
-    return SceneContext?.checkValid(pos)
+    if (!SceneContext) return true
+    return SceneContext.checkValid(pos)
   }
 
   return {
