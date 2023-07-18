@@ -20,7 +20,7 @@ export const freeDomWrapProps = {
   },
   showLine: {
     type: Boolean,
-    defautl: true,
+    default: true,
   },
   minWidth: freeDomProps.minWidth,
   minHeight: freeDomProps.minHeight,
@@ -114,7 +114,6 @@ export const FreeDomWrap = defineComponent({
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
         : this.$slots.default
-
     return h('section', {
       ref: 'rectRef',
       class: 'vv-free-dom--scene',

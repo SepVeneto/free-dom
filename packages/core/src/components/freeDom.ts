@@ -62,6 +62,10 @@ export const freeDomProps = {
     type: Function as PropType<ResizeFnCallback>,
     default: noop,
   },
+  autoSize: {
+    type: Boolean,
+    default: true,
+  },
   minWidth: resizeDomCoreProps.minWidth,
   minHeight: resizeDomCoreProps.minHeight,
   disabledDrag: Boolean,
@@ -109,14 +113,16 @@ const freeDom = defineComponent({
     }
 
     const sceneContext = useSceneContext(context, props)
-    const syncSize = () => _syncSize(
-      sceneContext.fixNonMonospaced.value,
-      sceneContext.minWidth.value,
-      sceneContext.minHeight.value,
-    )
+    const syncSize = () => {
+      _syncSize(
+        sceneContext.fixNonMonospaced.value,
+        sceneContext.minWidth.value,
+        sceneContext.minHeight.value,
+      )
+    }
 
     onMounted(() => {
-      syncSize()
+      props.autoSize && syncSize()
     })
 
     const style = computed(() => ({
