@@ -213,6 +213,7 @@ const freeDom = defineComponent({
       stopFn: onResizeStop,
       minHeight: sceneContext.minHeight.value,
       minWidth: sceneContext.minWidth.value,
+      scale: sceneContext.scale.value,
     }, {
       default: () => children.value,
       handler: slots.handler,
