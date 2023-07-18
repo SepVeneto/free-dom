@@ -94,7 +94,7 @@ const freeDom = defineComponent({
       handleDrag,
       handleDragStop,
     } = useDraggableData(props)
-    const { width, height, syncSize } = useResizableData(props, domRef)
+    const { width, height, syncSize: _syncSize } = useResizableData(props, domRef)
 
     const context = {
       _rect: reactive({
@@ -109,9 +109,14 @@ const freeDom = defineComponent({
     }
 
     const sceneContext = useSceneContext(context, props)
+    const syncSize = () => _syncSize(
+      sceneContext.fixNonMonospaced.value,
+      sceneContext.minWidth.value,
+      sceneContext.minHeight.value,
+    )
 
     onMounted(() => {
-      syncSize(sceneContext.fixNonMonospaced.value)
+      syncSize()
     })
 
     const style = computed(() => ({

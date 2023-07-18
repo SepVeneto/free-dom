@@ -22,7 +22,11 @@ export function useResizableData(
   function getHeight() {
     return props.height || props.modelValue.h
   }
-  async function syncSize(fixNonMonospaced?: boolean) {
+  async function syncSize(
+    fixNonMonospaced: boolean,
+    minWidth: number,
+    minHeight: number,
+  ) {
     if ((props.width && props.height) || (props.modelValue.w && props.modelValue.h)) return
     if (!domRef.value) return [0, 0]
 
@@ -32,8 +36,8 @@ export function useResizableData(
     }
 
     const { width: w, height: h } = window.getComputedStyle(domRef.value.$el)
-    width.value = Math.max(Math.ceil(parseFloat(w)), props.minWidth)
-    height.value = Math.max(Math.ceil(parseFloat(h)), props.minHeight)
+    width.value = Math.max(Math.ceil(parseFloat(w)), minWidth)
+    height.value = Math.max(Math.ceil(parseFloat(h)), minHeight)
   }
 
   return {
