@@ -5,6 +5,9 @@ const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
 type LineType = typeof lineType[number]
 
 export default defineComponent({
+  props: {
+    showLine: Boolean,
+  },
   setup() {
     const SceneContext = inject<any>(SceneToken)
     const lines = shallowRef(lineType)
@@ -166,9 +169,11 @@ export default defineComponent({
       style: { [line.includes('x') ? 'top' : 'left']: info.pos + 'px' },
       class: [line.includes('x') ? 'vv-free-dom--xline' : 'vv-free-dom--yline', 'vv-free-dom--line'],
     })
-    const _lines = this.lines
-      .filter(line => this.lineStatus[line].show)
-      .map(line => _line(line, this.lineStatus[line]))
+    const _lines = this.showLine
+      ? this.lines
+        .filter(line => this.lineStatus[line].show)
+        .map(line => _line(line, this.lineStatus[line]))
+      : []
     return h('div', {
       class: 'vv-free-dom--markline',
     }, _lines)

@@ -119,6 +119,6 @@ export const FreeDomWrap = defineComponent({
       ref: 'rectRef',
       class: 'vv-free-dom--scene',
       style: this.style,
-    }, [defaultSlot, h(markLine)])
+    }, [defaultSlot, h(markLine, { showLine: this.showLine })])
   },
 })
