@@ -1,15 +1,10 @@
 <template>
-  <FreeScene>
+  <FreeScene lock-aspect-ratio>
     <FreeDom v-model="pos1">
-      <span>测试文本1</span>
-      <span>测试文本1</span>
+      测试文本1
     </FreeDom>
     <FreeDom v-model="pos2">
-      <div
-        style="font-size: 32px; line-height: 32px;"
-      >
-        测试文本2
-      </div>
+      测试文本2
     </FreeDom>
   </FreeScene>
 </template>
@@ -17,9 +12,12 @@
 <script setup lang="ts">
 import { FreeDom, FreeScene } from 'free-dom'
 import { ref } from 'vue'
-
-const pos1 = ref({})
+const pos1 = ref({
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+})
 const pos2 = ref({
-  x: 100,
+  x: Math.random() * 100 + 100,
+  y: Math.random() * 100 + 100,
 })
 </script>

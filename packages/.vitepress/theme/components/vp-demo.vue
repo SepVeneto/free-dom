@@ -19,7 +19,9 @@ const props = defineProps<{
 }>()
 const demo = computed(() => {
   const keys = Object.keys(props.demos)
+  console.log(keys)
   for (const k of keys) {
+    console.log(k)
     const p = k.replace('../examples/', '').replace('.vue', '')
     if (p === props.path) {
       return props.demos[k].default

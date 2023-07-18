@@ -14,7 +14,7 @@ export default defineConfig({
       enforce: 'pre',
       transform(code, id) {
         if (!id.endsWith('.md') || id.endsWith('index.md')) return
-        const exampleId = id.split('/').splice(-2)[0]
+        const exampleId = id.split('/').splice(-2).join('/').split('.').slice(0, -1)[0]
         code += `\n<script setup>const demos = import.meta.globEager('../examples/${exampleId}/*.vue')</script>`
         return code
       },
