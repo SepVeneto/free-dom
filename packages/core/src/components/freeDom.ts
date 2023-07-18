@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, h, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -67,6 +67,7 @@ export const freeDomProps = {
   disabledDrag: Boolean,
   disabledResize: Boolean,
   scale: resizeDomCoreProps.scale,
+  fixNonMonospaced: Boolean,
 }
 export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
 
@@ -108,6 +109,10 @@ const freeDom = defineComponent({
     }
 
     const sceneContext = useSceneContext(context, props)
+
+    onMounted(() => {
+      syncSize(sceneContext.fixNonMonospaced.value)
+    })
 
     const style = computed(() => ({
       position: 'absolute',
@@ -194,7 +199,6 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
     }
-
     const resizeNode = () => h(ResizeDomCore, {
       width: width.value,
       height: height.value,

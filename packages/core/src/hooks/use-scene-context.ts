@@ -15,6 +15,9 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   const disabledDrag = computed(() => SceneContext?.disabledDrag || props.disabledDrag)
   const disabledResize = computed(() => SceneContext?.disabledResize || props.disabledResize)
   const scale = computed(() => SceneContext?.scale || props.scale)
+  const fixNonMonospaced = computed(() => {
+    return SceneContext?.fixNonMonospaced || props.fixNonMonospaced
+  })
 
   onMounted(() => {
     SceneContext?.register(uuid, context)
@@ -37,5 +40,6 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     minHeight,
     disabledDrag,
     disabledResize,
+    fixNonMonospaced,
   }
 }

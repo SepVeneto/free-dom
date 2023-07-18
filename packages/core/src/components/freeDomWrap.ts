@@ -28,6 +28,7 @@ export const freeDomWrapProps = {
   disabledDrag: freeDomProps.disabledDrag,
   disabledResize: freeDomProps.disabledResize,
   scale: freeDomProps.scale,
+  fixNonMonospaced: freeDomProps.fixNonMonospaced,
 }
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
