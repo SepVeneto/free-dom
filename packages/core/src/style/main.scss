@@ -1,6 +1,6 @@
 .free-dom__widget-wrapper {
   display: inline-block;
-  border: 1px dashed transparent;
+  // border: 1px dashed transparent;
   transition: border-color 0.3s;
   box-sizing: content-box;
   user-select: none;
@@ -51,3 +51,4 @@
     border-bottom: 2px solid rgba(0, 0, 0, 0.4);
   }
 }
+

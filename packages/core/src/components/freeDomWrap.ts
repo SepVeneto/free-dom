@@ -1,36 +1,35 @@
-import { defineComponent, shallowRef, h, provide, reactive, ref, toRefs, ExtractPropTypes, PropType } from 'vue-demi';
-import { useElementBounding } from '@vueuse/core';
-import { SceneToken } from '../util';
-import markLine from './markLine';
-
-const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const;
-type IDot = typeof Dots[number]
+import type { ExtractPropTypes } from 'vue-demi'
+import { computed, defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
+import { SceneToken } from '../util'
+import markLine from './markLine'
+import { useEventBus } from '../hooks'
+import { freeDomProps } from './freeDom'
 
 export const freeDomWrapProps = {
-  absolute: {
-    type: Boolean,
+  width: {
+    type: Number,
     default: undefined,
   },
-  preview: Boolean,
-  move: Boolean,
-  scale: [Boolean, Array] as PropType<IDot[] | boolean>,
+  height: {
+    type: Number,
+    default: undefined,
+  },
   diff: {
     type: Number,
-    default: 3,
+    default: 2,
   },
-  handler: {
-    type: String as PropType<'dot' | 'mark'>,
-    default: undefined,
-  },
-  diagonal: {
+  showLine: {
     type: Boolean,
-    default: undefined,
+    default: true,
   },
-  grid: {
-    type: Object as PropType<[number, number]>,
-    default: undefined,
-  },
-};
+  minWidth: freeDomProps.minWidth,
+  minHeight: freeDomProps.minHeight,
+  lockAspectRatio: freeDomProps.lockAspectRatio,
+  disabledDrag: freeDomProps.disabledDrag,
+  disabledResize: freeDomProps.disabledResize,
+  scale: freeDomProps.scale,
+  fixNonMonospaced: freeDomProps.fixNonMonospaced,
+}
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
 export type IPos = {
@@ -41,30 +40,48 @@ export type IPos = {
 }
 export type INodeInfo = {
   _rect: IPos
-  trigger: () => void
 }
 export type INode = {
-  uuid: string
+  uuid: number
   node: INodeInfo
 }
 
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  setup (props) {
-    const rectRef = shallowRef(null);
-    const rect = useElementBounding(rectRef);
-    const nodes = ref<INode[]>([]);
+  setup(props) {
+    const eventBus = useEventBus()
+    const rectRef = shallowRef<HTMLElement>()
+    const nodes = ref<INode[]>([])
+    const width = ref(props.width)
+    const height = ref(props.height)
 
-    function register (uuid: string, node: INodeInfo) {
-      nodes.value.push({ uuid, node });
+    watchEffect(() => {
+      width.value = props.width
+    })
+    watchEffect(() => {
+      height.value = props.height
+    })
+    onMounted(() => {
+      if (!props.width || !props.height) {
+        if (!rectRef.value) console.warn('[free-dom] cannot find element, width or height may be set to 0')
+        const { width: w, height: h } = rectRef.value?.getBoundingClientRect() || {}
+        if (!props.width) width.value = w || 0
+        if (!props.height) height.value = h || 0
+      }
+    })
+
+    function register(uuid: number, node: INodeInfo) {
+      nodes.value.push({ uuid, node })
     }
-    function checkValid (pos: IPos) {
-      const { x, y, width, height } = pos;
+    function checkValid(pos: IPos) {
+      const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
-      x! + width! <= rect.width.value &&
+      // @ts-expect-error: execute after mounted
+      x! + w! <= width.value &&
       y! >= 0 &&
-      y! + height! <= rect.height.value;
+      // @ts-expect-error: execute after mounted
+      y! + h! <= height.value
     }
 
     provide(
@@ -72,24 +89,35 @@ export const FreeDomWrap = defineComponent({
       reactive({
         ...toRefs(props),
         nodes,
+        width,
+        height,
 
         register,
         checkValid,
+        on: eventBus.on,
+        off: eventBus.off,
+        emit: eventBus.emit,
       }),
-    );
+    )
+    const style = computed(() => ({
+      width: `${props.width}px`,
+      height: `${props.height}px`,
+    }))
 
     return {
       rectRef,
-    };
+      style,
+    }
   },
-  render () {
+  render() {
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
-        : this.$slots.default;
-
+        : this.$slots.default
     return h('section', {
       ref: 'rectRef',
-    }, [defaultSlot, h(markLine)]);
+      class: 'vv-free-dom--scene',
+      style: this.style,
+    }, [defaultSlot, h(markLine, { showLine: this.showLine })])
   },
-});
+})

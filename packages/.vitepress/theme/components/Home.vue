@@ -1,79 +1,73 @@
 <template>
-  <button @click="handleAdd">
-    添加
-  </button>
-  <button
-    style="margin-left: 20px"
-    @click="handlePreview"
-  >
-    {{ !preview ? '隐藏' : '显示' }}
-  </button>
-  <template v-if="!preview">
-    <free-scene
-      move
-      scale
-      style="
-        width: 600px;
-        height: 400px;
-        border: 1px solid #999;
-        position: relative;
-        margin: 20px;
-      "
+  <div style="display: flex; width: 1200px;">
+    <pre style="flex-basis: 200px; flex-shrink: 0;">{{ layout }}</pre>
+    <!-- <pre>{{ demo }}</pre> -->
+
+    <GridLayout
+      v-model="layout"
+      :width="width"
+      collision
+      style="flex: 1; background: #ddd;"
     >
-      <free-dom
-        v-for="(item, index) in domList"
-        :key="index"
-        v-model:x="item.x"
-        v-model:y="item.y"
-        v-model:width="item.width"
-        v-model:height="item.height"
-        :style="item.style"
-        @select="handleSelect"
-      >
-        <div>
-          <span>{{ item.text }}{{ index }}</span>
-        </div>
-      </free-dom>
-    </free-scene>
-    <pre>{{ domList }}</pre>
-  </template>
+      <span
+        key="a"
+        class="grid-item"
+      >a</span>
+      <span
+        key="b"
+        class="grid-item"
+      >b</span>
+      <span
+        key="c"
+        class="grid-item"
+      >c</span>
+    </GridLayout>
+  </div>
+  <FreeScene style="width: 1000px; height: 500px; border: 1px solid black;">
+    <FreeDom
+      :width="100"
+      :height="100"
+      lock-aspect-ratio
+    >
+      <Test />
+    </FreeDom>
+    <FreeDom
+      v-model="demo"
+    >
+      <pre style="font-size: 32px;">{{ demo }}</pre>
+    </FreeDom>
+  </FreeScene>
 </template>
 
 <script lang="ts" setup>
-import { freeDom, freeScene } from 'free-dom';
-import 'free-dom/index.css';
-import { CSSProperties, ref } from 'vue-demi';
-type Dom = {
-  text: string
-  x?: number
-  y?: number
-  width?: number
-  height?: number
-  style?: CSSProperties
-}
-const preview = ref(false);
-const domList = ref<Dom[]>([
-  {
-    text: '测试文本',
-    x: 50,
-    y: 0,
-    style: { color: '#d1239d' },
-  },
-  {
-    x: 0,
-    y: 0,
-    text: '测试文本',
-    style: { fontSize: '24px' },
-  },
-]);
+import Test from './Test.vue'
+import { FreeDom, FreeScene, GridLayout } from 'free-dom'
+import 'free-dom/style/index.scss'
+import { ref } from 'vue'
 
-function handlePreview () {
-  preview.value = !preview.value;
-}
-function handleAdd () {
-  domList.value.push({ text: '测试文本', style: {} });
-}
-function handleSelect (data: any) {
-  console.log(data);
-}
+defineOptions({
+  name: 'HomePage',
+})
+
+const demo = ref({
+})
+const width = ref(1000)
+
+const layout = ref([
+  { i: 'a', x: 0, y: 0, w: 1, h: 2 },
+  { i: 'b', x: 1, y: 0, w: 3, h: 2, static: true },
+  { i: 'c', x: 4, y: 0, w: 1, h: 2 },
+])
 </script>
+
+<style>
+.vp-doc {
+  position: static !important;
+}
+.grid-item {
+  background: #fff;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+</style>

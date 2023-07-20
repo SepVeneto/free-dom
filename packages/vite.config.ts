@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import Components from 'unplugin-vue-components/vite';
+import { defineConfig } from 'vite'
+import { resolve } from 'path'
+import Components from 'unplugin-vue-components/vite'
 
 export default defineConfig({
   plugins: [
@@ -9,14 +9,24 @@ export default defineConfig({
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
       transformer: 'vue3',
     }),
+    {
+      name: 'transform-markdown',
+      enforce: 'pre',
+      transform(code, id) {
+        if (!id.endsWith('.md') || id.endsWith('index.md')) return
+        const exampleId = id.split('/').splice(-2).join('/').split('.').slice(0, -1)[0]
+        code += `\n<script setup>const demos = import.meta.globEager('../examples/${exampleId}/*.vue')</script>`
+        return code
+      },
+    },
   ],
   resolve: {
     alias: {
-      'free-dom': resolve(__dirname, './core/dist'),
+      'free-dom': resolve(__dirname, './core/src'),
     },
     dedupe: ['vue', 'vue-demi'],
   },
   optimizeDeps: {
     exclude: ['vue-demi'],
   },
-});
+})

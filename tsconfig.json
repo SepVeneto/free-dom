@@ -20,13 +20,14 @@
 
     "paths": {
       "@/*": [ "src/*" ],
-      "free-dom": [ "packages/core/src/index.ts" ]
-    },
+      "free-dom": [ "packages/core/src" ]
+    }
   },
   "include": [
     "packages",
+    "packages/examples/**/*.vue",
     "packages/.vitepress/theme/components/*.vue",
-    "packages/.vitepress/*.ts",
+    "packages/.vitepress/*.ts"
   ],
   "exclude": [
     "node_modules"
