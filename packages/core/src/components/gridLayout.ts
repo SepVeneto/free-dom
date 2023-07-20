@@ -18,6 +18,10 @@ export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
 
 const gridLayoutProps = {
+  style: {
+    type: Object,
+    default: () => ({}),
+  },
   modelValue: {
     type: Array as PropType<GridLayoutConfig>,
     required: true,
@@ -159,6 +163,10 @@ const GridLayout = defineComponent({
   },
 
   render() {
+    const mergedStyle = {
+      ...(this.style || {}),
+      height: this.layout.calContainerHeight(),
+    }
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
@@ -166,9 +174,7 @@ const GridLayout = defineComponent({
       []
     return h('div', {
       class: 'vv-grid-layout',
-      style: {
-        height: this.layout.calContainerHeight(),
-      },
+      style: mergedStyle,
     }, [
       defaultSlot.map(this.processItem),
       this.placeholder(),
