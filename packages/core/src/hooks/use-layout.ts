@@ -3,7 +3,7 @@ import type { GridLayoutConfig, GridLayoutItem, GridLayoutProps } from '../compo
 import type { GridItemProps } from '../components/gridItem'
 import type { CoreFnCallback } from '../components/freeDomCore'
 import type { ResizeFnCallback } from '../components/resizeDomCore'
-import { clamp } from '../util'
+import { clamp, log } from '../util'
 
 export function useLayout(props: GridLayoutProps) {
   const layout = shallowRef(props.modelValue)
@@ -39,7 +39,7 @@ export function useLayout(props: GridLayoutProps) {
     if (config.static) return layout
     if (config.y === y && config.x === x) return layout
 
-    console.log(
+    log(
       `Moving element ${config.i} to [${String(x)},${String(y)}] from [${config.x},${config.y}]`,
     )
 
@@ -66,7 +66,7 @@ export function useLayout(props: GridLayoutProps) {
     }
 
     collisions.forEach(collision => {
-      console.log(
+      log(
         `Resolving collision between ${config.i} at [${config.x},${config.y}] and ${collision.i} at [${collision.x},${collision.y}]`,
         collision.moved, collision.i)
       if (collision.moved) return
@@ -113,7 +113,7 @@ export function useLayout(props: GridLayoutProps) {
       }
 
       if (!_getFirstCollision(layout, fakeItem)) {
-        console.log(
+        log(
           `Doing reverse collision on ${itemToMove.i} up to [${fakeItem.x},${fakeItem.y}].`,
         )
         return _moveElement(
