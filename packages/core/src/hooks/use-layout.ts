@@ -58,7 +58,7 @@ export function useLayout(props: GridLayoutProps) {
     const collisions = sortable.filter(l => _collides(l, config))
     const hasCollsions = collisions.length > 0
 
-    if (hasCollsions && !preventCollision) {
+    if (hasCollsions && preventCollision) {
       config.x = oldX
       config.y = oldY
       config.moved = false
@@ -185,9 +185,9 @@ export function useLayout(props: GridLayoutProps) {
   function _collides(l1: GridLayoutConfig[number], l2: GridLayoutConfig[number]) {
     if (l1.i === l2.i) return false
     else if (l1.x + l1.w <= l2.x) return false
+    else if (l1.x >= l2.x + l2.w) return false
     else if (l1.y + l1.h <= l2.y) return false
-    else if (l2.x + l2.w <= l1.x) return false
-    else if (l2.y + l2.h <= l1.y) return false
+    else if (l1.y >= l2.y + l2.h) return false
     else return true
   }
   // 第一个触发碰撞的网格
