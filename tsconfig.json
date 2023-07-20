@@ -25,8 +25,9 @@
   },
   "include": [
     "packages",
+    "packages/examples/**/*.vue",
     "packages/.vitepress/theme/components/*.vue",
-    "packages/.vitepress/*.ts",
+    "packages/.vitepress/*.ts"
   ],
   "exclude": [
     "node_modules"

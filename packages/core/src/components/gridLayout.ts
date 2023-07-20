@@ -4,6 +4,7 @@ import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
 import { useLayout } from '../hooks'
+import type { ResizeDomCoreProps } from './resizeDomCore'
 
 export type GridLayoutItem = {
   i: string | number
@@ -13,6 +14,7 @@ export type GridLayoutItem = {
   h: number
   moved?: boolean
   static?: boolean
+  scale?: ResizeDomCoreProps['scale']
 }
 export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
@@ -63,14 +65,8 @@ const gridLayoutProps = {
     type: Array as PropType<number[]>,
     default: undefined,
   },
-  isDraggable: {
-    type: Boolean,
-    default: true,
-  },
-  isResizable: {
-    type: Boolean,
-    default: true,
-  },
+  disabledDrag: Boolean,
+  disabledResize: Boolean,
   collision: Boolean,
 }
 export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
@@ -92,8 +88,8 @@ const GridLayout = defineComponent({
       if (!key) return
       const config = layout.getItem(String(key))
       if (!config) return
-      const isDraggable = !config.static && props.isDraggable
-      const isResizable = !config.static && props.isResizable
+      const isDraggable = !config.static && !props.disabledDrag
+      const isResizable = !config.static && !props.disabledResize
       return h(GridItem, {
         x: config.x,
         y: config.y,
@@ -101,6 +97,7 @@ const GridLayout = defineComponent({
         height: config.h,
         isDraggable,
         isResizable,
+        scale: config.scale,
         dragEndFn: (evt, rect) => {
           const { x, y } = rect
           const _layout = layout.moveTo(config, x, y)

@@ -10,6 +10,10 @@ export default defineConfig({
   themeConfig: {
     sidebar: [
       {
+        text: '快速开始',
+        link: '/quick-start',
+      },
+      {
         text: 'free-dom',
         items: [
           { text: '介绍', link: '/free-dom/introduction' },
@@ -27,6 +31,11 @@ export default defineConfig({
         text: 'grid-layout',
         items: [
           { text: '介绍', link: '/grid-layout/introduction' },
+          { text: '禁用拖曳/缩放', link: '/grid-layout/only-layout' },
+          { text: '静态元素', link: '/grid-layout/static' },
+          { text: '元素的最小尺寸', link: '/grid-layout/min-size' },
+          { text: '元素碰撞', link: '/grid-layout/collision' },
+          { text: '缩放操作点', link: '/grid-layout/scale-handler' },
         ],
       },
     ],

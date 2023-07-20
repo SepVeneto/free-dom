@@ -1,7 +1,7 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
 import { defineComponent, h, inject } from 'vue-demi'
 import FreeDomCore from './freeDomCore'
-import ResizeDomCore from './resizeDomCore'
+import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
 import { useDefaultSlot, useLayoutItem } from '../hooks'
 
 import { gridLayoutContextKey } from './tokens'
@@ -59,6 +59,10 @@ const gridItemProps = {
   },
   isDraggable: Boolean,
   isResizable: Boolean,
+  scale: {
+    type: resizeDomCoreProps.scale.type,
+    default: () => (['rb']),
+  },
 }
 const gridItemEmits = ['dragMove']
 
@@ -98,7 +102,7 @@ export const GridItem = defineComponent({
       return h(ResizeDomCore, {
         width: width.value,
         height: height.value,
-        scale: ['rb'],
+        scale: props.scale,
         dragOpts: {
           disabled: !props.isResizable,
         },
