@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, h, isVue2, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -210,20 +210,35 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
     }
-    const resizeNode = () => h(ResizeDomCore, {
-      width: width.value,
-      height: height.value,
-      lockAspectRatio: sceneContext.lockAspectRatio.value,
-      dragOpts: { disabled: sceneContext.disabledResize.value },
-      resizeFn: onResize,
-      stopFn: onResizeStop,
-      minHeight: sceneContext.minHeight.value,
-      minWidth: sceneContext.minWidth.value,
-      scale: sceneContext.scale.value,
-    }, {
-      default: () => children.value,
-      handler: slots.handler,
-    })
+    // DEV: vue2 vue3
+    const resizeNode = () => {
+      const props = {
+        width: width.value,
+        height: height.value,
+        lockAspectRatio: sceneContext.lockAspectRatio.value,
+        dragOpts: { disabled: sceneContext.disabledResize.value },
+        resizeFn: onResize,
+        stopFn: onResizeStop,
+        minHeight: sceneContext.minHeight.value,
+        minWidth: sceneContext.minWidth.value,
+        scale: sceneContext.scale.value,
+      }
+      const _slots = {
+        default: () => {
+          return children.value
+        },
+        handler: slots.handler,
+      }
+      // DEBUG
+      if (!isVue2) {
+        return h(ResizeDomCore, {
+          props,
+          scopedSlots: _slots,
+        })
+      } else {
+        return h(ResizeDomCore, props, _slots)
+      }
+    }
 
     expose({
       syncSize,
@@ -239,17 +254,27 @@ const freeDom = defineComponent({
     }
   },
   render() {
+    // DEV: vue2 vue3
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
-
+    const props = {
+      stopFn: this.onDragStop,
+      dragFn: this.onDrag,
+      disabled: this.disabled,
+    }
     return h(FreeDomCore, {
       ref: 'domRef',
       class: 'vv-free-dom--draggable',
       style: this.style,
-      stopFn: this.onDragStop,
-      dragFn: this.onDrag,
-      disabled: this.disabled,
-    }, () => this.resizeNode())
+      props,
+    }, [() => this.resizeNode()])
+    // } else {
+    //   return h(FreeDomCore, {
+    //     ref: 'domRef',
+    //     ...attrs,
+    //     ...props,
+    //   }, slots)
+    // }
   },
 })
 

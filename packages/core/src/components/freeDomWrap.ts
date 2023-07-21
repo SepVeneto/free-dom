@@ -110,6 +110,7 @@ export const FreeDomWrap = defineComponent({
     }
   },
   render() {
+    // DEV: vue2 vue3
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
@@ -118,6 +119,6 @@ export const FreeDomWrap = defineComponent({
       ref: 'rectRef',
       class: 'vv-free-dom--scene',
       style: this.style,
-    }, [defaultSlot, h(markLine, { showLine: this.showLine })])
+    }, [defaultSlot, h(markLine, { props: { showLine: this.showLine } })])
   },
 })

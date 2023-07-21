@@ -148,20 +148,40 @@ const resizeDomCore = defineComponent({
     }
   },
   render() {
-    return h('div', {
+    // DEV: vue2 vue3
+    // return h('div', {
+    //   class: 'vv-resize-dom--box',
+    // }, [
+    //   this.children?.map(node => h(node)),
+    //   this.dots.map(dot => h(FreeDomCore, {
+    //     class: [
+    //       this.dragOpts.disabled && 'vv-resize-dom--disabled',
+    //     ],
+    //     ...this.dragOpts,
+    //     stopFn: this.handleResize('stop', dot),
+    //     startFn: this.handleResize('start', dot),
+    //     dragFn: this.handleResize('resize', dot),
+    //   }, this.renderResizehandler(dot))),
+    // ])
+    const node = h('div', {
       class: 'vv-resize-dom--box',
     }, [
-      this.children?.map(node => h(node)),
-      this.dots.map(dot => h(FreeDomCore, {
-        class: [
-          this.dragOpts.disabled && 'vv-resize-dom--disabled',
-        ],
-        ...this.dragOpts,
-        stopFn: this.handleResize('stop', dot),
-        startFn: this.handleResize('start', dot),
-        dragFn: this.handleResize('resize', dot),
-      }, this.renderResizehandler(dot))),
+      ...(this.children || []),
+      this.dots.map(dot => {
+        return h(FreeDomCore, {
+          class: [
+            this.dragOpts.disabled && 'vv-resize-dom--disabled',
+          ],
+          props: {
+            ...this.dragOpts,
+            stopFn: this.handleResize('stop', dot),
+            startFn: this.handleResize('start', dot),
+            dragFn: this.handleResize('resize', dot),
+          },
+        }, [this.renderResizehandler(dot)])
+      }),
     ])
+    return node
   },
 })
 

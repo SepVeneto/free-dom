@@ -1,6 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue-demi'
+import { computed, defineComponent, h, isVue2, onUnmounted, ref } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
+import { merge } from 'lodash'
 
 function noop() { /** pass */ }
 
@@ -152,13 +153,43 @@ const freeDomCore = defineComponent({
     }
   },
   render() {
+    // DEV: vue2 vue3
+    const vue2Props = {
+      ref: (el) => { this.domRef = el },
+      on: {
+        mousedown: (evt: MouseEvent) => {
+          evt.stopPropagation()
+          this.mousedownFn(evt)
+        },
+        mouseup: this.mouseupFn,
+      },
+    }
+    const vue3Props = {
+      ref: 'domRef',
+      onMousedown: (evt: MouseEvent) => {
+        evt.stopPropagation()
+        this.mousedownFn(evt)
+      },
+      onMouseup: this.mouseupFn,
+    }
+    // DEBUG
+    const props = !isVue2 ? vue2Props : vue3Props
+    if (!this.only) return null
+    // return this.only
+    // this.only.componentOptions = {
+    //   listeners: vue2Props.nativeOn,
+    // }
+    // console.log(this.only, 'only')
+    // this.only.parent && merge(this.only.parent.componentOptions, {
+    //   listeners: vue2Props.nativeOn,
+    // })
+    merge(this.only.data, vue2Props)
+    // console.log('example', h('div', vue2Props))
     return this.only
-      ? h(this.only, {
-        ref: 'domRef',
-        onMousedown: withModifiers(this.mousedownFn, ['stop']),
-        onMouseup: this.mouseupFn,
-      })
-      : null
+
+    // return this.only
+    //   ? h(this.only.context, props as any)
+    //   : null
   },
 })
 
