@@ -100,18 +100,21 @@ export const GridItem = defineComponent({
 
     const resizeNode = (child?: VNode[] | VNode) => {
       return h(ResizeDomCore, {
-        width: width.value,
-        height: height.value,
-        scale: props.scale,
-        dragOpts: {
-          disabled: !props.isResizable,
+        // DEV: vue2 vue3
+        props: {
+          width: width.value,
+          height: height.value,
+          scale: props.scale,
+          dragOpts: {
+            disabled: !props.isResizable,
+          },
+          minWidth: minWidth.value,
+          minHeight: minHeight.value,
+          startFn: onResizeStart,
+          resizeFn: onResize,
+          stopFn: onResizeStop,
         },
-        minWidth: minWidth.value,
-        minHeight: minHeight.value,
-        startFn: onResizeStart,
-        resizeFn: onResize,
-        stopFn: onResizeStop,
-      }, () => child)
+      }, [child])
     }
     const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
       class: [
@@ -120,11 +123,14 @@ export const GridItem = defineComponent({
         !props.isDraggable && 'vv-grid-layout--item__disabled',
       ],
       style: style.value,
-      disabled: !props.isDraggable,
-      startFn: onDragStart,
-      stopFn: onDragStop,
-      dragFn: onDrag,
-    }, () => resizeNode(child))
+      // DEV: vue2 vue3
+      props: {
+        disabled: !props.isDraggable,
+        startFn: onDragStart,
+        stopFn: onDragStop,
+        dragFn: onDrag,
+      },
+    }, [() => resizeNode(child)])
 
     return {
       x,
