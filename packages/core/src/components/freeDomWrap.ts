@@ -78,8 +78,10 @@ export const FreeDomWrap = defineComponent({
     function checkValid(pos: IPos) {
       const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
+      // @ts-expect-error: trigger after mounted
       x! + w! <= width.value &&
       y! >= 0 &&
+      // @ts-expect-error: trigger after mounted
       y! + h! <= height.value
     }
 

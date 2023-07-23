@@ -116,6 +116,7 @@ export const GridItem = defineComponent({
         ? h(ResizeDomCore, { props: _props }, [child])
         : h(ResizeDomCore, _props, child)
     }
+    // @ts-expect-error: vue2
     const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
       class: [
         dragging.value && 'vv-grid-layout--item__draggable',

@@ -1,5 +1,5 @@
 import { merge } from 'lodash'
-import type { Component, Text, VNode, VNodeArrayChildren } from 'vue-demi'
+import type { Component, VNode, VNodeArrayChildren } from 'vue-demi'
 import { h, isVue2 } from 'vue-demi'
 
 type RawChildren = string | number | boolean | VNode | VNodeArrayChildren | (() => any)
@@ -26,6 +26,7 @@ export function createRender(
   listeners: Record<string, (...args: any[]) => void> = {},
 ) {
   if (!comp) return () => (null)
+  console.log(isVue2)
   const options = isVue2
     ? {
         ...attrs,
@@ -44,11 +45,14 @@ export function createRender(
   return (slots: Slots) => {
     if (isVue2) {
       if (Object.prototype.toString.call(slots) === '[object Object]') {
+        // @ts-expect-error: vue2
         return h(comp, { ...options, scopedSlots: slots })
       } else {
+        // @ts-expect-error: vue2
         return h(comp, options, Array.isArray(slots) ? slots : [slots])
       }
     } else {
+      // @ts-expect-error: vue3
       return h(comp, options, slots)
     }
   }
