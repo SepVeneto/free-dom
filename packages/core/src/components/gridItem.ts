@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
-import { defineComponent, h, inject } from 'vue-demi'
+import { defineComponent, h, inject, isVue2 } from 'vue-demi'
 import FreeDomCore from './freeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
 import { useDefaultSlot, useLayoutItem } from '../hooks'
@@ -99,22 +99,22 @@ export const GridItem = defineComponent({
     const { only, slots } = useDefaultSlot()
 
     const resizeNode = (child?: VNode[] | VNode) => {
-      return h(ResizeDomCore, {
-        // DEV: vue2 vue3
-        props: {
-          width: width.value,
-          height: height.value,
-          scale: props.scale,
-          dragOpts: {
-            disabled: !props.isResizable,
-          },
-          minWidth: minWidth.value,
-          minHeight: minHeight.value,
-          startFn: onResizeStart,
-          resizeFn: onResize,
-          stopFn: onResizeStop,
+      const _props = {
+        width: width.value,
+        height: height.value,
+        scale: props.scale,
+        dragOpts: {
+          disabled: !props.isResizable,
         },
-      }, [child])
+        minWidth: minWidth.value,
+        minHeight: minHeight.value,
+        startFn: onResizeStart,
+        resizeFn: onResize,
+        stopFn: onResizeStop,
+      }
+      return isVue2
+        ? h(ResizeDomCore, { props: _props }, [child])
+        : h(ResizeDomCore, _props, child)
     }
     const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
       class: [

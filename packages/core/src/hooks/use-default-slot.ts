@@ -2,7 +2,6 @@ import { computed, useSlots } from 'vue-demi'
 
 export function useDefaultSlot() {
   const slots = useSlots()
-
   const slotList = computed(() => {
     return typeof slots.default === 'function'
       ? slots.default()

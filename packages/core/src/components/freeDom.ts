@@ -5,12 +5,12 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, isVue2, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
-import { clamp } from '../util'
+import { clamp, createRender } from '../util'
 
 function noop() { /* noop */ }
 
@@ -210,7 +210,6 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
     }
-    // DEV: vue2 vue3
     const resizeNode = () => {
       const props = {
         width: width.value,
@@ -229,18 +228,10 @@ const freeDom = defineComponent({
         },
         handler: slots.handler,
       }
-      // DEBUG
-      if (!isVue2) {
-        return h(ResizeDomCore, {
-          props,
-          scopedSlots: _slots,
-        })
-      } else {
-        return h(ResizeDomCore, props, _slots)
-      }
+      return createRender(ResizeDomCore, {}, props)(_slots)
     }
 
-    expose({
+    expose?.({
       syncSize,
     })
 
@@ -254,27 +245,23 @@ const freeDom = defineComponent({
     }
   },
   render() {
-    // DEV: vue2 vue3
-    // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
-    // 表现出来就是props的值在resizeBox内部一直保持初始值不变
     const props = {
       stopFn: this.onDragStop,
       dragFn: this.onDrag,
       disabled: this.disabled,
     }
-    return h(FreeDomCore, {
-      ref: 'domRef',
-      class: 'vv-free-dom--draggable',
-      style: this.style,
+    // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
+    // 表现出来就是props的值在resizeBox内部一直保持初始值不变
+    const slots = () => this.resizeNode()
+    return createRender(
+      FreeDomCore,
+      {
+        ref: (el: any) => { this.domRef = el },
+        class: 'vv-free-dom--draggable',
+        style: this.style,
+      },
       props,
-    }, [() => this.resizeNode()])
-    // } else {
-    //   return h(FreeDomCore, {
-    //     ref: 'domRef',
-    //     ...attrs,
-    //     ...props,
-    //   }, slots)
-    // }
+    )(slots)
   },
 })
 

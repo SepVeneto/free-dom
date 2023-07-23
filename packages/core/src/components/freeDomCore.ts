@@ -1,7 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, isVue2, onUnmounted, ref } from 'vue-demi'
+import { computed, defineComponent, isVue2, onUnmounted, ref } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
-import { merge } from 'lodash'
+import { createRender } from '../util'
 
 function noop() { /** pass */ }
 
@@ -153,9 +153,7 @@ const freeDomCore = defineComponent({
     }
   },
   render() {
-    // DEV: vue2 vue3
     const vue2Props = {
-      ref: (el) => { this.domRef = el },
       on: {
         mousedown: (evt: MouseEvent) => {
           evt.stopPropagation()
@@ -165,31 +163,24 @@ const freeDomCore = defineComponent({
       },
     }
     const vue3Props = {
-      ref: 'domRef',
       onMousedown: (evt: MouseEvent) => {
         evt.stopPropagation()
         this.mousedownFn(evt)
       },
       onMouseup: this.mouseupFn,
     }
-    // DEBUG
-    const props = !isVue2 ? vue2Props : vue3Props
-    if (!this.only) return null
-    // return this.only
-    // this.only.componentOptions = {
-    //   listeners: vue2Props.nativeOn,
-    // }
-    // console.log(this.only, 'only')
-    // this.only.parent && merge(this.only.parent.componentOptions, {
-    //   listeners: vue2Props.nativeOn,
-    // })
-    merge(this.only.data, vue2Props)
-    // console.log('example', h('div', vue2Props))
-    return this.only
-
-    // return this.only
-    //   ? h(this.only.context, props as any)
-    //   : null
+    const res = createRender(
+      // @ts-expect-error: e
+      this.only,
+      { ref: 'domRef' },
+      isVue2 ? {} : vue3Props,
+      isVue2 ? vue2Props.on : {},
+    )
+    if (typeof res === 'function') {
+      return res()
+    } else {
+      return res
+    }
   },
 })
 

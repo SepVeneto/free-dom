@@ -1,5 +1,6 @@
 export * from './EventBus'
 export * from './tokens'
+export * from './render'
 
 const isProduction = process.env.NODE_ENV === 'production'
 

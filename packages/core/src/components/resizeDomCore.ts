@@ -3,6 +3,7 @@ import type { ExtractPropTypes, PropType } from 'vue-demi'
 import { useDefaultSlot } from '../hooks'
 import FreeDomCore from './freeDomCore'
 import type { CoreFnCallback, FreeDomCoreProps } from './freeDomCore'
+import { createRender } from '../util'
 
 const Dots = ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] as const
 type IDot = typeof Dots[number]
@@ -148,40 +149,25 @@ const resizeDomCore = defineComponent({
     }
   },
   render() {
-    // DEV: vue2 vue3
-    // return h('div', {
-    //   class: 'vv-resize-dom--box',
-    // }, [
-    //   this.children?.map(node => h(node)),
-    //   this.dots.map(dot => h(FreeDomCore, {
-    //     class: [
-    //       this.dragOpts.disabled && 'vv-resize-dom--disabled',
-    //     ],
-    //     ...this.dragOpts,
-    //     stopFn: this.handleResize('stop', dot),
-    //     startFn: this.handleResize('start', dot),
-    //     dragFn: this.handleResize('resize', dot),
-    //   }, this.renderResizehandler(dot))),
-    // ])
-    const node = h('div', {
-      class: 'vv-resize-dom--box',
-    }, [
+    const slots = [
       ...(this.children || []),
       this.dots.map(dot => {
-        return h(FreeDomCore, {
-          class: [
-            this.dragOpts.disabled && 'vv-resize-dom--disabled',
-          ],
-          props: {
+        return createRender(
+          FreeDomCore,
+          { class: [this.dragOpts.disabled && 'vv-resize-dom--disabled'] },
+          {
             ...this.dragOpts,
             stopFn: this.handleResize('stop', dot),
             startFn: this.handleResize('start', dot),
             dragFn: this.handleResize('resize', dot),
           },
-        }, [this.renderResizehandler(dot)])
+        )(this.renderResizehandler(dot))
       }),
-    ])
-    return node
+    ]
+    return createRender(
+      'div',
+      { class: 'vv-resize-dom--box' },
+    )(slots)
   },
 })
 

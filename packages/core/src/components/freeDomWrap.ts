@@ -1,8 +1,8 @@
 import type { ExtractPropTypes } from 'vue-demi'
-import { computed, defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
-import { SceneToken } from '../util'
+import { computed, defineComponent, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
+import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
-import { useEventBus } from '../hooks'
+import { useDefaultSlot, useEventBus } from '../hooks'
 import { freeDomProps } from './freeDom'
 
 export const freeDomWrapProps = {
@@ -50,6 +50,7 @@ export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
   setup(props) {
+    const { slots } = useDefaultSlot()
     const eventBus = useEventBus()
     const rectRef = shallowRef<HTMLElement>()
     const nodes = ref<INode[]>([])
@@ -77,10 +78,8 @@ export const FreeDomWrap = defineComponent({
     function checkValid(pos: IPos) {
       const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
-      // @ts-expect-error: execute after mounted
       x! + w! <= width.value &&
       y! >= 0 &&
-      // @ts-expect-error: execute after mounted
       y! + h! <= height.value
     }
 
@@ -107,18 +106,19 @@ export const FreeDomWrap = defineComponent({
     return {
       rectRef,
       style,
+      slots,
     }
   },
   render() {
-    // DEV: vue2 vue3
-    const defaultSlot =
-      typeof this.$slots.default === 'function'
-        ? this.$slots.default()
-        : this.$slots.default
-    return h('section', {
-      ref: 'rectRef',
-      class: 'vv-free-dom--scene',
-      style: this.style,
-    }, [defaultSlot, h(markLine, { props: { showLine: this.showLine } })])
+    const marklineComp = createRender(markLine, {}, { showLine: this.showLine })
+    const slots = [this.slots, marklineComp]
+    return createRender(
+      'selection',
+      {
+        ref: 'rectRef',
+        class: 'vv-free-dom--scene',
+        style: this.style,
+      },
+    )(slots)
   },
 })

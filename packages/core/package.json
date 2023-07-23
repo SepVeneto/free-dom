@@ -15,6 +15,9 @@
     },
     "./css": "./dist/index.css"
   },
+  "typesVersions": {
+    "*": { ".": ["dist/index.d.ts"]}
+  },
   "scripts": {
     "build": "tsup",
     "dev": "vue-demi-switch 3 && vitepress dev docs",
@@ -25,17 +28,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vueuse/core": "^9.2.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.0",
     "vue-demi": "latest"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.195",
     "@types/uuid": "^8.3.4",
     "bumpp": "^8.2.1",
     "esbuild-plugin-sass": "^1.0.1",
-    "tsup": "^6.5.0",
-    "vue": "^3.2.39"
+    "tsup": "^6.5.0"
   },
   "changelog": "https://github.com/SepVeneto/free-dom/blob/master/packages/core/CHANGELOG.md",
   "homepage": "https://github.com/SepVeneto/free-dom/blob/master/readme.md",

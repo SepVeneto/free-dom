@@ -101,7 +101,7 @@ const GridLayout = defineComponent({
           isDraggable,
           isResizable,
           scale: config.scale,
-          dragEndFn: (evt, rect) => {
+          dragEndFn: (evt: any, rect: any) => {
             const { x, y } = rect
             const _layout = layout.moveTo(config, x, y)
             emit('update:modelValue', _layout)
@@ -110,7 +110,7 @@ const GridLayout = defineComponent({
           dragStartFn: () => {
           /** pass */
           },
-          dragFn: (evt, data) => {
+          dragFn: (evt: any, data: any) => {
             if (!config) return
             const placeholder = {
               x: config.x,
@@ -123,7 +123,7 @@ const GridLayout = defineComponent({
 
             activeDrag.value = placeholder
           },
-          resizeFn: (evt, data) => {
+          resizeFn: (evt: any, data: any) => {
             const placeholder = {
               x: config.x,
               y: config.y,
@@ -135,7 +135,7 @@ const GridLayout = defineComponent({
             const { w, h } = data
             layout.resizeTo(config, w, h)
           },
-          resizeStopFn: (evt, data) => {
+          resizeStopFn: (evt: any, data: any) => {
             const { w, h } = data
             layout.resizeTo(config, w, h)
             activeDrag.value = null
@@ -174,6 +174,7 @@ const GridLayout = defineComponent({
     }
     const defaultSlot =
       typeof this.$slots.default === 'function'
+      // @ts-expect-error: e
         ? this.$slots.default()
         : this.$slots.default ||
       []
