@@ -112,10 +112,10 @@ export const FreeDomWrap = defineComponent({
     }
   },
   render() {
-    const marklineComp = createRender(markLine, {}, { showLine: this.showLine })
+    const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
     const slots = [this.slots, marklineComp]
     return createRender(
-      'selection',
+      'section',
       {
         ref: 'rectRef',
         class: 'vv-free-dom--scene',

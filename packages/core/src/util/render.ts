@@ -26,7 +26,6 @@ export function createRender(
   listeners: Record<string, (...args: any[]) => void> = {},
 ) {
   if (!comp) return () => (null)
-  console.log(isVue2)
   const options = isVue2
     ? {
         ...attrs,

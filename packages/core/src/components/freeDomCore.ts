@@ -44,8 +44,8 @@ const freeDomCore = defineComponent({
   setup(props) {
     const { only } = useDefaultSlot()
     const dragging = ref(false)
-    const domRef = ref()
-    const node = computed<HTMLElement | undefined>(() => domRef.value?.$el || domRef.value)
+    const coreRef = ref()
+    const node = computed<HTMLElement | undefined>(() => coreRef.value?.$el || coreRef.value)
     const ownerDoc = computed(() => node.value?.ownerDocument)
     const { lastX, lastY, create } = useCoreData(node)
     let parentNode: Element
@@ -147,7 +147,7 @@ const freeDomCore = defineComponent({
 
     return {
       only,
-      domRef,
+      coreRef,
       mousedownFn,
       mouseupFn,
     }
@@ -171,7 +171,7 @@ const freeDomCore = defineComponent({
     }
     const res = createRender(
       this.only,
-      { ref: 'domRef' },
+      { ref: (el: any) => { this.coreRef = el } },
       isVue2 ? {} : vue3Props,
       isVue2 ? vue2Props.on : {},
     )

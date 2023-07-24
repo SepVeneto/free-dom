@@ -87,7 +87,6 @@ const freeDom = defineComponent({
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
 
-    const children = slots
     const {
       x,
       y,
@@ -221,13 +220,7 @@ const freeDom = defineComponent({
         minWidth: sceneContext.minWidth.value,
         scale: sceneContext.scale.value,
       }
-      const _slots = {
-        default: () => {
-          return children.value
-        },
-        handler: slots.handler,
-      }
-      return createRender(ResizeDomCore, {}, props)(_slots)
+      return createRender(ResizeDomCore, {}, props)(slots)
     }
 
     expose?.({
@@ -252,7 +245,6 @@ const freeDom = defineComponent({
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
     const slots = () => this.resizeNode()
-    console.log(this.$refs)
     return createRender(
       FreeDomCore,
       {

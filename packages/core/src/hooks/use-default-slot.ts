@@ -1,8 +1,7 @@
-import { computed, getCurrentInstance, useSlots } from 'vue-demi'
+import { computed, useSlots } from 'vue-demi'
 
 export function useDefaultSlot() {
   const slots = useSlots()
-  console.log(getCurrentInstance(), 'inst')
   const slotList = computed(() => {
     return typeof slots.default === 'function'
       ? slots.default()

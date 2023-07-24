@@ -1,10 +1,11 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
-import { defineComponent, h, inject, isVue2 } from 'vue-demi'
+import { defineComponent, inject } from 'vue-demi'
 import FreeDomCore from './freeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
 import { useDefaultSlot, useLayoutItem } from '../hooks'
 
 import { gridLayoutContextKey } from './tokens'
+import { createRender } from '../util'
 
 export type GridItemInfo = {
   x: number
@@ -97,7 +98,7 @@ export const GridItem = defineComponent({
       onResizeStop,
     } = useLayoutItem(props, layout)
     const { only, slots } = useDefaultSlot()
-
+    console.log(slots)
     const resizeNode = (child?: VNode[] | VNode) => {
       const _props = {
         width: width.value,
@@ -112,26 +113,40 @@ export const GridItem = defineComponent({
         resizeFn: onResize,
         stopFn: onResizeStop,
       }
-      return isVue2
-        ? h(ResizeDomCore, { props: _props }, [child])
-        : h(ResizeDomCore, _props, child)
+      return createRender(ResizeDomCore, {}, _props)(child)
     }
-    // @ts-expect-error: vue2
-    const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
-      class: [
-        dragging.value && 'vv-grid-layout--item__draggable',
-        'vv-grid-layout--item',
-        !props.isDraggable && 'vv-grid-layout--item__disabled',
-      ],
-      style: style.value,
-      // DEV: vue2 vue3
-      props: {
+    const dragNode = (child?: VNode[] | VNode) => {
+      const _attrs = {
+        class: [
+          dragging.value && 'vv-grid-layout--item__draggable',
+          'vv-grid-layout--item',
+          !props.isDraggable && 'vv-grid-layout--item__disabled',
+        ],
+        style: style.value,
+      }
+      const _props = {
         disabled: !props.isDraggable,
         startFn: onDragStart,
         stopFn: onDragStop,
         dragFn: onDrag,
-      },
-    }, [() => resizeNode(child)])
+      }
+      return createRender(FreeDomCore, _attrs, _props)(() => resizeNode(child))
+    }
+    // const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
+    //   class: [
+    //     dragging.value && 'vv-grid-layout--item__draggable',
+    //     'vv-grid-layout--item',
+    //     !props.isDraggable && 'vv-grid-layout--item__disabled',
+    //   ],
+    //   style: style.value,
+    //   // DEV: vue2 vue3
+    //   props: {
+    //     disabled: !props.isDraggable,
+    //     startFn: onDragStart,
+    //     stopFn: onDragStop,
+    //     dragFn: onDrag,
+    //   },
+    // }, [() => resizeNode(child)])
 
     return {
       x,
