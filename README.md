@@ -132,3 +132,4 @@ const rect = ref({ })
 4. `limitHeight`和`limitWidth`必须同时设置
 5. `preview`的优先级比其它操作属性要高
 6. 不同的`vue`版本双向绑定的语法糖不一样，具体可以参考上面的使用说明
+7. `vue@2.7`必须使用`vue@2.7.1`，具体原因参见[Cannot assign to a NaN variable](https://github.com/vuejs/vue/issues/12595)

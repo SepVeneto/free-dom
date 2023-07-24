@@ -5,6 +5,7 @@ import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
 import { useLayout } from '../hooks'
 import type { ResizeDomCoreProps } from './resizeDomCore'
+import { createRender } from '../util'
 
 export type GridLayoutItem = {
   i: string | number
@@ -20,10 +21,11 @@ export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
 
 const gridLayoutProps = {
-  style: {
-    type: Object,
-    default: () => ({}),
-  },
+  // DEV: vue2 vue3
+  // style: {
+  //   type: Object,
+  //   default: () => ({}),
+  // },
   modelValue: {
     type: Array as PropType<GridLayoutConfig>,
     required: true,
@@ -90,7 +92,7 @@ const GridLayout = defineComponent({
       if (!config) return
       const isDraggable = !config.static && !props.disabledDrag
       const isResizable = !config.static && !props.disabledResize
-      return h(GridItem, {
+      const _props = {
         x: config.x,
         y: config.y,
         width: config.w,
@@ -98,7 +100,7 @@ const GridLayout = defineComponent({
         isDraggable,
         isResizable,
         scale: config.scale,
-        dragEndFn: (evt, rect) => {
+        dragEndFn: (evt: any, rect: any) => {
           const { x, y } = rect
           const _layout = layout.moveTo(config, x, y)
           emit('update:modelValue', _layout)
@@ -107,7 +109,7 @@ const GridLayout = defineComponent({
         dragStartFn: () => {
           /** pass */
         },
-        dragFn: (evt, data) => {
+        dragFn: (evt: any, data: any) => {
           if (!config) return
           const placeholder = {
             x: config.x,
@@ -120,7 +122,7 @@ const GridLayout = defineComponent({
 
           activeDrag.value = placeholder
         },
-        resizeFn: (evt, data) => {
+        resizeFn: (evt: any, data: any) => {
           const placeholder = {
             x: config.x,
             y: config.y,
@@ -132,24 +134,38 @@ const GridLayout = defineComponent({
           const { w, h } = data
           layout.resizeTo(config, w, h)
         },
-        resizeStopFn: (evt, data) => {
+        resizeStopFn: (evt: any, data: any) => {
           const { w, h } = data
           layout.resizeTo(config, w, h)
           activeDrag.value = null
         },
-      }, () => node)
+      }
+      return createRender(GridItem, {}, _props)({ default: () => node })
     }
     function placeholder() {
       if (!activeDrag.value) return null
       const { x, y, width, height } = activeDrag.value
-      return h(GridItem, {
-        class: 'vv-grid-layout--placeholder',
+      const _props = {
         x,
         y,
         width,
         height,
         move: false,
-      })
+      }
+      return createRender(GridItem, {
+        class: 'vv-grid-layout--placeholder',
+      }, _props)()
+      // return h(GridItem, {
+      //   class: 'vv-grid-layout--placeholder',
+      //   // DEV: vue2 vue3
+      //   props: {
+      //     x,
+      //     y,
+      //     width,
+      //     height,
+      //     move: false,
+      //   },
+      // })
     }
 
     return {
@@ -161,7 +177,8 @@ const GridLayout = defineComponent({
 
   render() {
     const mergedStyle = {
-      ...(this.style || {}),
+      // DEV: vue2 vue3
+      // ...(this.style || {}),
       height: this.layout.calContainerHeight(),
     }
     const defaultSlot =

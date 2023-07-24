@@ -4,25 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vue-demi-switch 3 && vitepress dev packages",
+    "dev": "vitepress dev packages",
     "build:core": "pnpm -C packages/core build",
     "release": "pnpm -C packages/core release",
     "docs:build": "pnpm build:core && vitepress build packages",
-    "test": "vitest"
+    "test": "vitest",
+    "play:v27": "vue-demi-switch 2.7 && pnpm -C playgrounds/vue27 dev",
+    "play:v3": "vue-demi-switch 3 && pnpm -C playgrounds/vue3 dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@vueuse/core": "^9.2.0",
-    "vue-demi": "*",
     "@sepveneto/eslint-config": "^0.9.0",
-    "markdown-it-container": "^3.0.0",
     "@types/markdown-it": "^12.2.3",
     "@types/markdown-it-container": "^2.0.5",
     "@types/node": "^18.7.18",
+    "@vueuse/core": "^9.2.0",
     "eslint": "^8.32.0",
     "markdown-it": "^13.0.1",
+    "markdown-it-container": "^3.0.0",
     "sass": "^1.54.9",
     "typescript": "^5.0.0",
     "unplugin-vue-components": "^0.22.7",
@@ -30,9 +31,12 @@
     "vitepress": "1.0.0-beta.5",
     "vitest": "^0.23.4",
     "vue": "^3.3.4",
-    "vue2": "npm:vue@^2.7.10"
+    "vue2": "npm:vue@^2.7.14"
   },
   "pnpm": {
+    "overrides": {
+      "vue-demi": "0.14.5"
+    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "@algolia/client-search",

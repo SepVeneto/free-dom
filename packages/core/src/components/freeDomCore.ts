@@ -1,6 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, onUnmounted, ref, withModifiers } from 'vue-demi'
+import { computed, defineComponent, isVue2, onUnmounted, ref } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
+import { createRender } from '../util'
 
 function noop() { /** pass */ }
 
@@ -43,8 +44,8 @@ const freeDomCore = defineComponent({
   setup(props) {
     const { only } = useDefaultSlot()
     const dragging = ref(false)
-    const domRef = ref()
-    const node = computed<HTMLElement | undefined>(() => domRef.value?.$el || domRef.value)
+    const coreRef = ref()
+    const node = computed<HTMLElement | undefined>(() => coreRef.value?.$el || coreRef.value)
     const ownerDoc = computed(() => node.value?.ownerDocument)
     const { lastX, lastY, create } = useCoreData(node)
     let parentNode: Element
@@ -146,19 +147,39 @@ const freeDomCore = defineComponent({
 
     return {
       only,
-      domRef,
+      coreRef,
       mousedownFn,
       mouseupFn,
     }
   },
   render() {
-    return this.only
-      ? h(this.only, {
-        ref: 'domRef',
-        onMousedown: withModifiers(this.mousedownFn, ['stop']),
-        onMouseup: this.mouseupFn,
-      })
-      : null
+    const vue2Props = {
+      on: {
+        mousedown: (evt: MouseEvent) => {
+          evt.stopPropagation()
+          this.mousedownFn(evt)
+        },
+        mouseup: this.mouseupFn,
+      },
+    }
+    const vue3Props = {
+      onMousedown: (evt: MouseEvent) => {
+        evt.stopPropagation()
+        this.mousedownFn(evt)
+      },
+      onMouseup: this.mouseupFn,
+    }
+    const res = createRender(
+      this.only,
+      { ref: (el: any) => { this.coreRef = el } },
+      isVue2 ? {} : vue3Props,
+      isVue2 ? vue2Props.on : {},
+    )
+    if (typeof res === 'function') {
+      return res()
+    } else {
+      return res
+    }
   },
 })
 

@@ -1,16 +1,15 @@
 import {
-  useDefaultSlot,
   useDraggableData,
   useResizableData,
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, h, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
-import { clamp } from '../util'
+import { clamp, createRender } from '../util'
 
 function noop() { /* noop */ }
 
@@ -88,7 +87,6 @@ const freeDom = defineComponent({
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
 
-    const { slots: children } = useDefaultSlot()
     const {
       x,
       y,
@@ -210,22 +208,22 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
     }
-    const resizeNode = () => h(ResizeDomCore, {
-      width: width.value,
-      height: height.value,
-      lockAspectRatio: sceneContext.lockAspectRatio.value,
-      dragOpts: { disabled: sceneContext.disabledResize.value },
-      resizeFn: onResize,
-      stopFn: onResizeStop,
-      minHeight: sceneContext.minHeight.value,
-      minWidth: sceneContext.minWidth.value,
-      scale: sceneContext.scale.value,
-    }, {
-      default: () => children.value,
-      handler: slots.handler,
-    })
+    const resizeNode = () => {
+      const props = {
+        width: width.value,
+        height: height.value,
+        lockAspectRatio: sceneContext.lockAspectRatio.value,
+        dragOpts: { disabled: sceneContext.disabledResize.value },
+        resizeFn: onResize,
+        stopFn: onResizeStop,
+        minHeight: sceneContext.minHeight.value,
+        minWidth: sceneContext.minWidth.value,
+        scale: sceneContext.scale.value,
+      }
+      return createRender(ResizeDomCore, {}, props)(slots)
+    }
 
-    expose({
+    expose?.({
       syncSize,
     })
 
@@ -239,17 +237,23 @@ const freeDom = defineComponent({
     }
   },
   render() {
-    // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
-    // 表现出来就是props的值在resizeBox内部一直保持初始值不变
-
-    return h(FreeDomCore, {
-      ref: 'domRef',
-      class: 'vv-free-dom--draggable',
-      style: this.style,
+    const props = {
       stopFn: this.onDragStop,
       dragFn: this.onDrag,
       disabled: this.disabled,
-    }, () => this.resizeNode())
+    }
+    // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
+    // 表现出来就是props的值在resizeBox内部一直保持初始值不变
+    const slots = () => this.resizeNode()
+    return createRender(
+      FreeDomCore,
+      {
+        ref: 'domRef',
+        class: 'vv-free-dom--draggable',
+        style: this.style,
+      },
+      props,
+    )?.(slots)
   },
 })
 
