@@ -1,4 +1,4 @@
-import { merge } from 'lodash'
+import { merge } from 'lodash-unified'
 import type { Component, VNode, VNodeArrayChildren } from 'vue-demi'
 import { h, isVue2 } from 'vue-demi'
 
