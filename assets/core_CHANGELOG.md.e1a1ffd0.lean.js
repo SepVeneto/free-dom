@@ -1,1 +1,0 @@
-import{o as e,c as r,U as a}from"./chunks/framework.9199ecdb.js";const t=a("",26),o=[t],b=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"core/CHANGELOG.md","filePath":"core/CHANGELOG.md"}'),i={name:"core/CHANGELOG.md"},d=Object.assign(i,{setup(c){return(f,l)=>(e(),r("div",null,o))}});export{b as __pageData,d as default};
