@@ -21,11 +21,6 @@ export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
 
 const gridLayoutProps = {
-  // DEV: vue2 vue3
-  // style: {
-  //   type: Object,
-  //   default: () => ({}),
-  // },
   modelValue: {
     type: Array as PropType<GridLayoutConfig>,
     required: true,
@@ -75,6 +70,7 @@ export type GridLayoutProps = ExtractPropTypes<typeof gridLayoutProps>
 
 const GridLayout = defineComponent({
   name: 'GridLayout',
+  inheritAttrs: false,
   props: gridLayoutProps,
   emits: ['update:modelValue'],
 
@@ -155,17 +151,6 @@ const GridLayout = defineComponent({
       return createRender(GridItem, {
         class: 'vv-grid-layout--placeholder',
       }, _props)()
-      // return h(GridItem, {
-      //   class: 'vv-grid-layout--placeholder',
-      //   // DEV: vue2 vue3
-      //   props: {
-      //     x,
-      //     y,
-      //     width,
-      //     height,
-      //     move: false,
-      //   },
-      // })
     }
 
     return {
@@ -177,8 +162,7 @@ const GridLayout = defineComponent({
 
   render() {
     const mergedStyle = {
-      // DEV: vue2 vue3
-      // ...(this.style || {}),
+      ...(this.$attrs.style || {}),
       height: this.layout.calContainerHeight(),
     }
     const defaultSlot =

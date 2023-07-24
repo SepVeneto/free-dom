@@ -22,4 +22,5 @@ yarn add @sepveneto/free-dom
 
 ```js
 import { FreeDom, FreeScene, GridLayout } from '@sepveneto/free-dom'
+import '@sepveneto/free-dom/css'
 ```

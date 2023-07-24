@@ -131,21 +131,6 @@ export const GridItem = defineComponent({
       }
       return createRender(FreeDomCore, _attrs, _props)(() => resizeNode(child))
     }
-    // const dragNode = (child?: VNode[] | VNode) => h(FreeDomCore, {
-    //   class: [
-    //     dragging.value && 'vv-grid-layout--item__draggable',
-    //     'vv-grid-layout--item',
-    //     !props.isDraggable && 'vv-grid-layout--item__disabled',
-    //   ],
-    //   style: style.value,
-    //   // DEV: vue2 vue3
-    //   props: {
-    //     disabled: !props.isDraggable,
-    //     startFn: onDragStart,
-    //     stopFn: onDragStop,
-    //     dragFn: onDrag,
-    //   },
-    // }, [() => resizeNode(child)])
 
     return {
       x,

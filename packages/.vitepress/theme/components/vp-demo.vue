@@ -40,7 +40,6 @@ const demo = computed(() => {
   for (const k of keys) {
     const p = k.replace('../examples/', '').replace('.vue', '')
     if (p === props.path) {
-      console.log(props.demos[k].default, props.path)
       return props.demos[k].default
     }
   }
