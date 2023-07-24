@@ -1,37 +1,63 @@
 <template>
-  <div>
-    <a
-      href="https://vitejs.dev"
-      target="_blank"
-    >
-      <img
-        src="/vite.svg"
-        class="logo"
-        alt="Vite logo"
+  <FreeScene style="width: 100vw; height: 50vh; display: block;">
+    <FreeDom>
+      <a
+        href="https://vitejs.dev"
+        target="_blank"
       >
-    </a>
-    <a
-      href="https://vuejs.org/"
-      target="_blank"
-    >
-      <img
-        src="./assets/vue.svg"
-        class="logo vue"
-        alt="Vue logo"
+        <img
+          src="/vite.svg"
+          class="logo"
+          alt="Vite logo"
+        >
+      </a>
+    </FreeDom>
+    <FreeDom>
+      <a
+        href="https://vuejs.org/"
+        target="_blank"
       >
-    </a>
-  </div>
-  <FreeDom>
-    <HelloWorld msg="Vite + Vue" />
-  </FreeDom>
+        <img
+          src="./assets/vue.svg"
+          class="logo vue"
+          alt="Vue logo"
+        >
+      </a>
+    </FreeDom>
+    <FreeDom>
+      <HelloWorld msg="Vite + Vue" />
+    </FreeDom>
+  </FreeScene>
+  <GridLayout
+    v-model="layout"
+    collision
+  >
+    <span
+      key="a"
+      class="grid-item"
+    >a</span>
+    <span
+      key="b"
+      class="grid-item"
+    >b</span>
+    <span
+      key="c"
+      class="grid-item"
+    >c</span>
+  </GridLayout>
 </template>
 
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
-import { FreeDom } from '@sepveneto/free-dom'
-import { useSlots } from 'vue'
+import { FreeDom, FreeScene, GridLayout } from '@sepveneto/free-dom'
 import '@sepveneto/free-dom/css'
-console.log(useSlots())
+import { ref } from 'vue'
+
+const layout = ref([
+  { i: 'a', x: 0, y: 0, w: 1, h: 2 },
+  { i: 'b', x: 1, y: 0, w: 3, h: 2 },
+  { i: 'c', x: 2, y: 0, w: 1, h: 2 },
+])
 </script>
 
 <style scoped>
