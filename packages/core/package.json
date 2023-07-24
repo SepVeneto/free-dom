@@ -1,6 +1,6 @@
 {
   "name": "@sepveneto/free-dom",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -16,7 +16,11 @@
     "./css": "./dist/index.css"
   },
   "typesVersions": {
-    "*": { ".": ["dist/index.d.ts"]}
+    "*": {
+      ".": [
+        "dist/index.d.ts"
+      ]
+    }
   },
   "scripts": {
     "build": "tsup",
