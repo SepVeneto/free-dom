@@ -170,6 +170,7 @@ const freeDomCore = defineComponent({
       onMouseup: this.mouseupFn,
     }
     const res = createRender(
+      // @ts-expect-error: maybe vue2
       this.only,
       { ref: (el: any) => { this.coreRef = el } },
       isVue2 ? {} : vue3Props,
