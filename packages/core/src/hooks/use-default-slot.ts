@@ -7,11 +7,12 @@ export function useDefaultSlot() {
       ? slots.default()
       : slots.default
   })
-  const only = computed(() => slotList.value?.filter(slot => {
-    // DEV: vue2 vue3
-    // @ts-expect-error: exist on vue2
-    return !slot.isComment
-  })[0] || null)
+  const only = computed(() => slotList.value?.[0])
+  // const only = computed(() => slotList.value?.filter(slot => {
+  //   return true
+  //   // DEV: vue2 vue3
+  //   // return !slot.isComment
+  // })[0] || null)
   return {
     slots: slotList,
     only,
