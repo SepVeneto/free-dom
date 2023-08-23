@@ -45,7 +45,7 @@ export const freeDomProps = {
     type: Function as PropType<CoreFnCallback>,
     default: noop,
   },
-  dargFn: {
+  dragFn: {
     type: Function as PropType<CoreFnCallback>,
     default: noop,
   },
@@ -93,6 +93,7 @@ const freeDom = defineComponent({
       deltaX,
       deltaY,
       create,
+      handleDragStart,
       handleDrag,
       handleDragStop,
     } = useDraggableData(props)
@@ -165,6 +166,9 @@ const freeDom = defineComponent({
       emit('update:y', y.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
     }
+    const onDragStart: CoreFnCallback = (evt, coreData) => {
+      handleDragStart(evt, coreData)
+    }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
       // @ts-expect-error: execute after mounted
@@ -196,17 +200,21 @@ const freeDom = defineComponent({
       props.resizeFn(evt, { node, width: w, height: h, handle: axis })
       sceneContext?.emit('move')
     }
-    const onResizeStop: ResizeFnCallback = () => {
+    const onResizeStop: ResizeFnCallback = (evt, data) => {
       const isValid = sceneContext.check?.({ x: x.value, y: y.value, width: width.value, height: height.value })
       if (!isValid) {
         x.value = clamp(x.value, 0, sceneContext.width)
         y.value = clamp(y.value, 0, sceneContext.height)
       }
 
+      props.resizeStopFn(evt, data)
       emit('update:width', width.value)
       emit('update:height', height.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
+    }
+    const onResizeStart: ResizeFnCallback = (evt, data) => {
+      props.resizeStartFn(evt, data)
     }
     const resizeNode = () => {
       const props = {
@@ -214,6 +222,7 @@ const freeDom = defineComponent({
         height: height.value,
         lockAspectRatio: sceneContext.lockAspectRatio.value,
         dragOpts: { disabled: sceneContext.disabledResize.value },
+        startFn: onResizeStart,
         resizeFn: onResize,
         stopFn: onResizeStop,
         minHeight: sceneContext.minHeight.value,
@@ -232,12 +241,14 @@ const freeDom = defineComponent({
       style,
       onDragStop,
       onDrag,
+      onDragStart,
       resizeNode,
       disabled: sceneContext.disabledDrag,
     }
   },
   render() {
     const props = {
+      startFn: this.onDragStart,
       stopFn: this.onDragStop,
       dragFn: this.onDrag,
       disabled: this.disabled,

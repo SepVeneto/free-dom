@@ -16,13 +16,16 @@ export function useDraggableData(props: FreeDomProps) {
     y.value = props.y || props.modelValue.y || 0
   })
 
+  const handleDragStart: CoreFnCallback = (evt, data) => {
+    props.dragStartFn(evt, data)
+  }
   const handleDrag: CoreFnCallback = (evt, data) => {
     x.value = data.x
     y.value = data.y
     deltaX.value = data.deltaX
     deltaY.value = data.deltaY
 
-    props.dargFn(evt, data)
+    props.dragFn(evt, data)
   }
   const handleDragStop: CoreFnCallback = (evt, coreData) => {
     const data = dragData.value = create(coreData)
@@ -47,6 +50,7 @@ export function useDraggableData(props: FreeDomProps) {
     deltaX,
     deltaY,
     create,
+    handleDragStart,
     handleDrag,
     handleDragStop,
   }
