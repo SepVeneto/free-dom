@@ -15,12 +15,18 @@ title: '首页'
 | ---- | ---- | ---- | ----- | ----- | --- |
 | v-model/model-value | object | ❌ | - | - | 元素的位置及尺寸
 | lock-aspect-ratio | boolean | ❌ | false | - | 缩放时是否按当前宽高比计算
+| dragStartFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳开始的回调函数 |
+| dragFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳时的回调函数 |
+| dragStopFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳结束的回调函数 |
+| resizeStartFn | <Desc desc="(evt, resizeData) => void">ResizeFnCallback</Desc> | ❌ | - | - | 缩放开始的回调函数 |
+| resizeFn | <Desc desc="(evt, resizeData) => void">ResizeFnCallback</Desc> | ❌ | - | - | 缩放时的回调函数 |
+| resizeStopFn | <Desc desc="(evt, resizeData) => void">ResizeFnCallback</Desc> | ❌ | - | - | 缩放结束的回调函数 |
 | auto-size | boolean | ❌ | true | - | 是否在初次渲染时根据当时的元素尺寸自动计算宽高
 | min-width | number | ❌ | 50 | - | 缩放的最小宽度，单位px
 | min-height | number | ❌ | 50 | - | 缩放的最小高度，单位px
 | disabled-drag | boolean | ❌ | false | - | 是否禁用拖曳功能
 | disabled-resize | boolean | ❌ | false | - | 是否禁用缩放功能
-| scale | array | ❌ | - | ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] | 允许缩放的方向
+| scale | array | ❌ | - | <Desc desc="'t' \| 'r' \| 'l' \| 'b' \| 'lt' \| 'lb' \| 'rt' \| 'rb'">enum</Desc> | 允许缩放的方向
 | fix-non-monospaced | boolean | ❌ | false | - | 是否在初次渲染是等待字体加载完成再计算尺寸（主要是针对非等宽字体）
 
 ### 方法
