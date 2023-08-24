@@ -25,6 +25,7 @@ export default defineConfig({
           { text: '自定义缩放操作点', link: '/free-dom/custom-handler' },
           { text: '边缘吸附', link: '/free-dom/diff' },
           { text: '同步尺寸', link: '/free-dom/sync-size' },
+          { text: '指定拖曳对象', link: '/free-dom/drag-handle' },
         ],
       },
       {

@@ -57,3 +57,54 @@ describe('callback', () => {
     expect(resizeStopSpy).toHaveBeenCalled()
   })
 })
+
+describe('drag handle', () => {
+  test('cannot find handle', async () => {
+    const warnSpy = vi.spyOn(console, 'warn')
+
+    const wrapper = mount(h(
+      FreeDom,
+      { handle: 'operate' },
+      () => [h('div', { class: 'operate' }, 'x')],
+    ))
+    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
+    dnd.trigger('mousedown')
+    expect(warnSpy).toHaveBeenCalledOnce()
+  })
+  test('drag handle with class', async () => {
+    const options = {
+      dragStartFn: () => ({}),
+      handle: '.operate',
+    }
+    const dragStartSpy = vi.spyOn(options, 'dragStartFn')
+
+    const wrapper = mount(h(
+      FreeDom,
+      options,
+      () => [h('div', { class: 'operate' }, 'x')],
+    ))
+    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
+    dnd.trigger('mousedown')
+    expect(dragStartSpy).not.toHaveBeenCalled()
+    dnd.find('.operate').trigger('mousedown')
+    expect(dragStartSpy).toHaveBeenCalled()
+  })
+  test('drag handle with id', async () => {
+    const options = {
+      dragStartFn: () => ({}),
+      handle: '#operate',
+    }
+    const dragStartSpy = vi.spyOn(options, 'dragStartFn')
+
+    const wrapper = mount(h(
+      FreeDom,
+      options,
+      () => [h('div', { id: 'operate' }, 'x')],
+    ))
+    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
+    dnd.trigger('mousedown')
+    expect(dragStartSpy).not.toHaveBeenCalled()
+    dnd.find('#operate').trigger('mousedown')
+    expect(dragStartSpy).toHaveBeenCalled()
+  })
+})

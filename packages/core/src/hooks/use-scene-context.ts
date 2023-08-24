@@ -9,6 +9,7 @@ let id = 0
 export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
   const uuid = id++
+  const handle = computed(() => SceneContext?.handle || props.handle)
   const lockAspectRatio = computed(() => SceneContext?.lockAspectRatio || props.lockAspectRatio)
   const minWidth = computed(() => SceneContext?.minWidth || props.minWidth)
   const minHeight = computed(() => SceneContext?.minHeight || props.minHeight)
@@ -35,6 +36,7 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     height: SceneContext?.height,
 
     scale,
+    handle,
     lockAspectRatio,
     minWidth,
     minHeight,

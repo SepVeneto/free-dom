@@ -36,6 +36,10 @@ export const freeDomProps = {
     type: Number,
     default: undefined,
   },
+  handle: {
+    type: String,
+    default: undefined,
+  },
   lockAspectRatio: Boolean,
   dragStartFn: {
     type: Function as PropType<CoreFnCallback>,
@@ -119,6 +123,7 @@ const freeDom = defineComponent({
         sceneContext.minHeight.value,
       )
     }
+    const canDrag = ref(false)
 
     onMounted(() => {
       props.autoSize && syncSize()
@@ -132,6 +137,7 @@ const freeDom = defineComponent({
     }))
 
     const onDrag: CoreFnCallback = (evt, coreData) => {
+      if (!canDrag.value) return
       const data = create(coreData)
       const newPos = {
         x: data.x,
@@ -146,6 +152,7 @@ const freeDom = defineComponent({
       sceneContext.emit('move')
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
+      if (!canDrag.value) return
       const newPos = {
         x: x.value,
         y: y.value,
@@ -167,7 +174,20 @@ const freeDom = defineComponent({
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
     }
     const onDragStart: CoreFnCallback = (evt, coreData) => {
-      handleDragStart(evt, coreData)
+      const handle = sceneContext.handle.value
+      if (handle) {
+        if (handle.startsWith('.')) {
+          canDrag.value = (evt.target as HTMLElement)!.classList.contains(handle.slice(1))
+        } else if (handle.startsWith('#')) {
+          canDrag.value = (evt.target as HTMLElement)!.id === handle.slice(1)
+        } else {
+          console.warn(`[free-dom] can not find element with ${handle}`)
+          canDrag.value = true
+        }
+      } else {
+        canDrag.value = true
+      }
+      canDrag.value && handleDragStart(evt, coreData)
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {

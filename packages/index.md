@@ -15,6 +15,7 @@ title: '首页'
 | ---- | ---- | ---- | ----- | ----- | --- |
 | v-model/model-value | object | ❌ | - | - | 元素的位置及尺寸
 | lock-aspect-ratio | boolean | ❌ | false | - | 缩放时是否按当前宽高比计算
+| handle | string | ❌ | - | - | 通过class或id指定允许触发拖曳的元素
 | dragStartFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳开始的回调函数 |
 | dragFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳时的回调函数 |
 | dragStopFn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳结束的回调函数 |

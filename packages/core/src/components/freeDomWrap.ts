@@ -22,6 +22,7 @@ export const freeDomWrapProps = {
     type: Boolean,
     default: true,
   },
+  handle: freeDomProps.handle,
   minWidth: freeDomProps.minWidth,
   minHeight: freeDomProps.minHeight,
   lockAspectRatio: freeDomProps.lockAspectRatio,
