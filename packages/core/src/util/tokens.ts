@@ -9,6 +9,7 @@ export const SceneToken = Symbol('Scene')
 export type SceneTokenContext = {
   nodes: INode[]
   register: (uuid: number, node: INodeInfo) => void
+  remove: (uuid: number) => void
   checkValid: (pos: IPos) => boolean
   on: EventBusOnHandle
   off: EventBusOffHandle

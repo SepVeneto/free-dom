@@ -76,6 +76,10 @@ export const FreeDomWrap = defineComponent({
     function register(uuid: number, node: INodeInfo) {
       nodes.value.push({ uuid, node })
     }
+    function remove(uuid: number) {
+      const index = nodes.value.findIndex(item => item.uuid === uuid)
+      nodes.value.splice(index, 1)
+    }
     function checkValid(pos: IPos) {
       const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
@@ -95,6 +99,7 @@ export const FreeDomWrap = defineComponent({
         height,
 
         register,
+        remove,
         checkValid,
         on: eventBus.on,
         off: eventBus.off,

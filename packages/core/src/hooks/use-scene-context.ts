@@ -1,6 +1,6 @@
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
-import { computed, inject, onMounted } from 'vue-demi'
+import { computed, inject, onMounted, onUnmounted } from 'vue-demi'
 import type { INodeInfo, IPos } from '../components/freeDomWrap'
 import type { FreeDomProps } from '../components/freeDom'
 
@@ -22,6 +22,9 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
 
   onMounted(() => {
     SceneContext?.register(uuid, context)
+  })
+  onUnmounted(() => {
+    SceneContext?.remove(uuid)
   })
 
   function check(pos: IPos) {
