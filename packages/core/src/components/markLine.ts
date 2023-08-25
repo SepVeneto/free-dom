@@ -1,4 +1,4 @@
-import { defineComponent, h, inject, onBeforeUnmount, reactive, ref, shallowRef } from 'vue-demi'
+import { computed, defineComponent, h, inject, onBeforeUnmount, reactive, shallowRef } from 'vue-demi'
 import { SceneToken } from '../util'
 
 const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
@@ -11,7 +11,7 @@ export default defineComponent({
   setup() {
     const SceneContext = inject<any>(SceneToken)
     const lines = shallowRef(lineType)
-    const diff = ref(SceneContext.diff)
+    const diff = computed(() => SceneContext.diff)
     const nodes = SceneContext.nodes as any[]
 
     const lineStatus = reactive({

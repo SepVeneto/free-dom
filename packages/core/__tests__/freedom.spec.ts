@@ -157,3 +157,53 @@ describe('auto correct', () => {
     expect(nodeList[0].style.y).toBe(80)
   })
 })
+
+describe('reactive diff', () => {
+  test('dynamic diff', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = mount({
+      components: {
+        FreeDom,
+        FreeScene,
+      },
+      template: `
+        <FreeScene
+          :width="100"
+          :height="100"
+          :diff="diff"
+        >
+          <FreeDom
+            v-for="(node, index) in nodeList"
+            :key="index"
+            :width="20"
+            :height="20"
+            v-model="node.style"
+          >{{ index }}</FreeDom>
+        </FreeScene>
+      `,
+      data: () => ({
+        nodeList,
+        diff: 0,
+      }),
+    })
+
+    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
+    dnd.trigger('mousedown')
+
+    wrapper.setData({ diff: 2 })
+    await nextTick()
+
+    {
+      const mousemove = new MouseEvent('mousemove', { clientY: 0, clientX: 4 })
+      const ownerDoc = wrapper.element.ownerDocument
+      ownerDoc.dispatchEvent(mousemove)
+    }
+
+    dnd.trigger('mouseup')
+
+    expect(nodeList[0].style.x).toBe(5)
+  })
+})
