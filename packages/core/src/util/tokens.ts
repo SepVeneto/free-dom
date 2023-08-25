@@ -11,6 +11,7 @@ export type SceneTokenContext = {
   register: (uuid: number, node: INodeInfo) => void
   remove: (uuid: number) => void
   checkValid: (pos: IPos) => boolean
+  correct: (pos: Required<IPos>) => Required<IPos>
   on: EventBusOnHandle
   off: EventBusOffHandle
   emit: EventBusEmitHandle

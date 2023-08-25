@@ -112,7 +112,9 @@ const freeDom = defineComponent({
         deltaX,
         deltaY,
       }),
-      trigger: () => { /* TODO */ },
+      trigger: (pos: any) => {
+        emit('update:modelValue', pos)
+      },
     }
 
     const sceneContext = useSceneContext(context, props)
@@ -127,6 +129,9 @@ const freeDom = defineComponent({
 
     onMounted(() => {
       props.autoSize && syncSize()
+      // @ts-expect-error: trigger after mounted
+      const pos = sceneContext.correct(context._rect)
+      context.trigger({ x: pos.x, y: pos.y, w: pos.width, h: pos.height })
     })
 
     const style = computed(() => ({

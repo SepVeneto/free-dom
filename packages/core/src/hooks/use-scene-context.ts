@@ -31,10 +31,15 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     if (!SceneContext) return true
     return SceneContext.checkValid(pos)
   }
+  function correct(pos: Required<IPos>) {
+    if (!SceneContext) return pos
+    return SceneContext.correct(pos)
+  }
 
   return {
     emit: (name: string) => SceneContext?.emit(name, uuid),
     check,
+    correct,
     width: SceneContext?.width,
     height: SceneContext?.height,
 
