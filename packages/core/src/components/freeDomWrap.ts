@@ -41,6 +41,7 @@ export type IPos = {
 }
 export type INodeInfo = {
   _rect: IPos
+  trigger: (pos: { x: number, y: number, w: number, h: number }) => void
 }
 export type INode = {
   uuid: number
@@ -67,10 +68,21 @@ export const FreeDomWrap = defineComponent({
     onMounted(() => {
       if (!props.width || !props.height) {
         if (!rectRef.value) console.warn('[free-dom] cannot find element, width or height may be set to 0')
-        const { width: w, height: h } = rectRef.value?.getBoundingClientRect() || {}
+        const h = rectRef.value?.clientHeight
+        const w = rectRef.value?.clientWidth
         if (!props.width) width.value = w || 0
         if (!props.height) height.value = h || 0
       }
+      nodes.value.forEach(pos => {
+        // @ts-expect-error: trigger after mounted
+        const { x, y, width, height } = correct(pos.node._rect)
+        // 直接对_rect赋值会导致引用丢失，进而无法触发坐标的更新
+        pos.node._rect.x = x
+        pos.node._rect.y = y
+        pos.node._rect.width = width
+        pos.node._rect.height = height
+        pos.node.trigger({ x, y, w: width, h: height })
+      })
     })
 
     function register(uuid: number, node: INodeInfo) {
@@ -89,6 +101,38 @@ export const FreeDomWrap = defineComponent({
       // @ts-expect-error: trigger after mounted
       y! + h! <= height.value
     }
+    function correct(pos: Required<IPos>) {
+      let x = Math.max(pos.x, 0)
+      let y = Math.max(pos.y, 0)
+      let w = pos.width
+      let h = pos.height
+      // @ts-expect-error: trigger after mounted
+      if (pos.x + pos.width > width.value) {
+      // @ts-expect-error: trigger after mounted
+        x = width.value - pos.width
+        if (x < 0) {
+        // @ts-expect-error: trigger after mounted
+          w = width.value
+          x = 0
+        }
+      }
+      // @ts-expect-error: trigger after mounted
+      if (pos.y + pos.height > height.value) {
+      // @ts-expect-error: trigger after mounted
+        y = height.value - pos.height
+        if (y < 0) {
+        // @ts-expect-error: trigger after mounted
+          h = height.value
+          y = 0
+        }
+      }
+      return {
+        x,
+        y,
+        width: w,
+        height: h,
+      }
+    }
 
     provide(
       SceneToken,
@@ -101,6 +145,7 @@ export const FreeDomWrap = defineComponent({
         register,
         remove,
         checkValid,
+        correct,
         on: eventBus.on,
         off: eventBus.off,
         emit: eventBus.emit,

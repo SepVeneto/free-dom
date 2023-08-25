@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
-import { FreeDom } from '../src'
+import { FreeDom, FreeScene } from '../src'
 import { mount } from '@vue/test-utils'
-import { h } from 'vue'
+import { h, nextTick, ref } from 'vue'
 
 describe('callback', () => {
   test('drag fn', async () => {
@@ -106,5 +106,54 @@ describe('drag handle', () => {
     expect(dragStartSpy).not.toHaveBeenCalled()
     dnd.find('#operate').trigger('mousedown')
     expect(dragStartSpy).toHaveBeenCalled()
+  })
+})
+
+describe('auto correct', () => {
+  test('when scene mounted', async () => {
+    const INIT = { x: -20, y: 100, w: 20, h: 20 }
+    const pos = ref(INIT)
+    mount(h(
+      FreeScene,
+      {
+        width: 100,
+        height: 100,
+      },
+      () => h(FreeDom, {
+        modelValue: pos.value,
+        'onUpdate:modelValue': (val) => { pos.value = val },
+      }, () => h('span', 'test')),
+    ))
+    await nextTick()
+    expect(pos.value.x).toBe(0)
+    expect(pos.value.y).toBe(80)
+  })
+  test('when add new', async () => {
+    const nodeList = [{ style: { x: -20, y: 100 } }]
+    const wrapper = mount({
+      components: {
+        FreeDom,
+        FreeScene,
+      },
+      template: `
+      <FreeScene :width="100" :height="100">
+        <FreeDom
+          v-for="(node, index) in nodeList"
+          :key="index"
+          :width="20"
+          :height="20"
+          v-model="node.style"
+        >{{ index }}</FreeDom>
+      </FreeScene>
+      `,
+      data: () => ({ nodeList: [] }),
+    })
+    await nextTick()
+    wrapper.setData({
+      nodeList,
+    })
+    await nextTick()
+    expect(nodeList[0].style.x).toBe(0)
+    expect(nodeList[0].style.y).toBe(80)
   })
 })

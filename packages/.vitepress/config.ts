@@ -26,6 +26,7 @@ export default defineConfig({
           { text: '边缘吸附', link: '/free-dom/diff' },
           { text: '同步尺寸', link: '/free-dom/sync-size' },
           { text: '指定拖曳对象', link: '/free-dom/drag-handle' },
+          { text: '自动更正', link: '/free-dom/auto-correct' },
         ],
       },
       {
