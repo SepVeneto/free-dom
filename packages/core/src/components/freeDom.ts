@@ -135,7 +135,6 @@ const freeDom = defineComponent({
     })
 
     const style = computed(() => ({
-      position: 'absolute',
       width: `${width.value}px`,
       height: `${height.value}px`,
       transform: `translate(${x.value}px, ${y.value}px)`,
@@ -285,7 +284,7 @@ const freeDom = defineComponent({
       FreeDomCore,
       {
         ref: 'domRef',
-        class: 'vv-free-dom--draggable',
+        class: ['vv-free-dom--draggable', this.disabled && 'vv-free-dom--draggable__disabled'],
         style: this.style,
       },
       props,

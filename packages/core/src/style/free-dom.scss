@@ -1,5 +1,9 @@
 .vv-free-dom--draggable {
+  position: absolute;
   cursor: move;
+}
+.vv-free-dom--draggable__disabled {
+  cursor: initial;
 }
 .vv-free-dom--line {
   background: var(--vv-free-dom--line);
