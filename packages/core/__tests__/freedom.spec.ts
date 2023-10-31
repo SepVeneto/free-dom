@@ -1,10 +1,10 @@
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable promise/param-names */
 import { describe, expect, test, vi } from 'vitest'
-import { FreeDom, FreeDomCore, FreeScene } from '../src'
-import type { VueWrapper } from '@vue/test-utils'
+import { FreeDom, FreeScene } from '../src'
 import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
+import { simulateMoveFromTo } from './util'
 import type { CoreFnCallback } from '../src/components/freeDomCore'
 
 describe('callback', () => {
@@ -199,7 +199,7 @@ describe('reactive diff', () => {
   })
 })
 
-describe('core drag scale', () => {
+describe('drag scale', () => {
   test('when parent element is 0.5x', () => new Promise<void>(done => {
     const onDragFn: CoreFnCallback = (evt, data) => {
       expect(data.x).equal(200)
@@ -209,9 +209,9 @@ describe('core drag scale', () => {
       done()
     }
     const wrapper = mount(h(
-      FreeDomCore,
+      FreeDom,
       {
-        scale: 0.5,
+        transformScale: 0.5,
         dragFn: onDragFn,
       },
       () => h('test'),
@@ -228,9 +228,9 @@ describe('core drag scale', () => {
       done()
     }
     const wrapper = mount(h(
-      FreeDomCore,
+      FreeDom,
       {
-        scale: 2,
+        transformScale: 2,
         dragFn: onDragFn,
       },
       () => h('test'),
@@ -239,23 +239,3 @@ describe('core drag scale', () => {
     simulateMoveFromTo(wrapper, 0, 0, 100, 100)
   }))
 })
-
-function simulateMoveFromTo(
-  node: VueWrapper,
-  fromX: number,
-  fromY: number,
-  toX: number,
-  toY: number,
-) {
-  const dnd = node.findComponent({ name: 'FreeDomCore' })
-  dnd.trigger('mousedown', { clientX: fromX, clientY: fromY })
-
-  const doc = node.element.ownerDocument
-  const mousemove = new MouseEvent('mousemove', {
-    clientX: toX,
-    clientY: toY,
-  })
-  doc.dispatchEvent(mousemove)
-
-  dnd.trigger('mouseup')
-}
