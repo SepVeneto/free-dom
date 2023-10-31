@@ -34,6 +34,10 @@ export const freeDomCoreProps = {
     default: noop,
   },
   disabled: Boolean,
+  scale: {
+    type: Number,
+    default: 1,
+  },
 }
 
 export type FreeDomCoreProps = ExtractPropTypes<typeof freeDomCoreProps>
@@ -139,8 +143,8 @@ const freeDomCore = defineComponent({
         parentRect = isBody ? { left: 0, top: 0 } : parent.getBoundingClientRect()
       }
 
-      const x = evt.clientX + parent.scrollLeft - parentRect.left
-      const y = evt.clientY + parent.scrollTop - parentRect.top
+      const x = (evt.clientX + parent.scrollLeft - parentRect.left) / props.scale
+      const y = (evt.clientY + parent.scrollTop - parentRect.top) / props.scale
 
       return { x, y }
     }

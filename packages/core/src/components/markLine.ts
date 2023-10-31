@@ -11,7 +11,7 @@ export default defineComponent({
   setup() {
     const SceneContext = inject<any>(SceneToken)
     const lines = shallowRef(lineType)
-    const diff = computed(() => SceneContext.diff)
+    const diff = computed(() => SceneContext.diff / SceneContext.transformScale)
     const nodes = SceneContext.nodes as any[]
 
     const lineStatus = reactive({
