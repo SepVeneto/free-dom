@@ -16,6 +16,7 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   const disabledDrag = computed(() => SceneContext?.disabledDrag || props.disabledDrag)
   const disabledResize = computed(() => SceneContext?.disabledResize || props.disabledResize)
   const scale = computed(() => SceneContext?.scale || props.scale)
+  const transformScale = computed(() => SceneContext?.transformScale || props.transformScale)
   const fixNonMonospaced = computed(() => {
     return SceneContext?.fixNonMonospaced || props.fixNonMonospaced
   })
@@ -51,5 +52,6 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     disabledDrag,
     disabledResize,
     fixNonMonospaced,
+    transformScale,
   }
 }

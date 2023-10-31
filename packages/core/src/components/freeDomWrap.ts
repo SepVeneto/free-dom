@@ -22,6 +22,10 @@ export const freeDomWrapProps = {
     type: Boolean,
     default: true,
   },
+  transformScale: {
+    type: Number,
+    default: 1,
+  },
   handle: freeDomProps.handle,
   minWidth: freeDomProps.minWidth,
   minHeight: freeDomProps.minHeight,

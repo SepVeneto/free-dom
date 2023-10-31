@@ -74,6 +74,10 @@ export const freeDomProps = {
   disabledDrag: Boolean,
   disabledResize: Boolean,
   scale: resizeDomCoreProps.scale,
+  transformScale: {
+    type: Number,
+    default: 1,
+  },
   fixNonMonospaced: Boolean,
 }
 export type FreeDomProps = ExtractPropTypes<typeof freeDomProps>
@@ -245,7 +249,10 @@ const freeDom = defineComponent({
         width: width.value,
         height: height.value,
         lockAspectRatio: sceneContext.lockAspectRatio.value,
-        dragOpts: { disabled: sceneContext.disabledResize.value },
+        dragOpts: {
+          disabled: sceneContext.disabledResize.value,
+          scale: sceneContext.transformScale.value,
+        },
         startFn: onResizeStart,
         resizeFn: onResize,
         stopFn: onResizeStop,

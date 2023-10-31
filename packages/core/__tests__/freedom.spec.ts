@@ -1,7 +1,11 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable promise/param-names */
 import { describe, expect, test, vi } from 'vitest'
-import { FreeDom, FreeScene } from '../src'
+import { FreeDom, FreeDomCore, FreeScene } from '../src'
+import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
+import type { CoreFnCallback } from '../src/components/freeDomCore'
 
 describe('callback', () => {
   test('drag fn', async () => {
@@ -17,17 +21,10 @@ describe('callback', () => {
     const wrapper = mount(h(FreeDom, options, () => h('span', 'test')))
     expect(wrapper.classes()).toContain('vv-free-dom--draggable')
 
-    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
+    simulateMoveFromTo(wrapper, 0, 0, 100, 100)
 
-    dnd.trigger('mousedown')
     expect(dragStartSpy).toHaveBeenCalled()
-
-    const mousemove = new MouseEvent('mousemove')
-    const ownerDoc = wrapper.element.ownerDocument
-    ownerDoc.dispatchEvent(mousemove)
     expect(dragSpy).toHaveBeenCalled()
-
-    dnd.trigger('mouseup')
     expect(dragStopSpy).toHaveBeenCalled()
   })
   test('resize fn', async () => {
@@ -44,16 +41,10 @@ describe('callback', () => {
     const resize = wrapper.findComponent({ name: 'ResizeDomCore' })
     expect(resize.classes()).toContain('vv-resize-dom--box')
 
-    const dnd = resize.findComponent({ name: 'FreeDomCore' })
-    dnd.trigger('mousedown')
+    simulateMoveFromTo(resize, 0, 0, 100, 100)
+
     expect(resizeStartSpy).toHaveBeenCalled()
-
-    const mousemove = new MouseEvent('mousemove')
-    const ownerDoc = wrapper.element.ownerDocument
-    ownerDoc.dispatchEvent(mousemove)
     expect(resizeSpy).toHaveBeenCalled()
-
-    dnd.trigger('mouseup')
     expect(resizeStopSpy).toHaveBeenCalled()
   })
 })
@@ -207,3 +198,64 @@ describe('reactive diff', () => {
     expect(nodeList[0].style.x).toBe(5)
   })
 })
+
+describe('core drag scale', () => {
+  test('when parent element is 0.5x', () => new Promise<void>(done => {
+    const onDragFn: CoreFnCallback = (evt, data) => {
+      expect(data.x).equal(200)
+      expect(data.y).equal(200)
+      expect(data.deltaX).equal(200)
+      expect(data.deltaY).equal(200)
+      done()
+    }
+    const wrapper = mount(h(
+      FreeDomCore,
+      {
+        scale: 0.5,
+        dragFn: onDragFn,
+      },
+      () => h('test'),
+    ))
+
+    simulateMoveFromTo(wrapper, 0, 0, 100, 100)
+  }))
+  test('when parent element is 2x', () => new Promise<void>(done => {
+    const onDragFn: CoreFnCallback = (evt, data) => {
+      expect(data.x).equal(50)
+      expect(data.y).equal(50)
+      expect(data.deltaX).equal(50)
+      expect(data.deltaY).equal(50)
+      done()
+    }
+    const wrapper = mount(h(
+      FreeDomCore,
+      {
+        scale: 2,
+        dragFn: onDragFn,
+      },
+      () => h('test'),
+    ))
+
+    simulateMoveFromTo(wrapper, 0, 0, 100, 100)
+  }))
+})
+
+function simulateMoveFromTo(
+  node: VueWrapper,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+) {
+  const dnd = node.findComponent({ name: 'FreeDomCore' })
+  dnd.trigger('mousedown', { clientX: fromX, clientY: fromY })
+
+  const doc = node.element.ownerDocument
+  const mousemove = new MouseEvent('mousemove', {
+    clientX: toX,
+    clientY: toY,
+  })
+  doc.dispatchEvent(mousemove)
+
+  dnd.trigger('mouseup')
+}
