@@ -1,6 +1,6 @@
 {
   "name": "@sepveneto/free-dom",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
