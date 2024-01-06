@@ -18,3 +18,25 @@ export function log(...args: any[]) {
   if (isProduction) return
   console.log('[grid-layout]', ...args)
 }
+
+export function addUserSelectStyle(doc?: Document) {
+  if (!doc) return
+  if (!doc.getElementById('free-dom-style-el')) {
+    const styleEl = doc.createElement('style')
+    styleEl.id = 'free-dom-style-el'
+    styleEl.innerHTML = '.free-dom-transparent-selection *::selection {all: inherit;}'
+    doc.getElementsByTagName('head')[0].appendChild(styleEl)
+  }
+  if (doc.body) doc.body.classList.add('free-dom-transparent-selection')
+}
+
+export function removeUserSelectStyle(doc?: Document) {
+  if (!doc) return
+  if (doc.body) {
+    doc.body.classList.remove('free-dom-transparent-selection')
+  }
+  const selection = doc.getSelection()
+  if (selection) {
+    selection.removeAllRanges()
+  }
+}

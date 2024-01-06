@@ -1,7 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
 import { computed, defineComponent, isVue2, onUnmounted, ref } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
-import { createRender } from '../util'
+import { addUserSelectStyle, createRender, removeUserSelectStyle } from '../util'
 
 function noop() { /** pass */ }
 
@@ -56,7 +56,7 @@ const freeDomCore = defineComponent({
 
     onUnmounted(() => {
       if (!ownerDoc.value) return
-      if (props.userSelectHack) _removeUserSelectStyle(ownerDoc.value)
+      if (props.userSelectHack) removeUserSelectStyle(ownerDoc.value)
       ownerDoc.value.removeEventListener('mousemove', _handleDrag)
       ownerDoc.value.removeEventListener('mouseup', _handleDragStop)
     })
@@ -67,26 +67,7 @@ const freeDomCore = defineComponent({
     function mouseupFn(evt: MouseEvent) {
       _handleDragStop(evt)
     }
-    function _addUserSelectStyle(doc?: Document) {
-      if (!doc) return
-      if (!doc.getElementById('free-dom-style-el')) {
-        const styleEl = doc.createElement('style')
-        styleEl.id = 'free-dom-style-el'
-        styleEl.innerHTML = '.free-dom-transparent-selection *::selection {all: inherit;}'
-        doc.getElementsByTagName('head')[0].appendChild(styleEl)
-      }
-      if (doc.body) doc.body.classList.add('free-dom-transparent-selection')
-    }
-    function _removeUserSelectStyle(doc?: Document) {
-      if (!doc) return
-      if (doc.body) {
-        doc.body.classList.remove('free-dom-transparent-selection')
-      }
-      const selection = doc.getSelection()
-      if (selection) {
-        selection.removeAllRanges()
-      }
-    }
+
     function _handleDragstart(evt: MouseEvent) {
       if (
         props.disabled ||
@@ -102,7 +83,7 @@ const freeDomCore = defineComponent({
       lastY.value = y
       dragging.value = true
 
-      if (props.userSelectHack) _addUserSelectStyle(ownerDoc.value)
+      if (props.userSelectHack) addUserSelectStyle(ownerDoc.value)
 
       ownerDoc.value?.addEventListener('mousemove', _handleDrag)
       ownerDoc.value?.addEventListener('mouseup', _handleDragStop)
@@ -114,7 +95,7 @@ const freeDomCore = defineComponent({
       const coreEvent = create(x, y)
       props.stopFn(evt, coreEvent)
 
-      if (props.userSelectHack) _removeUserSelectStyle(ownerDoc.value)
+      if (props.userSelectHack) removeUserSelectStyle(ownerDoc.value)
 
       dragging.value = false
       lastX.value = NaN

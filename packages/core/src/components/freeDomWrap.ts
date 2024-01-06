@@ -1,8 +1,8 @@
-import type { ExtractPropTypes } from 'vue-demi'
+import type { ExtractPropTypes, Ref } from 'vue-demi'
 import { computed, defineComponent, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
-import { useDefaultSlot, useEventBus } from '../hooks'
+import { useDefaultSlot, useEventBus, useMask } from '../hooks'
 import { freeDomProps } from './freeDom'
 
 export const freeDomWrapProps = {
@@ -46,6 +46,7 @@ export type IPos = {
 }
 export type INodeInfo = {
   _rect: IPos
+  selected: Ref<boolean>,
   trigger: (pos: { x: number, y: number, w: number, h: number }) => void
 }
 export type INode = {
@@ -62,6 +63,9 @@ export const FreeDomWrap = defineComponent({
     const nodes = ref<INode[]>([])
     const width = ref(props.width)
     const height = ref(props.height)
+
+    const selecting = ref(false)
+    const mask = useMask(rectRef, nodes)
 
     watchEffect(() => {
       width.value = props.width
@@ -159,22 +163,29 @@ export const FreeDomWrap = defineComponent({
       width: `${props.width}px`,
       height: `${props.height}px`,
     }))
-
     return {
       rectRef,
       style,
+      selecting,
+      mask,
     }
   },
   render() {
     const { slots } = useDefaultSlot()
     const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
-    const slotList = [slots, marklineComp]
+
+    const slotList = [this.mask.selecting && this.mask.renderMask(), slots, marklineComp]
+
     return createRender(
       'section',
       {
         ref: 'rectRef',
         class: 'vv-free-dom--scene',
         style: this.style,
+      },
+      {
+        onMousedown: this.mask.handleMousedown,
+        onMousemove: this.mask.handleMousemove,
       },
     )(slotList)
   },

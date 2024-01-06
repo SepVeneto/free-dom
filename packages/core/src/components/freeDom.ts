@@ -108,8 +108,10 @@ const freeDom = defineComponent({
       handleDragStop,
     } = useDraggableData(props)
     const { width, height, syncSize: _syncSize } = useResizableData(props, domRef)
+    const selected = ref(false)
 
     const context = {
+      selected,
       _rect: reactive({
         x,
         y,
@@ -124,7 +126,6 @@ const freeDom = defineComponent({
     }
 
     const sceneContext = useSceneContext(context, props)
-    const selected = ref(false)
     onClickOutside(domRef, () => {
       if (!selected.value) return
       selected.value = false

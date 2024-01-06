@@ -28,6 +28,7 @@ export default defineConfig({
           { text: '指定拖曳对象', link: '/free-dom/drag-handle' },
           { text: '自动更正', link: '/free-dom/auto-correct' },
           { text: '缩放补偿', link: '/free-dom/transform-scale' },
+          { text: '批量操作', link: '/free-dom/batch-select' },
         ],
       },
       {
