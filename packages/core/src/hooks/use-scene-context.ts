@@ -20,6 +20,7 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   const fixNonMonospaced = computed(() => {
     return SceneContext?.fixNonMonospaced || props.fixNonMonospaced
   })
+  const keyboard = computed(() => SceneContext?.keyboard || props.keyboard)
 
   onMounted(() => {
     SceneContext?.register(uuid, context)
@@ -55,5 +56,6 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     disabledResize,
     fixNonMonospaced,
     transformScale,
+    keyboard,
   }
 }

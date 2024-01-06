@@ -1,9 +1,18 @@
 .vv-free-dom--draggable {
+  transition: background 0.3s;
   position: absolute;
   cursor: move;
 }
+.vv-free-dom--draggable:focus-visible {
+  outline: none;
+}
 .vv-free-dom--draggable__disabled {
   cursor: initial;
+}
+.vv-free-dom--draggable__selected,
+.vv-free-dom--draggable__selected:focus-visible {
+  background: var(--vv-free-dom--selected);
+  outline: 2px dashed var(--vv-free-dom--theme);
 }
 .vv-free-dom--line {
   background: var(--vv-free-dom--line);

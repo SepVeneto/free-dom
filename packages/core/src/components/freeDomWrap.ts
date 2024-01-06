@@ -26,6 +26,7 @@ export const freeDomWrapProps = {
     type: Number,
     default: 1,
   },
+  keyboard: Boolean,
   handle: freeDomProps.handle,
   minWidth: freeDomProps.minWidth,
   minHeight: freeDomProps.minHeight,

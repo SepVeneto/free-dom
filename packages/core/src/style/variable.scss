@@ -1,7 +1,8 @@
 :root {
-  --vv-free-dom--theme: #4089ef;
+  --vv-free-dom--theme: rgb(64, 137, 239);
   --vv-free-dom--line: var(--vv-free-dom--theme);
   --free-dom-dot: var(--vv-free-dom--theme);
+  --vv-free-dom--selected: rgba(64, 137, 239, 0.3);
 
   --vv-grid-layout--placeholder: crimson;
   --vv-grid-layout--placeholder__opacity: 0.2;

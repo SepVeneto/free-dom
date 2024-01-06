@@ -29,6 +29,7 @@ title: '首页'
 | disabled-resize | boolean | ❌ | false | - | 是否禁用缩放功能
 | scale | array | ❌ | - | <Desc desc="'t' \| 'r' \| 'l' \| 'b' \| 'lt' \| 'lb' \| 'rt' \| 'rb'">enum</Desc> | 允许缩放的方向
 | fix-non-monospaced | boolean | ❌ | false | - | 是否在初次渲染是等待字体加载完成再计算尺寸（主要是针对非等宽字体）
+| keyboard | boolean | ❌ | false | - | 是否允许通过键盘的方向键来控制选中元素的移动
 
 ### 方法
 

@@ -10,6 +10,9 @@
 }
 .vv-grid-layout--item {
   transition: transform 0.2s;
+  &:focus-visible {
+    outline: none;
+  }
   &.vv-grid-layout--item__draggable {
     transition: none;
     z-index: 1;

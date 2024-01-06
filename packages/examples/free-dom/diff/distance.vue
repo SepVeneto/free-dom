@@ -1,12 +1,15 @@
 <template>
   <FreeScene
     :diff="10"
+    keyboard
   >
     <FreeDom v-model="pos1">
       测试文本1
     </FreeDom>
-    <FreeDom v-model="pos2">
-      测试文本2
+    <FreeDom
+      v-model="pos2"
+    >
+      {{ pos2 }}
     </FreeDom>
   </FreeScene>
 </template>

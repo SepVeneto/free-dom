@@ -4,12 +4,13 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, isVue2, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
 import ResizeDomCore, { resizeDomCoreProps } from './resizeDomCore'
 import { clamp, createRender } from '../util'
+import { onClickOutside } from '@vueuse/core'
 
 function noop() { /* noop */ }
 
@@ -20,6 +21,7 @@ export const freeDomProps = {
     type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
   },
+  keyboard: Boolean,
   x: {
     type: Number,
     default: 0,
@@ -122,6 +124,12 @@ const freeDom = defineComponent({
     }
 
     const sceneContext = useSceneContext(context, props)
+    const selected = ref(false)
+    onClickOutside(domRef, () => {
+      if (!selected.value) return
+      selected.value = false
+      sceneContext.emit('moveup')
+    })
     const syncSize = () => {
       _syncSize(
         sceneContext.fixNonMonospaced.value,
@@ -263,17 +271,62 @@ const freeDom = defineComponent({
       return createRender(ResizeDomCore, {}, props)(slots)
     }
 
+    function handleSelect() {
+      if (selected.value) return
+      selected.value = true
+    }
+    function handleKeyboard(evt: KeyboardEvent) {
+      if (!canDrag.value || !sceneContext.keyboard.value) return
+      evt.preventDefault()
+
+      switch (evt.key) {
+        case 'ArrowUp':
+          y.value -= 1
+          break
+        case 'ArrowDown':
+          y.value += 1
+          break
+        case 'ArrowLeft':
+          x.value -= 1
+          break
+        case 'ArrowRight':
+          x.value += 1
+          break
+      }
+      const newPos = {
+        x: x.value,
+        y: y.value,
+        width: width.value,
+        height: height.value,
+      }
+
+      const isValid = sceneContext.check?.(newPos)
+      if (!isValid) {
+        x.value = clamp(x.value, 0, sceneContext.width)
+        y.value = clamp(y.value, 0, sceneContext.height)
+      }
+
+      emit('update:x', x.value)
+      emit('update:y', y.value)
+      emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
+      // 为了显示参考线, 模拟鼠标移动
+      sceneContext.emit('move', true)
+    }
+
     expose?.({
       syncSize,
     })
 
     return {
+      selected,
       domRef,
       style,
       onDragStop,
       onDrag,
       onDragStart,
       resizeNode,
+      handleKeyboard,
+      handleSelect,
       disabled: sceneContext.disabledDrag,
       scale: sceneContext.transformScale,
     }
@@ -285,6 +338,18 @@ const freeDom = defineComponent({
       dragFn: this.onDrag,
       disabled: this.disabled,
       scale: this.scale,
+      keyboard: this.keyboard,
+    }
+    const vue2Listener = {
+      on: {
+        mousedown: this.handleSelect,
+        keydown: this.handleKeyboard,
+      },
+    }
+    const vue3Props = {
+      ...props,
+      onMousedown: this.handleSelect,
+      onKeydown: this.handleKeyboard,
     }
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
@@ -293,10 +358,16 @@ const freeDom = defineComponent({
       FreeDomCore,
       {
         ref: 'domRef',
-        class: ['vv-free-dom--draggable', this.disabled && 'vv-free-dom--draggable__disabled'],
+        tabindex: -1,
+        class: [
+          'vv-free-dom--draggable',
+          this.disabled && 'vv-free-dom--draggable__disabled',
+          this.selected && 'vv-free-dom--draggable__selected',
+        ],
         style: this.style,
       },
-      props,
+      isVue2 ? props : vue3Props,
+      isVue2 ? vue2Listener.on : {},
     )?.(slots)
   },
 })

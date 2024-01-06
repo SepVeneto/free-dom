@@ -22,6 +22,6 @@ free-dom/diff/distance
 
 通过`show-line`可以将是否对齐的参考线隐藏
 
-<!-- :::demo
+:::demo
 free-dom/diff/markline
-::: -->
+:::

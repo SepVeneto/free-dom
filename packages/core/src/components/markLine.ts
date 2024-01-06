@@ -50,76 +50,76 @@ export default defineComponent({
         const _target = normalize(node.node._rect)
 
         // lock y
-        if (isNearly(_current.top, _target.top)) {
+        if (isNearly(_current.top, _target.top, withoutConstraint)) {
           lineStatus.xt = {
             show: true,
             pos: _target.top,
           }
-          !withoutConstraint && (current._rect.y = _target.top)
+          current._rect.y = _target.top
         }
-        if (isNearly(_current.bottom, _target.top)) {
+        if (isNearly(_current.bottom, _target.top, withoutConstraint)) {
           lineStatus.xt = {
             show: true,
             pos: _target.top,
           }
-          !withoutConstraint && (current._rect.y = _target.top - _current.height)
+          current._rect.y = _target.top - _current.height
         }
-        if (isNearly(_current.centerY, _target.centerY)) {
+        if (isNearly(_current.centerY, _target.centerY, withoutConstraint)) {
           lineStatus.xc = {
             show: true,
             pos: _target.centerY,
           }
-          !withoutConstraint && (current._rect.y = _target.centerY - _current.height / 2)
+          current._rect.y = _target.centerY - _current.height / 2
         }
-        if (isNearly(_current.top, _target.bottom)) {
+        if (isNearly(_current.top, _target.bottom, withoutConstraint)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
           }
-          !withoutConstraint && (current._rect.y = _target.bottom)
+          current._rect.y = _target.bottom
         }
-        if (isNearly(_current.bottom, _target.bottom)) {
+        if (isNearly(_current.bottom, _target.bottom, withoutConstraint)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
           }
-          !withoutConstraint && (current._rect.y = _target.bottom - _current.height)
+          current._rect.y = _target.bottom - _current.height
         }
         // lock x
-        if (isNearly(_current.left, _target.left)) {
+        if (isNearly(_current.left, _target.left, withoutConstraint)) {
           lineStatus.yl = {
             show: true,
             pos: _target.left,
           }
-          !withoutConstraint && (current._rect.x = _target.left)
+          current._rect.x = _target.left
         }
-        if (isNearly(_current.right, _target.left)) {
+        if (isNearly(_current.right, _target.left, withoutConstraint)) {
           lineStatus.yl = {
             show: true,
             pos: _target.left,
           }
-          !withoutConstraint && (current._rect.x = _target.left - _current.width)
+          current._rect.x = _target.left - _current.width
         }
-        if (isNearly(_current.centerX, _target.centerX)) {
+        if (isNearly(_current.centerX, _target.centerX, withoutConstraint)) {
           lineStatus.yc = {
             show: true,
             pos: _target.centerX,
           }
-          !withoutConstraint && (current._rect.x = _target.centerX - _current.width / 2)
+          current._rect.x = _target.centerX - _current.width / 2
         }
-        if (isNearly(_current.left, _target.right)) {
+        if (isNearly(_current.left, _target.right, withoutConstraint)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
           }
-          !withoutConstraint && (current._rect.x = _target.right)
+          current._rect.x = _target.right
         }
-        if (isNearly(_current.right, _target.right)) {
+        if (isNearly(_current.right, _target.right, withoutConstraint)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
           }
-          !withoutConstraint && (current._rect.x = _target.right - _current.width)
+          current._rect.x = _target.right - _current.width
         }
       })
     }
@@ -154,8 +154,9 @@ export default defineComponent({
         centerY: rect.y + rect.height / 2,
       }
     }
-    function isNearly(curr: number, target: number) {
-      return Math.abs(curr - target) <= diff.value
+    function isNearly(curr: number, target: number, withoutConstraint?: boolean) {
+      const _diff = withoutConstraint ? 0 : diff.value
+      return Math.abs(curr - target) <= _diff
     }
 
     return {

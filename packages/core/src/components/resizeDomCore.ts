@@ -130,6 +130,7 @@ const resizeDomCore = defineComponent({
     function renderResizehandler(axis: IDot) {
       if (!slots.handler) {
         return () => h('i', {
+          dataType: 'handler',
           class: [
             'vv-resize-dom--handler',
             `vv-resize-dom--handler__${axis}`,
