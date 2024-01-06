@@ -46,7 +46,6 @@ const freeDomCore = defineComponent({
   name: 'FreeDomCore',
   props: freeDomCoreProps,
   setup(props) {
-    const { only } = useDefaultSlot()
     const dragging = ref(false)
     const coreRef = ref()
     const node = computed<HTMLElement | undefined>(() => coreRef.value?.$el || coreRef.value)
@@ -150,13 +149,13 @@ const freeDomCore = defineComponent({
     }
 
     return {
-      only,
       coreRef,
       mousedownFn,
       mouseupFn,
     }
   },
   render() {
+    const { only } = useDefaultSlot()
     const vue2Props = {
       on: {
         mousedown: (evt: MouseEvent) => {
@@ -175,7 +174,7 @@ const freeDomCore = defineComponent({
     }
     const res = createRender(
       // @ts-expect-error: maybe vue2
-      this.only,
+      only,
       { ref: (el: any) => { this.coreRef = el } },
       isVue2 ? {} : vue3Props,
       isVue2 ? vue2Props.on : {},

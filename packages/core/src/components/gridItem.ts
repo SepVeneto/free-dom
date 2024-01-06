@@ -97,7 +97,6 @@ export const GridItem = defineComponent({
       onResize,
       onResizeStop,
     } = useLayoutItem(props, layout)
-    const { only, slots } = useDefaultSlot()
     const resizeNode = (child?: VNode[] | VNode) => {
       const _props = {
         width: width.value,
@@ -137,8 +136,6 @@ export const GridItem = defineComponent({
       y,
       width,
       height,
-      child: only,
-      slots,
       style,
       dragging,
       onDragStart,
@@ -151,7 +148,8 @@ export const GridItem = defineComponent({
     }
   },
   render() {
-    const node: VNode[] | VNode | undefined = this.slots
+    const { slots } = useDefaultSlot()
+    const node: VNode[] | VNode | undefined = slots
 
     return this.dragNode(node)
   },

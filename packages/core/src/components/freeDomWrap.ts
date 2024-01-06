@@ -56,7 +56,6 @@ export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
   setup(props) {
-    const { slots } = useDefaultSlot()
     const eventBus = useEventBus()
     const rectRef = shallowRef<HTMLElement>()
     const nodes = ref<INode[]>([])
@@ -163,12 +162,12 @@ export const FreeDomWrap = defineComponent({
     return {
       rectRef,
       style,
-      slots,
     }
   },
   render() {
+    const { slots } = useDefaultSlot()
     const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
-    const slots = [this.slots, marklineComp]
+    const slotList = [slots, marklineComp]
     return createRender(
       'section',
       {
@@ -176,6 +175,6 @@ export const FreeDomWrap = defineComponent({
         class: 'vv-free-dom--scene',
         style: this.style,
       },
-    )(slots)
+    )(slotList)
   },
 })

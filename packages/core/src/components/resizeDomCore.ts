@@ -62,7 +62,6 @@ const resizeDomCore = defineComponent({
   name: 'ResizeDomCore',
   props: resizeDomCoreProps,
   setup(props, { slots }) {
-    const { slots: _slots } = useDefaultSlot()
     const dots = computed(() => {
       const _dots = props.scale
       return Array.isArray(_dots) ? _dots : Dots
@@ -143,14 +142,14 @@ const resizeDomCore = defineComponent({
 
     return {
       dots,
-      children: _slots,
       handleResize,
       renderResizehandler,
     }
   },
   render() {
+    const { slots: children } = useDefaultSlot()
     const slots = [
-      ...(this.children || []),
+      ...(children || []),
       this.dots.map(dot => {
         return createRender(
           FreeDomCore,
