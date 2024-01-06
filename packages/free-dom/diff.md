@@ -4,6 +4,8 @@ title: 边缘吸附
 
 # 边缘吸附
 
+即使开启了吸附效果依然可以通过按住Shift键或是方向键（↑↓←→）来忽略吸附效果
+
 ## 吸附距离
 
 通过`diff`可以设置触发吸附的像素距离。
@@ -20,6 +22,6 @@ free-dom/diff/distance
 
 通过`show-line`可以将是否对齐的参考线隐藏
 
-:::demo
+<!-- :::demo
 free-dom/diff/markline
-:::
+::: -->

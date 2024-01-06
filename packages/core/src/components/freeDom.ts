@@ -157,7 +157,7 @@ const freeDom = defineComponent({
       if (!isValid) return
 
       handleDrag(evt, data)
-      sceneContext.emit('move')
+      sceneContext.emit('move', evt.shiftKey)
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
       if (!canDrag.value) return

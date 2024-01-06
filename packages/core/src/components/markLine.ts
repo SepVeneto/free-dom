@@ -41,7 +41,7 @@ export default defineComponent({
       },
     })
 
-    const runConstraints = (uuid: number) => {
+    const runConstraints = (uuid: number, withoutConstraint?: boolean) => {
       const current = nodes.find(node => node.uuid === uuid)?.node ?? {}
       clearStatus()
       nodes.forEach((node: any) => {
@@ -55,35 +55,35 @@ export default defineComponent({
             show: true,
             pos: _target.top,
           }
-          current._rect.y = _target.top
+          !withoutConstraint && (current._rect.y = _target.top)
         }
         if (isNearly(_current.bottom, _target.top)) {
           lineStatus.xt = {
             show: true,
             pos: _target.top,
           }
-          current._rect.y = _target.top - _current.height
+          !withoutConstraint && (current._rect.y = _target.top - _current.height)
         }
         if (isNearly(_current.centerY, _target.centerY)) {
           lineStatus.xc = {
             show: true,
             pos: _target.centerY,
           }
-          current._rect.y = _target.centerY - _current.height / 2
+          !withoutConstraint && (current._rect.y = _target.centerY - _current.height / 2)
         }
         if (isNearly(_current.top, _target.bottom)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
           }
-          current._rect.y = _target.bottom
+          !withoutConstraint && (current._rect.y = _target.bottom)
         }
         if (isNearly(_current.bottom, _target.bottom)) {
           lineStatus.xb = {
             show: true,
             pos: _target.bottom,
           }
-          current._rect.y = _target.bottom - _current.height
+          !withoutConstraint && (current._rect.y = _target.bottom - _current.height)
         }
         // lock x
         if (isNearly(_current.left, _target.left)) {
@@ -91,35 +91,35 @@ export default defineComponent({
             show: true,
             pos: _target.left,
           }
-          current._rect.x = _target.left
+          !withoutConstraint && (current._rect.x = _target.left)
         }
         if (isNearly(_current.right, _target.left)) {
           lineStatus.yl = {
             show: true,
             pos: _target.left,
           }
-          current._rect.x = _target.left - _current.width
+          !withoutConstraint && (current._rect.x = _target.left - _current.width)
         }
         if (isNearly(_current.centerX, _target.centerX)) {
           lineStatus.yc = {
             show: true,
             pos: _target.centerX,
           }
-          current._rect.x = _target.centerX - _current.width / 2
+          !withoutConstraint && (current._rect.x = _target.centerX - _current.width / 2)
         }
         if (isNearly(_current.left, _target.right)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
           }
-          current._rect.x = _target.right
+          !withoutConstraint && (current._rect.x = _target.right)
         }
         if (isNearly(_current.right, _target.right)) {
           lineStatus.yr = {
             show: true,
             pos: _target.right,
           }
-          current._rect.x = _target.right - _current.width
+          !withoutConstraint && (current._rect.x = _target.right - _current.width)
         }
       })
     }

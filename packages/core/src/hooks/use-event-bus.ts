@@ -19,10 +19,9 @@ export function useEventBus() {
   const off: EventBusOffHandle = (name) => {
     callbacks.value[name].length = 0
   }
-  const emit: EventBusEmitHandle = (name, args) => {
+  const emit: EventBusEmitHandle = (name, ...args) => {
     const fns = callbacks.value[name] || []
-
-    fns.forEach(fn => fn(args))
+    fns.forEach(fn => fn(...args))
   }
 
   return {

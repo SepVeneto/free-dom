@@ -38,7 +38,9 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
   }
 
   return {
-    emit: (name: string) => SceneContext?.emit(name, uuid),
+    emit: (name: string, withoutConstraint?: boolean) => {
+      SceneContext?.emit(name, uuid, withoutConstraint)
+    },
     check,
     correct,
     width: SceneContext?.width,
