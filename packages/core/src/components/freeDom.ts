@@ -1,5 +1,6 @@
 import {
   useDraggableData,
+  useEventBus,
   useResizableData,
   useSceneContext,
 } from '../hooks'
@@ -96,6 +97,11 @@ const freeDom = defineComponent({
   ],
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
+    const isBatchSelecting = ref(false)
+    const eventBus = useEventBus()
+    eventBus.on('batch-select', (state: 'start' | 'end') => {
+      isBatchSelecting.value = state === 'start'
+    })
 
     const {
       x,
@@ -125,11 +131,10 @@ const freeDom = defineComponent({
       },
     }
 
-    const sceneContext = useSceneContext(context, props)
+    const sceneContext = useSceneContext(context, reactive(props))
     onClickOutside(domRef, () => {
-      if (!selected.value) return
+      if (!selected.value || isBatchSelecting.value) return
       selected.value = false
-      sceneContext.emit('moveup')
     })
     const syncSize = () => {
       _syncSize(
@@ -189,6 +194,7 @@ const freeDom = defineComponent({
       emit('update:x', x.value)
       emit('update:y', y.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
+      sceneContext.history?.push({ type: 'move-end' })
     }
     const onDragStart: CoreFnCallback = (evt, coreData) => {
       const handle = sceneContext.handle.value
@@ -249,6 +255,8 @@ const freeDom = defineComponent({
       emit('update:height', height.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
+
+      sceneContext.history?.push({ type: 'resize-end' })
     }
     const onResizeStart: ResizeFnCallback = (evt, data) => {
       props.resizeStartFn(evt, data)
@@ -275,6 +283,7 @@ const freeDom = defineComponent({
     function handleSelect() {
       if (selected.value) return
       selected.value = true
+      sceneContext.history?.push({ type: 'select' })
     }
     function handleKeyboard(evt: KeyboardEvent) {
       if (!canDrag.value || !sceneContext.keyboard.value) return

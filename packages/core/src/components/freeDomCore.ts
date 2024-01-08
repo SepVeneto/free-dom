@@ -51,6 +51,8 @@ const freeDomCore = defineComponent({
     const node = computed<HTMLElement | undefined>(() => coreRef.value?.$el || coreRef.value)
     const ownerDoc = computed(() => node.value?.ownerDocument)
     const { lastX, lastY, create } = useCoreData(node)
+    const startX = ref(NaN)
+    const startY = ref(NaN)
     let parentNode: Element
     let parentRect: { left: number, top: number }
 
@@ -79,6 +81,8 @@ const freeDomCore = defineComponent({
       const coreEvent = create(x, y)
       props.startFn(evt, coreEvent)
 
+      startX.value = x
+      startY.value = y
       lastX.value = x
       lastY.value = y
       dragging.value = true
@@ -90,13 +94,16 @@ const freeDomCore = defineComponent({
     }
     function _handleDragStop(evt: MouseEvent) {
       if (!dragging.value) return
-      const { x, y } = _offsetFormat(evt)
 
-      const coreEvent = create(x, y)
-      props.stopFn(evt, coreEvent)
-
+      // 拖曳前后位置不变，跳过停止回调
+      if (startX.value === lastX.value && startY.value === lastY.value) {
+        // pass
+      } else {
+        const { x, y } = _offsetFormat(evt)
+        const coreEvent = create(x, y)
+        props.stopFn(evt, coreEvent)
+      }
       if (props.userSelectHack) removeUserSelectStyle(ownerDoc.value)
-
       dragging.value = false
       lastX.value = NaN
       lastY.value = NaN
