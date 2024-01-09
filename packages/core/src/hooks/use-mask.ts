@@ -5,8 +5,6 @@ import { addUserSelectStyle, removeUserSelectStyle } from '../util'
 import type { INode } from '../types'
 import { useEventBus, useOperateHistory } from '../hooks'
 
-const BOUNDARY = -30
-
 export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
   const eventBus = useEventBus()
   const startX = ref(0)
@@ -37,7 +35,15 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
   function checkNode() {
     nodes.value.forEach(node => {
       const rect = node.node._rect
-      if (!rect.x || !rect.y || !rect.width || !rect.height) return false
+      // eslint-disable-next-line eqeqeq
+      if (rect.x == undefined ||
+      // eslint-disable-next-line eqeqeq
+          rect.y == undefined ||
+      // eslint-disable-next-line eqeqeq
+          rect.width == undefined ||
+      // eslint-disable-next-line eqeqeq
+          rect.height == undefined
+      ) return false
       const x1 = rect.x
       const y1 = rect.y
       const x2 = x1 + rect.width
@@ -51,13 +57,13 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
     const areaEndX = Math.max(startX.value, lastX.value)
     const areaEndY = Math.max(startY.value, lastY.value)
 
-    const crossX = isCrossing(areaStartX, areaEndX, x1, x2)
-    const crossY = isCrossing(areaStartY, areaEndY, y1, y2)
+    const crossX = isCrossing(areaStartX, areaEndX, x1, x2, Math.abs(x1 - x2) / 5)
+    const crossY = isCrossing(areaStartY, areaEndY, y1, y2, Math.abs(y1 - y2) / 5)
 
     return crossX && crossY
   }
-  function isCrossing(a: number, b: number, c: number, d: number) {
-    return (Math.max(a, c) - Math.min(b, d)) <= BOUNDARY
+  function isCrossing(a: number, b: number, c: number, d: number, standard: number) {
+    return (Math.max(a, c) - Math.min(b, d)) <= -standard
   }
   function offsetFormat(evt: MouseEvent) {
     const offsetX = evt.clientX - rect.x.value
