@@ -7,6 +7,9 @@
     <FreeDom v-model="pos2">
       测试文本2
     </FreeDom>
+    <FreeDom>
+      测试文本3
+    </FreeDom>
   </FreeScene>
 </template>
 

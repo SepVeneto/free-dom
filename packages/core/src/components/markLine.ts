@@ -1,5 +1,6 @@
 import { computed, defineComponent, h, inject, onBeforeUnmount, reactive, shallowRef } from 'vue-demi'
 import { SceneToken } from '../util'
+import type { SceneTokenContext } from '../util'
 
 const lineType = ['xt', 'xc', 'xb', 'yl', 'yc', 'yr'] as const
 type LineType = typeof lineType[number]
@@ -9,10 +10,12 @@ export default defineComponent({
     showLine: Boolean,
   },
   setup() {
-    const SceneContext = inject<any>(SceneToken)
+    const SceneContext = inject<SceneTokenContext>(SceneToken)!
     const lines = shallowRef(lineType)
     const diff = computed(() => SceneContext.diff / SceneContext.transformScale)
-    const nodes = SceneContext.nodes as any[]
+    const nodes = SceneContext.nodes
+
+    const staticNodes = computed(() => nodes.filter(node => !node.node.selected))
 
     const lineStatus = reactive({
       xt: {
@@ -42,10 +45,12 @@ export default defineComponent({
     })
 
     const runConstraints = (uuid: number, withoutConstraint?: boolean) => {
-      const current = nodes.find(node => node.uuid === uuid)?.node ?? {}
+      const current = nodes.find(node => node.uuid === uuid)?.node
+      if (!current) return
       clearStatus()
-      nodes.forEach((node: any) => {
-        if (node.uuid === uuid) return
+      staticNodes.value.forEach((node: any) => {
+        // if (node.uuid === uuid) return
+        // @ts-expect-error: without undefined
         const _current = normalize(current._rect)
         const _target = normalize(node.node._rect)
 

@@ -5,6 +5,8 @@ export type IPos = {
   y?: number
   width?: number
   height?: number
+  deltaX?: number
+  deltaY?: number
 }
 export type INodeInfo = UnwrapRef<{
   _rect: IPos

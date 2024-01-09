@@ -51,6 +51,20 @@ export const FreeDomWrap = defineComponent({
     const width = ref(props.width)
     const height = ref(props.height)
 
+    const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
+    eventBus.on('move', (nodeId: number) => {
+      const mainNode = selectedNodes.value.find(node => node.uuid === nodeId)
+      if (!mainNode) return
+
+      const { deltaX, deltaY } = mainNode.node._rect
+      selectedNodes.value.forEach(node => {
+        if (node.uuid === nodeId) return
+
+        node.node._rect.x! += deltaX || 0
+        node.node._rect.y! += deltaY || 0
+      })
+    })
+
     const selecting = ref(false)
     const mask = useMask(rectRef, nodes)
 
@@ -167,7 +181,10 @@ export const FreeDomWrap = defineComponent({
     const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
 
     const slotList = [
-      h('pre', { style: 'position: absolute; right: 0; top: 0; transform: translateX(100%);' }, JSON.stringify(this.history.records.value, null, 4)),
+      /**
+       * TODO: debug remove
+       */
+      h('pre', { style: 'position: absolute; right: 0; top: 0; transform: translateX(100%);' }, JSON.stringify(this.history.records.value.map(item => item.type), null, 4)),
       this.mask.selecting && this.mask.renderMask(),
       slots,
       marklineComp,
