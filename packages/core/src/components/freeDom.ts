@@ -135,7 +135,7 @@ const freeDom = defineComponent({
     onClickOutside(domRef, () => {
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
-    }, { ignore: ['.vv-free-dom--draggable'] })
+    }, { ignore: [sceneContext.clearSelectState && '.vv-free-dom--draggable'] })
     const syncSize = () => {
       _syncSize(
         sceneContext.fixNonMonospaced.value,
@@ -357,7 +357,7 @@ const freeDom = defineComponent({
     }
     const vue2Listener = {
       on: {
-        onClick: this.handleSelect,
+        click: this.handleSelect,
         keydown: this.handleKeyboard,
       },
     }
