@@ -281,10 +281,14 @@ const freeDom = defineComponent({
     }
 
     function handleSelect(evt: MouseEvent) {
-      if (selected.value) return
-      !evt.shiftKey && sceneContext.clearSelectState?.()
-      selected.value = true
-      sceneContext.history?.push({ type: 'select' })
+      if (evt.ctrlKey) {
+        selected.value = !selected.value
+        sceneContext.history?.push({ type: 'select' })
+      } else if (!selected.value) {
+        sceneContext.clearSelectState?.()
+        selected.value = true
+        sceneContext.history?.push({ type: 'select' })
+      }
     }
     function handleKeyboard(evt: KeyboardEvent) {
       if (!canDrag.value || !sceneContext.keyboard.value) return
