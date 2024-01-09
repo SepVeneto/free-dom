@@ -135,7 +135,7 @@ const freeDom = defineComponent({
     onClickOutside(domRef, () => {
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
-    })
+    }, { ignore: ['.vv-free-dom--draggable__selected'] })
     const syncSize = () => {
       _syncSize(
         sceneContext.fixNonMonospaced.value,
@@ -352,13 +352,13 @@ const freeDom = defineComponent({
     }
     const vue2Listener = {
       on: {
-        mousedown: this.handleSelect,
+        onClick: this.handleSelect,
         keydown: this.handleKeyboard,
       },
     }
     const vue3Props = {
       ...props,
-      onMousedown: this.handleSelect,
+      onClick: this.handleSelect,
       onKeydown: this.handleKeyboard,
     }
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
