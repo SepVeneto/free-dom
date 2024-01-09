@@ -1,5 +1,15 @@
 import type { ExtractPropTypes } from 'vue-demi'
-import { computed, defineComponent, h, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  provide,
+  reactive,
+  ref,
+  shallowRef,
+  toRefs,
+  watchEffect,
+} from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
 import { useDefaultSlot, useEventBus, useMask, useOperateHistory } from '../hooks'
@@ -145,6 +155,9 @@ export const FreeDomWrap = defineComponent({
         height: h,
       }
     }
+    function clearSelectState() {
+      selectedNodes.value.forEach(node => { node.node.selected = false })
+    }
 
     provide(
       SceneToken,
@@ -155,6 +168,7 @@ export const FreeDomWrap = defineComponent({
         height,
         history,
 
+        clearSelectState,
         register,
         remove,
         checkValid,
@@ -181,10 +195,6 @@ export const FreeDomWrap = defineComponent({
     const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
 
     const slotList = [
-      /**
-       * TODO: debug remove
-       */
-      h('pre', { style: 'position: absolute; right: 0; top: 0; transform: translateX(100%);' }, JSON.stringify(this.history.records.value.map(item => item.type), null, 4)),
       this.mask.selecting && this.mask.renderMask(),
       slots,
       marklineComp,

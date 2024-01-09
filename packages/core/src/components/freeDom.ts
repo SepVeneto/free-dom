@@ -135,7 +135,7 @@ const freeDom = defineComponent({
     onClickOutside(domRef, () => {
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
-    }, { ignore: ['.vv-free-dom--draggable__selected'] })
+    }, { ignore: ['.vv-free-dom--draggable'] })
     const syncSize = () => {
       _syncSize(
         sceneContext.fixNonMonospaced.value,
@@ -280,8 +280,9 @@ const freeDom = defineComponent({
       return createRender(ResizeDomCore, {}, props)(slots)
     }
 
-    function handleSelect() {
+    function handleSelect(evt: MouseEvent) {
       if (selected.value) return
+      !evt.shiftKey && sceneContext.clearSelectState?.()
       selected.value = true
       sceneContext.history?.push({ type: 'select' })
     }

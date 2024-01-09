@@ -44,6 +44,7 @@ export function useSceneContext(context: INode['node'], props: FreeDomProps) {
     },
     check,
     correct,
+    clearSelectState: SceneContext?.clearSelectState,
     width: SceneContext?.width,
     height: SceneContext?.height,
     history: SceneContext?.history,
