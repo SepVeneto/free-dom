@@ -49,7 +49,7 @@ export default defineComponent({
       if (!current) return
       clearStatus()
       staticNodes.value.forEach((node: any) => {
-        // if (node.uuid === uuid) return
+        if (node.uuid === uuid) return
         // @ts-expect-error: without undefined
         const _current = normalize(current._rect)
         const _target = normalize(node.node._rect)
