@@ -1,5 +1,6 @@
 import {
   useDraggableData,
+  useEventBus,
   useResizableData,
   useSceneContext,
 } from '../hooks'
@@ -96,6 +97,11 @@ const freeDom = defineComponent({
   ],
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
+    const isBatchSelecting = ref(false)
+    const eventBus = useEventBus()
+    eventBus.on('batch-select', (state: 'start' | 'end') => {
+      isBatchSelecting.value = state === 'start'
+    })
 
     const {
       x,
@@ -125,12 +131,11 @@ const freeDom = defineComponent({
       },
     }
 
-    const sceneContext = useSceneContext(context, props)
+    const sceneContext = useSceneContext(context, reactive(props))
     onClickOutside(domRef, () => {
-      if (!selected.value) return
+      if (!selected.value || isBatchSelecting.value) return
       selected.value = false
-      sceneContext.emit('moveup')
-    })
+    }, { ignore: [sceneContext.clearSelectState && '.vv-free-dom--draggable'] })
     const syncSize = () => {
       _syncSize(
         sceneContext.fixNonMonospaced.value,
@@ -189,6 +194,7 @@ const freeDom = defineComponent({
       emit('update:x', x.value)
       emit('update:y', y.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
+      sceneContext.history?.push({ type: 'move-end' })
     }
     const onDragStart: CoreFnCallback = (evt, coreData) => {
       const handle = sceneContext.handle.value
@@ -249,6 +255,8 @@ const freeDom = defineComponent({
       emit('update:height', height.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
+
+      sceneContext.history?.push({ type: 'resize-end' })
     }
     const onResizeStart: ResizeFnCallback = (evt, data) => {
       props.resizeStartFn(evt, data)
@@ -272,9 +280,15 @@ const freeDom = defineComponent({
       return createRender(ResizeDomCore, {}, props)(slots)
     }
 
-    function handleSelect() {
-      if (selected.value) return
-      selected.value = true
+    function handleSelect(evt: MouseEvent) {
+      if (evt.ctrlKey) {
+        selected.value = !selected.value
+        sceneContext.history?.push({ type: 'select' })
+      } else if (!selected.value) {
+        sceneContext.clearSelectState?.()
+        selected.value = true
+        sceneContext.history?.push({ type: 'select' })
+      }
     }
     function handleKeyboard(evt: KeyboardEvent) {
       if (!canDrag.value || !sceneContext.keyboard.value) return
@@ -343,13 +357,13 @@ const freeDom = defineComponent({
     }
     const vue2Listener = {
       on: {
-        mousedown: this.handleSelect,
+        click: this.handleSelect,
         keydown: this.handleKeyboard,
       },
     }
     const vue3Props = {
       ...props,
-      onMousedown: this.handleSelect,
+      onClick: this.handleSelect,
       onKeydown: this.handleKeyboard,
     }
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定

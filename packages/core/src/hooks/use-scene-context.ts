@@ -1,12 +1,12 @@
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
 import { computed, inject, onMounted, onUnmounted } from 'vue-demi'
-import type { INodeInfo, IPos } from '../components/freeDomWrap'
+import type { INode, IPos } from '../types'
 import type { FreeDomProps } from '../components/freeDom'
 
 let id = 0
 
-export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
+export function useSceneContext(context: INode['node'], props: FreeDomProps) {
   const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
   const uuid = id++
   const handle = computed(() => SceneContext?.handle || props.handle)
@@ -44,8 +44,10 @@ export function useSceneContext(context: INodeInfo, props: FreeDomProps) {
     },
     check,
     correct,
+    clearSelectState: SceneContext?.clearSelectState,
     width: SceneContext?.width,
     height: SceneContext?.height,
+    history: SceneContext?.history,
 
     scale,
     handle,

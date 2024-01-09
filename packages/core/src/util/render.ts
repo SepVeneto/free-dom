@@ -44,14 +44,11 @@ export function createRender(
   return (slots: Slots) => {
     if (isVue2) {
       if (Object.prototype.toString.call(slots) === '[object Object]') {
-        // @ts-expect-error: vue2
         return h(comp, { ...options, scopedSlots: slots })
       } else {
-        // @ts-expect-error: vue2
         return h(comp, options, Array.isArray(slots) ? slots : [slots])
       }
     } else {
-      // @ts-expect-error: vue3
       return h(comp, options, slots)
     }
   }

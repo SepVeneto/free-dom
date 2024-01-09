@@ -149,18 +149,13 @@ describe('auto correct', () => {
   })
 })
 
-describe('reactive diff', () => {
-  test('dynamic diff', async () => {
-    const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
-    ]
-    const wrapper = mount({
-      components: {
-        FreeDom,
-        FreeScene,
-      },
-      template: `
+function renderDemo(nodeList: any[]) {
+  return mount({
+    components: {
+      FreeDom,
+      FreeScene,
+    },
+    template: `
         <FreeScene
           :width="100"
           :height="100"
@@ -175,27 +170,39 @@ describe('reactive diff', () => {
           >{{ index }}</FreeDom>
         </FreeScene>
       `,
-      data: () => ({
-        nodeList,
-        diff: 0,
-      }),
-    })
+    data: () => ({
+      nodeList,
+      diff: 3,
+    }),
+  })
+}
+describe('diff', () => {
+  test('dynamic diff', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const node = nodeList[0]
+    const wrapper = renderDemo(nodeList)
 
-    const dnd = wrapper.findComponent({ name: 'FreeDomCore' })
-    dnd.trigger('mousedown')
+    simulateMoveFromTo(wrapper, node.style.x, node.style.y, 3, 0)
+    expect(nodeList[0].style.x).toBe(5)
 
-    wrapper.setData({ diff: 2 })
+    wrapper.setData({ diff: 1 })
     await nextTick()
 
-    {
-      const mousemove = new MouseEvent('mousemove', { clientY: 0, clientX: 4 })
-      const ownerDoc = wrapper.element.ownerDocument
-      ownerDoc.dispatchEvent(mousemove)
-    }
+    simulateMoveFromTo(wrapper, node.style.x, node.style.y, 3, 0)
+    expect(nodeList[0].style.x).toBe(3)
+  })
+  test('use shift to ignore diff', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
 
-    dnd.trigger('mouseup')
-
-    expect(nodeList[0].style.x).toBe(5)
+    simulateMoveFromTo(wrapper, 0, 0, 4, 0, true)
+    expect(nodeList[0].style.x).toBe(4)
   })
 })
 
@@ -238,4 +245,108 @@ describe('drag scale', () => {
 
     simulateMoveFromTo(wrapper, 0, 0, 100, 100)
   }))
+})
+
+describe('select', () => {
+  test('single selection', async () => {
+    const wrapper = mount(h(FreeDom, () => h('span', 'test')))
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    dnd.trigger('click')
+    await nextTick()
+    expect(dnd.element.classList).toContain('vv-free-dom--draggable__selected')
+  })
+
+  test('multiple selection with ctrl', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+
+    first.trigger('click')
+    await nextTick()
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).not.toContain('vv-free-dom--draggable__selected')
+    second.trigger('click')
+    await nextTick()
+    expect(first.element.classList).not.toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
+
+    first.trigger('click', { ctrlKey: true })
+    await nextTick()
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
+  })
+
+  test('multiple selection with area', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    scene.trigger('mousedown')
+    scene.trigger('mousemove', { clientX: 100, clientY: 100 })
+    await nextTick()
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
+  })
+})
+
+describe('multiple area trigger condition', () => {
+  test('away from', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    scene.trigger('mousedown')
+    scene.trigger('mousemove', { clientX: 24, clientY: 100 })
+    await nextTick()
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).not.toContain('vv-free-dom--draggable__selected')
+  })
+  test('intersect but not meet the condition', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    scene.trigger('mousedown')
+    scene.trigger('mousemove', { clientX: 24, clientY: 100 })
+    await nextTick()
+
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).not.toContain('vv-free-dom--draggable__selected')
+  })
+
+  /**
+   * target node width / 5, height / 5
+   */
+  test('intersect and meet the condition', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    scene.trigger('mousedown')
+    scene.trigger('mousemove', { clientX: 36, clientY: 5 })
+    await nextTick()
+
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
+  })
 })

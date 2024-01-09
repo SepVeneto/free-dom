@@ -1,9 +1,20 @@
-import type { ExtractPropTypes, Ref } from 'vue-demi'
-import { computed, defineComponent, onMounted, provide, reactive, ref, shallowRef, toRefs, watchEffect } from 'vue-demi'
+import type { ExtractPropTypes } from 'vue-demi'
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  provide,
+  reactive,
+  ref,
+  shallowRef,
+  toRefs,
+  watchEffect,
+} from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
-import { useDefaultSlot, useEventBus, useMask } from '../hooks'
+import { useDefaultSlot, useEventBus, useMask, useOperateHistory } from '../hooks'
 import { freeDomProps } from './freeDom'
+import type { INode, IPos } from '../types'
 
 export const freeDomWrapProps = {
   width: {
@@ -38,21 +49,6 @@ export const freeDomWrapProps = {
 }
 
 export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
-export type IPos = {
-  x?: number
-  y?: number
-  width?: number
-  height?: number
-}
-export type INodeInfo = {
-  _rect: IPos
-  selected: Ref<boolean>,
-  trigger: (pos: { x: number, y: number, w: number, h: number }) => void
-}
-export type INode = {
-  uuid: number
-  node: INodeInfo
-}
 
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
@@ -61,8 +57,23 @@ export const FreeDomWrap = defineComponent({
     const eventBus = useEventBus()
     const rectRef = shallowRef<HTMLElement>()
     const nodes = ref<INode[]>([])
+    const history = useOperateHistory(nodes)
     const width = ref(props.width)
     const height = ref(props.height)
+
+    const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
+    eventBus.on('move', (nodeId: number) => {
+      const mainNode = selectedNodes.value.find(node => node.uuid === nodeId)
+      if (!mainNode) return
+
+      const { deltaX, deltaY } = mainNode.node._rect
+      selectedNodes.value.forEach(node => {
+        if (node.uuid === nodeId) return
+
+        node.node._rect.x! += deltaX || 0
+        node.node._rect.y! += deltaY || 0
+      })
+    })
 
     const selecting = ref(false)
     const mask = useMask(rectRef, nodes)
@@ -93,8 +104,11 @@ export const FreeDomWrap = defineComponent({
       })
     })
 
-    function register(uuid: number, node: INodeInfo) {
-      nodes.value.push({ uuid, node })
+    function register(uuid: number, node: INode['node']) {
+      nodes.value.push({
+        uuid,
+        node,
+      })
     }
     function remove(uuid: number) {
       const index = nodes.value.findIndex(item => item.uuid === uuid)
@@ -141,6 +155,9 @@ export const FreeDomWrap = defineComponent({
         height: h,
       }
     }
+    function clearSelectState() {
+      selectedNodes.value.forEach(node => { node.node.selected = false })
+    }
 
     provide(
       SceneToken,
@@ -149,7 +166,9 @@ export const FreeDomWrap = defineComponent({
         nodes,
         width,
         height,
+        history,
 
+        clearSelectState,
         register,
         remove,
         checkValid,
@@ -168,13 +187,18 @@ export const FreeDomWrap = defineComponent({
       style,
       selecting,
       mask,
+      history,
     }
   },
   render() {
     const { slots } = useDefaultSlot()
     const marklineComp = createRender(markLine, {}, { showLine: this.showLine })()
 
-    const slotList = [this.mask.selecting && this.mask.renderMask(), slots, marklineComp]
+    const slotList = [
+      this.mask.selecting && this.mask.renderMask(),
+      slots,
+      marklineComp,
+    ]
 
     return createRender(
       'section',

@@ -3,6 +3,9 @@
     <FreeDom @update:model-value="pos = $event">
       <pre>{{ pos }}</pre>
     </FreeDom>
+    <FreeDom>
+      <div>test1</div>
+    </FreeDom>
   </section>
 </template>
 

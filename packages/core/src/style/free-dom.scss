@@ -13,6 +13,9 @@
 .vv-free-dom--draggable__selected:focus-visible {
   background: var(--vv-free-dom--selected);
   outline: 2px dashed var(--vv-free-dom--theme);
+  &::selection {
+    background-color: transparent !important;
+  }
 }
 .vv-free-dom--line {
   background: var(--vv-free-dom--line);

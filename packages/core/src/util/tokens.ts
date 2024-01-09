@@ -1,13 +1,18 @@
-import type { FreeDomWrapProps, INode, INodeInfo, IPos } from '../components/freeDomWrap'
+import type { FreeDomWrapProps } from '../components/freeDomWrap'
+import type { INode, INodeInfo, IPos } from '../types'
 import type {
   EventBusEmitHandle,
   EventBusOffHandle,
   EventBusOnHandle,
 } from '../hooks'
+import type { UnwrapRef } from 'vue-demi'
+
 export const SceneToken = Symbol('Scene')
 
-export type SceneTokenContext = {
+export type SceneTokenContext = UnwrapRef<{
   nodes: INode[]
+  history: ReturnType<typeof import('../hooks')['useOperateHistory']>
+  clearSelectState: () => void
   register: (uuid: number, node: INodeInfo) => void
   remove: (uuid: number) => void
   checkValid: (pos: IPos) => boolean
@@ -15,4 +20,4 @@ export type SceneTokenContext = {
   on: EventBusOnHandle
   off: EventBusOffHandle
   emit: EventBusEmitHandle
-} & FreeDomWrapProps | undefined
+}> & FreeDomWrapProps | undefined
