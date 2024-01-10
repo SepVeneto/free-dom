@@ -2,6 +2,7 @@ import type { ExtractPropTypes } from 'vue-demi'
 import {
   computed,
   defineComponent,
+  isVue2,
   provide,
   reactive,
   ref,
@@ -182,10 +183,18 @@ export const FreeDomWrap = defineComponent({
         ref: 'rectRef',
         class: 'vv-free-dom--scene',
       },
-      {
-        onMousedown: this.mask.handleMousedown,
-        onMousemove: this.mask.handleMousemove,
-      },
+      (isVue2
+        ? {}
+        : {
+            onMousedown: this.mask.handleMousedown,
+            onMousemove: this.mask.handleMousemove,
+          }),
+      isVue2
+        ? {
+            mousedown: this.mask.handleMousedown,
+            mousemove: this.mask.handleMousemove,
+          }
+        : {},
     )(slotList)
   },
 })

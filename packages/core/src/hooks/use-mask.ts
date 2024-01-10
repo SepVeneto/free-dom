@@ -26,6 +26,7 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
       left: startX.value + (width < 0 ? width : 0) + 'px',
       width: Math.abs(width) + 'px',
       height: Math.abs(height) + 'px',
+      zIndex: 1,
     }
   })
   const selecting = ref(false)
