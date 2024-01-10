@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -2604,5 +2608,4 @@ packages:
   file:../../packages/core/dist:
     resolution: {directory: ../../packages/core/dist, type: directory}
     name: dist
-    version: 0.0.0
     dev: true

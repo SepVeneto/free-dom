@@ -1,4 +1,4 @@
 node_modules
 *.tgz
 dist
-packages/.vitepress/cache/deps
+packages/.vitepress/cache/

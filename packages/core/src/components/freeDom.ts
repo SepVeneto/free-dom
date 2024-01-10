@@ -116,7 +116,7 @@ const freeDom = defineComponent({
     const { width, height, syncSize: _syncSize } = useResizableData(props, domRef)
     const selected = ref(false)
 
-    const context = {
+    const context = reactive({
       selected,
       _rect: reactive({
         x,
@@ -129,9 +129,9 @@ const freeDom = defineComponent({
       trigger: (pos: any) => {
         emit('update:modelValue', pos)
       },
-    }
+    })
 
-    const sceneContext = useSceneContext(context, reactive(props))
+    const sceneContext = useSceneContext(context, props)
     onClickOutside(domRef, () => {
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
