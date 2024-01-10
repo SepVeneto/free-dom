@@ -12,6 +12,8 @@ export const SceneToken = Symbol('Scene')
 export type SceneTokenContext = UnwrapRef<{
   nodes: INode[]
   history: ReturnType<typeof import('../hooks')['useOperateHistory']>
+  width: number
+  height: number
   clearSelectState: () => void
   register: (uuid: number, node: INodeInfo) => void
   remove: (uuid: number) => void

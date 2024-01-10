@@ -2,29 +2,21 @@ import type { ExtractPropTypes } from 'vue-demi'
 import {
   computed,
   defineComponent,
-  onMounted,
   provide,
   reactive,
   ref,
   shallowRef,
   toRefs,
-  watchEffect,
+  watch,
 } from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
 import { useDefaultSlot, useEventBus, useMask, useOperateHistory } from '../hooks'
 import { freeDomProps } from './freeDom'
 import type { INode, IPos } from '../types'
+import { useElementBounding } from '@vueuse/core'
 
 export const freeDomWrapProps = {
-  width: {
-    type: Number,
-    default: undefined,
-  },
-  height: {
-    type: Number,
-    default: undefined,
-  },
   diff: {
     type: Number,
     default: 2,
@@ -55,11 +47,21 @@ export const FreeDomWrap = defineComponent({
   props: freeDomWrapProps,
   setup(props) {
     const eventBus = useEventBus()
-    const rectRef = shallowRef<HTMLElement>()
     const nodes = ref<INode[]>([])
     const history = useOperateHistory(nodes)
-    const width = ref(props.width)
-    const height = ref(props.height)
+    const width = ref(0)
+    const height = ref(0)
+    const rectRef = shallowRef<HTMLElement>()
+    const wrapRect = useElementBounding(rectRef)
+
+    watch([wrapRect.width, wrapRect.height], ([w, h]) => {
+      width.value = w
+      height.value = h
+
+      if (!w || !h) return
+
+      runCorrect()
+    })
 
     const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
     eventBus.on('move', (nodeId: number) => {
@@ -78,20 +80,7 @@ export const FreeDomWrap = defineComponent({
     const selecting = ref(false)
     const mask = useMask(rectRef, nodes)
 
-    watchEffect(() => {
-      width.value = props.width
-    })
-    watchEffect(() => {
-      height.value = props.height
-    })
-    onMounted(() => {
-      if (!props.width || !props.height) {
-        if (!rectRef.value) console.warn('[free-dom] cannot find element, width or height may be set to 0')
-        const h = rectRef.value?.clientHeight
-        const w = rectRef.value?.clientWidth
-        if (!props.width) width.value = w || 0
-        if (!props.height) height.value = h || 0
-      }
+    function runCorrect() {
       nodes.value.forEach(pos => {
         // @ts-expect-error: trigger after mounted
         const { x, y, width, height } = correct(pos.node._rect)
@@ -102,7 +91,7 @@ export const FreeDomWrap = defineComponent({
         pos.node._rect.height = height
         pos.node.trigger({ x, y, w: width, h: height })
       })
-    })
+    }
 
     function register(uuid: number, node: INode['node']) {
       nodes.value.push({
@@ -117,10 +106,8 @@ export const FreeDomWrap = defineComponent({
     function checkValid(pos: IPos) {
       const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
-      // @ts-expect-error: trigger after mounted
       x! + w! <= width.value &&
       y! >= 0 &&
-      // @ts-expect-error: trigger after mounted
       y! + h! <= height.value
     }
     function correct(pos: Required<IPos>) {
@@ -128,22 +115,16 @@ export const FreeDomWrap = defineComponent({
       let y = Math.max(pos.y, 0)
       let w = pos.width
       let h = pos.height
-      // @ts-expect-error: trigger after mounted
       if (pos.x + pos.width > width.value) {
-      // @ts-expect-error: trigger after mounted
         x = width.value - pos.width
         if (x < 0) {
-        // @ts-expect-error: trigger after mounted
           w = width.value
           x = 0
         }
       }
-      // @ts-expect-error: trigger after mounted
       if (pos.y + pos.height > height.value) {
-      // @ts-expect-error: trigger after mounted
         y = height.value - pos.height
         if (y < 0) {
-        // @ts-expect-error: trigger after mounted
           h = height.value
           y = 0
         }
@@ -178,13 +159,8 @@ export const FreeDomWrap = defineComponent({
         emit: eventBus.emit,
       }),
     )
-    const style = computed(() => ({
-      width: `${props.width}px`,
-      height: `${props.height}px`,
-    }))
     return {
       rectRef,
-      style,
       selecting,
       mask,
       history,
@@ -205,7 +181,6 @@ export const FreeDomWrap = defineComponent({
       {
         ref: 'rectRef',
         class: 'vv-free-dom--scene',
-        style: this.style,
       },
       {
         onMousedown: this.mask.handleMousedown,
