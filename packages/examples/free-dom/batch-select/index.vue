@@ -1,5 +1,5 @@
 <template>
-  <FreeScene>
+  <FreeScene keyboard>
     <FreeDom v-model="pos1">
       测试文本1
       测试文本1

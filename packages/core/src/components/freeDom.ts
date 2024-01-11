@@ -293,18 +293,28 @@ const freeDom = defineComponent({
 
       switch (evt.key) {
         case 'ArrowUp':
-          y.value -= 1
+          deltaY.value = -1
+          deltaX.value = 0
           break
         case 'ArrowDown':
-          y.value += 1
+          deltaY.value = 1
+          deltaX.value = 0
           break
         case 'ArrowLeft':
-          x.value -= 1
+          deltaX.value = -1
+          deltaY.value = 0
           break
         case 'ArrowRight':
-          x.value += 1
+          deltaX.value = 1
+          deltaY.value = 0
           break
+        default:
+          deltaX.value = 0
+          deltaY.value = 0
       }
+
+      x.value += deltaX.value
+      y.value += deltaY.value
       const newPos = {
         x: x.value,
         y: y.value,
