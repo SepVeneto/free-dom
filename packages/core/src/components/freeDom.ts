@@ -288,7 +288,7 @@ const freeDom = defineComponent({
       }
     }
     function handleKeyboard(evt: KeyboardEvent) {
-      if (!canDrag.value || !sceneContext.keyboard.value) return
+      if (sceneContext.disabledDrag.value || !sceneContext.keyboard.value) return
       evt.preventDefault()
 
       switch (evt.key) {
