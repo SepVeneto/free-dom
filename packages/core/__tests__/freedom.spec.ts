@@ -162,10 +162,9 @@ describe('auto correct', () => {
       data: () => ({ nodeList: [] }),
     })
     await nextTick()
-    wrapper.setData({
+    await wrapper.setData({
       nodeList,
     })
-    await nextTick()
     expect(nodeList[0].style.x).toBe(0)
     expect(nodeList[0].style.y).toBe(80)
   })

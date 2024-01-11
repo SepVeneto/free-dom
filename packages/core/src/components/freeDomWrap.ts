@@ -55,7 +55,11 @@ export const FreeDomWrap = defineComponent({
     const rectRef = shallowRef<HTMLElement>()
     const wrapRect = useElementBounding(rectRef)
 
-    watch([wrapRect.width, wrapRect.height], ([w, h]) => {
+    watch([
+      wrapRect.width,
+      wrapRect.height,
+      () => nodes.value.length,
+    ], ([w, h]) => {
       width.value = w
       height.value = h
 
