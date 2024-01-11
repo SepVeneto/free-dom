@@ -29,7 +29,7 @@ export function createRender(
   const _listeners = normalizeListeners(listeners)
   const options = isVue2
     ? {
-        ...attrs,
+        ...normalizeAttrs(attrs),
         props,
         ..._listeners,
       }
@@ -60,30 +60,44 @@ const NATIVE_ON_REGEXP = /^nativeOn([A-Z]\S*)/
 const ON_REGEXP = /^on([A-Z]\S*)/
 type Listeners = Record<string, (...args: any[]) => void>
 function normalizeListeners(listeners: Listeners) {
-  if (!isVue2) return listeners
-
   const on: Listeners = {}
   const nativeOn: Listeners = {}
   let needOn = false
   let needNativeOn = false
   Object.entries(listeners).forEach(([key, fn]) => {
-    const onName = key.match(ON_REGEXP)?.[1]
-    if (onName) {
+    if (isVue2) {
+      const onName = key.match(ON_REGEXP)?.[1]
+      if (onName) {
+        needOn = true
+        const name = onName.replace(/\S/, (letter) => letter.toLowerCase())
+        on[name] = fn
+        return
+      }
+      const nativeName = key.match(NATIVE_ON_REGEXP)?.[1]
+      if (nativeName) {
+        needNativeOn = true
+        const name = nativeName.replace(/\S/, (letter) => letter.toLowerCase())
+        nativeOn[name] = fn
+      }
+    } else {
       needOn = true
-      const name = onName.replace(/\S/, (letter) => letter.toLowerCase())
+      const name = key.replace(NATIVE_ON_REGEXP, (_, $1) => `on${$1}`)
       on[name] = fn
-      return
-    }
-    const nativeName = key.match(NATIVE_ON_REGEXP)?.[1]
-    if (nativeName) {
-      needNativeOn = true
-      const name = nativeName.replace(/\S/, (letter) => letter.toLowerCase())
-      nativeOn[name] = fn
     }
   })
 
   const res: { on?: Listeners, nativeOn?: Listeners } = {}
   if (needOn) res.on = on
   if (needNativeOn) res.nativeOn = nativeOn
-  return res
+  return isVue2 ? res : res.on
+}
+
+function normalizeAttrs(attrs: Record<string, any>) {
+  const { ref, class: _class, style, ..._attrs } = attrs
+  return {
+    ref,
+    class: _class,
+    style,
+    attrs: _attrs,
+  }
 }

@@ -350,7 +350,6 @@ const freeDom = defineComponent({
       dragFn: this.onDrag,
       disabled: this.disabled,
       scale: this.scale,
-      keyboard: this.keyboard,
     }
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
