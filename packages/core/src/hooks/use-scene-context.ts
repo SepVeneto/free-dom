@@ -1,12 +1,14 @@
 import type { SceneTokenContext } from '../util'
 import { SceneToken } from '../util'
+import type { Ref } from 'vue-demi'
 import { computed, inject, onMounted, onUnmounted } from 'vue-demi'
 import type { INode, IPos } from '../types'
 import type { FreeDomProps } from '../components/freeDom'
+import type { FreeDomCore } from '..'
 
 let id = 0
 
-export function useSceneContext(context: INode['node'], props: FreeDomProps) {
+export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | undefined>, context: INode['node'], props: FreeDomProps) {
   const SceneContext = inject<SceneTokenContext>(SceneToken, undefined)
   const uuid = id++
   const handle = computed(() => SceneContext?.handle || props.handle)
@@ -23,7 +25,12 @@ export function useSceneContext(context: INode['node'], props: FreeDomProps) {
   const keyboard = computed(() => SceneContext?.keyboard || props.keyboard)
 
   onMounted(() => {
-    SceneContext?.register(uuid, context)
+    const node = elm.value
+    if (!node) {
+      console.warn('[free-dom] mounted failed: element not found')
+      return
+    }
+    SceneContext?.register(node.$el, uuid, context)
   })
   onUnmounted(() => {
     SceneContext?.remove(uuid)

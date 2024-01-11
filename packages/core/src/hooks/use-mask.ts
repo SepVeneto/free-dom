@@ -34,6 +34,7 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
   const ownerDoc = computed(() => unrefElement(target)?.ownerDocument)
 
   function checkNode() {
+    let selectedNode: INode | undefined
     nodes.value.forEach(node => {
       const rect = node.node._rect
       // eslint-disable-next-line eqeqeq
@@ -49,8 +50,14 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
       const y1 = rect.y
       const x2 = x1 + rect.width
       const y2 = y1 + rect.height
-      node.node.selected = inArea(x1, y1, x2, y2)
+
+      const isSelected = inArea(x1, y1, x2, y2)
+      node.node.selected = isSelected
+      if (isSelected) {
+        selectedNode = node
+      }
     })
+    selectedNode?.el.focus()
   }
   function inArea(x1: number, y1: number, x2: number, y2: number) {
     const areaStartX = Math.min(startX.value, lastX.value)

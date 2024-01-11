@@ -73,7 +73,7 @@ export const FreeDomWrap = defineComponent({
       if (!mainNode) return
 
       const { deltaX, deltaY } = mainNode.node._rect
-      selectedNodes.value.forEach(node => {
+      selectedNodes.value.forEach((node) => {
         if (node.uuid === nodeId) return
 
         node.node._rect.x! += deltaX || 0
@@ -97,8 +97,9 @@ export const FreeDomWrap = defineComponent({
       })
     }
 
-    function register(uuid: number, node: INode['node']) {
+    function register(el: HTMLElement, uuid: number, node: INode['node']) {
       nodes.value.push({
+        el,
         uuid,
         node,
       })

@@ -14,6 +14,7 @@ export type INodeInfo = UnwrapRef<{
   trigger: (pos: { x: number, y: number, w: number, h: number }) => void
 }>
 export type INode = {
+  el: HTMLElement,
   uuid: number
   node: INodeInfo
 }

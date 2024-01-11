@@ -131,7 +131,7 @@ const freeDom = defineComponent({
       },
     })
 
-    const sceneContext = useSceneContext(context, props)
+    const sceneContext = useSceneContext(domRef, context, props)
     onClickOutside(domRef, () => {
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
