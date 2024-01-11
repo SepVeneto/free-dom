@@ -30,6 +30,7 @@
     "jsdom": "^22.1.0",
     "markdown-it": "^13.0.2",
     "markdown-it-container": "^3.0.0",
+    "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.69.7",
     "typescript": "^5.3.3",
     "unplugin-vue-components": "^0.22.12",

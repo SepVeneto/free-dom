@@ -6,6 +6,29 @@ import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
 import { simulateMoveFromTo } from './util'
 import type { CoreFnCallback } from '../src/components/freeDomCore'
+import ResizeObserver from 'resize-observer-polyfill'
+
+global.ResizeObserver = ResizeObserver
+global.window.HTMLElement.prototype.getBoundingClientRect = function () {
+  const width = parseFloat(this.style.width) || 0
+  const height = parseFloat(this.style.height) || 0
+  const x = parseFloat(this.style.marginLeft) || 0
+  const y = parseFloat(this.style.marginTop) || 0
+  const rect = {
+    x,
+    y,
+    bottom: y + height,
+    height,
+    left: x,
+    right: x + width,
+    top: y,
+    width,
+  }
+  return {
+    ...rect,
+    toJSON: function () { return JSON.stringify(rect) },
+  }
+}
 
 describe('callback', () => {
   test('drag fn', async () => {
@@ -107,8 +130,7 @@ describe('auto correct', () => {
     mount(h(
       FreeScene,
       {
-        width: 100,
-        height: 100,
+        style: 'width: 100px; height: 100px;',
       },
       () => h(FreeDom, {
         modelValue: pos.value,
@@ -127,7 +149,7 @@ describe('auto correct', () => {
         FreeScene,
       },
       template: `
-      <FreeScene :width="100" :height="100">
+      <FreeScene style="width: 100px; height: 100px;">
         <FreeDom
           v-for="(node, index) in nodeList"
           :key="index"
@@ -157,8 +179,7 @@ function renderDemo(nodeList: any[]) {
     },
     template: `
         <FreeScene
-          :width="100"
-          :height="100"
+          style="width: 100px; height: 100px;"
           :diff="diff"
         >
           <FreeDom
@@ -184,6 +205,7 @@ describe('diff', () => {
     ]
     const node = nodeList[0]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     simulateMoveFromTo(wrapper, node.style.x, node.style.y, 3, 0)
     expect(nodeList[0].style.x).toBe(5)
@@ -200,6 +222,7 @@ describe('diff', () => {
       { style: { x: 25, y: 0 } },
     ]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     simulateMoveFromTo(wrapper, 0, 0, 4, 0, true)
     expect(nodeList[0].style.x).toBe(4)
