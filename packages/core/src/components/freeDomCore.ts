@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, isVue2, onUnmounted, ref } from 'vue-demi'
+import { computed, defineComponent, onUnmounted, ref } from 'vue-demi'
 import { useCoreData, useDefaultSlot } from '../hooks'
 import { addUserSelectStyle, createRender, removeUserSelectStyle } from '../util'
 
@@ -144,28 +144,18 @@ const freeDomCore = defineComponent({
   },
   render() {
     const { only } = useDefaultSlot()
-    const vue2Props = {
-      on: {
-        mousedown: (evt: MouseEvent) => {
-          evt.stopPropagation()
-          this.mousedownFn(evt)
-        },
-        mouseup: this.mouseupFn,
-      },
-    }
-    const vue3Props = {
-      onMousedown: (evt: MouseEvent) => {
-        evt.stopPropagation()
-        this.mousedownFn(evt)
-      },
-      onMouseup: this.mouseupFn,
-    }
     const res = createRender(
       // @ts-expect-error: maybe vue2
       only,
       { ref: (el: any) => { this.coreRef = el } },
-      isVue2 ? {} : vue3Props,
-      isVue2 ? vue2Props.on : {},
+      {},
+      {
+        onMousedown: (evt: MouseEvent) => {
+          evt.stopPropagation()
+          this.mousedownFn(evt)
+        },
+        onMouseup: this.mouseupFn,
+      },
     )
     if (typeof res === 'function') {
       return res()

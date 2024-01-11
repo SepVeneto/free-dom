@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "vue-demi-switch 3 && vitepress dev packages",
-    "build:core": "vue-demi-switch 3 && pnpm -C packages/core build",
+    "build:v3": "vue-demi-switch 3 && pnpm -C packages/core build",
+    "build:v2": "vue-demi-switch 2.7 && pnpm -C packages/core build",
     "release": "pnpm -C packages/core release",
     "docs:build": "pnpm build:core && vitepress build packages",
     "test": "vitest",

@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, isVue2, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -352,17 +352,6 @@ const freeDom = defineComponent({
       scale: this.scale,
       keyboard: this.keyboard,
     }
-    const vue2Listener = {
-      on: {
-        click: this.handleSelect,
-        keydown: this.handleKeyboard,
-      },
-    }
-    const vue3Props = {
-      ...props,
-      onClick: this.handleSelect,
-      onKeydown: this.handleKeyboard,
-    }
     // 必须是在这里改为匿名函数，如果在下面会导致w和h的值在创建resizeNode时确定
     // 表现出来就是props的值在resizeBox内部一直保持初始值不变
     const slots = () => this.resizeNode()
@@ -378,8 +367,11 @@ const freeDom = defineComponent({
         ],
         style: this.style,
       },
-      isVue2 ? props : vue3Props,
-      isVue2 ? vue2Listener.on : {},
+      props,
+      {
+        nativeOnClick: this.handleSelect,
+        nativeOnKeydown: this.handleKeyboard,
+      },
     )?.(slots)
   },
 })
