@@ -180,6 +180,7 @@ function renderDemo(nodeList: any[]) {
         <FreeScene
           style="width: 100px; height: 100px;"
           :diff="diff"
+          :disabled-select="disabledSelect"
         >
           <FreeDom
             v-for="(node, index) in nodeList"
@@ -193,6 +194,7 @@ function renderDemo(nodeList: any[]) {
     data: () => ({
       nodeList,
       diff: 3,
+      disabledSelect: false,
     }),
   })
 }
@@ -316,6 +318,32 @@ describe('select', () => {
     const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
     expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
     expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
+  })
+
+  test('forbidden select', async () => {
+    const wrapper = mount(h(FreeDom, { disabledSelect: true }, () => h('span', 'test')))
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    dnd.trigger('click')
+    await nextTick()
+    expect(dnd.element.classList).not.toContain('vv-free-dom--draggable__selected')
+  })
+
+  test('forbidden batch select', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+      { style: { x: 25, y: 0 } },
+    ]
+    const wrapper = renderDemo(nodeList)
+    await wrapper.setData({ disabledBatch: true })
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+
+    scene.trigger('mousedown')
+    scene.trigger('mousemove', { clientX: 100, clientY: 100 })
+    await nextTick()
+
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    expect(first.element.classList).not.toContain('vv-free-dom--draggable__selected')
+    expect(second.element.classList).not.toContain('vv-free-dom--draggable__selected')
   })
 })
 

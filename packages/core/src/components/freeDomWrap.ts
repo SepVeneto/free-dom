@@ -30,12 +30,14 @@ export const freeDomWrapProps = {
     default: 1,
   },
   keyboard: Boolean,
+  disabledBatch: Boolean,
   handle: freeDomProps.handle,
   minWidth: freeDomProps.minWidth,
   minHeight: freeDomProps.minHeight,
   lockAspectRatio: freeDomProps.lockAspectRatio,
   disabledDrag: freeDomProps.disabledDrag,
   disabledResize: freeDomProps.disabledResize,
+  disabledSelect: freeDomProps.disabledSelect,
   scale: freeDomProps.scale,
   fixNonMonospaced: freeDomProps.fixNonMonospaced,
 }
@@ -82,7 +84,7 @@ export const FreeDomWrap = defineComponent({
     })
 
     const selecting = ref(false)
-    const mask = useMask(rectRef, nodes)
+    const mask = useMask(rectRef, props, nodes)
 
     function runCorrect() {
       nodes.value.forEach(pos => {

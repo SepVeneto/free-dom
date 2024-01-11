@@ -4,8 +4,9 @@ import { unrefElement, useElementBounding } from '@vueuse/core'
 import { addUserSelectStyle, removeUserSelectStyle } from '../util'
 import type { INode } from '../types'
 import { useEventBus, useOperateHistory } from '../hooks'
+import type { FreeDomWrapProps } from '../components/freeDomWrap'
 
-export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
+export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<INode[]>) {
   const eventBus = useEventBus()
   const startX = ref(0)
   const startY = ref(0)
@@ -32,10 +33,15 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
   const selecting = ref(false)
   const rect = useElementBounding(target)
   const ownerDoc = computed(() => unrefElement(target)?.ownerDocument)
+  const activeNodes = computed(() => nodes.value.filter(node => {
+    console.log(props.disabledSelect, node.node.disabledSelect)
+    return !(props.disabledSelect || node.node.disabledSelect)
+  }))
 
   function checkNode() {
     let selectedNode: INode | undefined
-    nodes.value.forEach(node => {
+    console.log()
+    activeNodes.value.forEach(node => {
       const rect = node.node._rect
       // eslint-disable-next-line eqeqeq
       if (rect.x == undefined ||
@@ -82,6 +88,8 @@ export function useMask(target: MaybeRef, nodes: Ref<INode[]>) {
     }
   }
   function handleMousedown(evt: MouseEvent) {
+    if (props.disabledBatch) return
+
     addUserSelectStyle(ownerDoc.value)
     const { x: offsetX, y: offsetY } = offsetFormat(evt)
     selecting.value = true

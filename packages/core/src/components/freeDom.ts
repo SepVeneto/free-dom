@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, onMounted, reactive, ref } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref, toRef } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -76,6 +76,7 @@ export const freeDomProps = {
   minHeight: resizeDomCoreProps.minHeight,
   disabledDrag: Boolean,
   disabledResize: Boolean,
+  disabledSelect: Boolean,
   scale: resizeDomCoreProps.scale,
   transformScale: {
     type: Number,
@@ -117,6 +118,7 @@ const freeDom = defineComponent({
     const selected = ref(false)
 
     const context = reactive({
+      disabledSelect: toRef(props, 'disabledSelect'),
       selected,
       _rect: reactive({
         x,
@@ -278,6 +280,8 @@ const freeDom = defineComponent({
     }
 
     function handleSelect(evt: MouseEvent) {
+      if (sceneContext.disabledSelect.value) return
+
       if (evt.ctrlKey) {
         selected.value = !selected.value
         sceneContext.history?.push({ type: 'select' })

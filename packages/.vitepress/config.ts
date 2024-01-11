@@ -20,6 +20,7 @@ export default defineConfig({
           { text: '基本用法', link: '/free-dom/basic' },
           { text: '禁止拖曳', link: '/free-dom/disabled-drag' },
           { text: '禁止缩放', link: '/free-dom/disabled-resize' },
+          { text: '禁止选中', link: '/free-dom/disabled-select' },
           { text: '锁定纵横比', link: '/free-dom/lock-aspect-ratio' },
           { text: '限制最小尺寸', link: '/free-dom/min-size' },
           { text: '自定义缩放操作点', link: '/free-dom/custom-handler' },

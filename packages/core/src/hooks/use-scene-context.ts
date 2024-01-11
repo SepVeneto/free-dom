@@ -17,6 +17,7 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
   const minHeight = computed(() => SceneContext?.minHeight || props.minHeight)
   const disabledDrag = computed(() => SceneContext?.disabledDrag || props.disabledDrag)
   const disabledResize = computed(() => SceneContext?.disabledResize || props.disabledResize)
+  const disabledSelect = computed(() => SceneContext?.disabledSelect || props.disabledSelect)
   const scale = computed(() => SceneContext?.scale || props.scale)
   const transformScale = computed(() => SceneContext?.transformScale || props.transformScale)
   const fixNonMonospaced = computed(() => {
@@ -63,6 +64,7 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
     minHeight,
     disabledDrag,
     disabledResize,
+    disabledSelect,
     fixNonMonospaced,
     transformScale,
     keyboard,

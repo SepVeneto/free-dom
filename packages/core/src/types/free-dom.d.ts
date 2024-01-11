@@ -10,6 +10,7 @@ export type IPos = {
 }
 export type INodeInfo = UnwrapRef<{
   _rect: IPos
+  disabledSelect: Ref<boolean>
   selected: Ref<boolean>,
   trigger: (pos: { x: number, y: number, w: number, h: number }) => void
 }>
