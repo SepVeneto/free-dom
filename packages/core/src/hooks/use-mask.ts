@@ -34,13 +34,11 @@ export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<IN
   const rect = useElementBounding(target)
   const ownerDoc = computed(() => unrefElement(target)?.ownerDocument)
   const activeNodes = computed(() => nodes.value.filter(node => {
-    console.log(props.disabledSelect, node.node.disabledSelect)
     return !(props.disabledSelect || node.node.disabledSelect)
   }))
 
   function checkNode() {
     let selectedNode: INode | undefined
-    console.log()
     activeNodes.value.forEach(node => {
       const rect = node.node._rect
       // eslint-disable-next-line eqeqeq

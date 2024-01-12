@@ -170,7 +170,7 @@ describe('auto correct', () => {
   })
 })
 
-function renderDemo(nodeList: any[]) {
+function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
   return mount({
     components: {
       FreeDom,
@@ -180,7 +180,7 @@ function renderDemo(nodeList: any[]) {
         <FreeScene
           style="width: 100px; height: 100px;"
           :diff="diff"
-          :disabled-select="disabledSelect"
+          v-bind="data"
         >
           <FreeDom
             v-for="(node, index) in nodeList"
@@ -194,7 +194,7 @@ function renderDemo(nodeList: any[]) {
     data: () => ({
       nodeList,
       diff: 3,
-      disabledSelect: false,
+      data,
     }),
   })
 }
@@ -333,7 +333,7 @@ describe('select', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = renderDemo(nodeList, { disabledSelect: true })
     await wrapper.setData({ disabledBatch: true })
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
 
