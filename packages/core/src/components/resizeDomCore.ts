@@ -74,18 +74,19 @@ const resizeDomCore = defineComponent({
 
       if (lockAspectRatio) {
         const ratio = props.width / props.height
-        const deltaW = width - props.width
-        const deltaH = height - props.height
 
-        if (Math.abs(deltaW) > Math.abs(deltaH * ratio)) {
-          height = width / ratio
-        } else {
+        if (ratio > 1) {
+          height = Math.max(height, props.minHeight)
           width = height * ratio
+        } else {
+          width = Math.max(width, props.minWidth)
+          height = width / ratio
         }
+      } else {
+        width = Math.max(width, props.minWidth)
+        height = Math.max(height, props.minHeight)
       }
 
-      width = Math.max(width, props.minWidth)
-      height = Math.max(height, props.minHeight)
       return [width, height]
     }
 

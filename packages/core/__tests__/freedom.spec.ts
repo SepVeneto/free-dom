@@ -400,3 +400,49 @@ describe('multiple area trigger condition', () => {
     expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
   })
 })
+
+describe('minisize', () => {
+  test('without lock aspect ratio', async () => {
+    const node = ref({
+      w: 20,
+      h: 30,
+      x: 0,
+      y: 0,
+    })
+    const options = {
+      scale: ['rb'] as ['rb'],
+      modelValue: node.value,
+      minWidth: 50,
+      minHeight: 50,
+      'onUpdate:modelValue': (val: any) => { node.value = val },
+    }
+    const wrapper = mount(h(FreeDom, options, () => h('span', 'test')))
+    const resize = wrapper.findComponent({ name: 'ResizeDomCore' })
+
+    simulateMoveFromTo(resize, 20, 20, 30, 40)
+    expect(node.value.w).toBe(50)
+    expect(node.value.h).toBe(50)
+  })
+  test('lock aspect ratio', async () => {
+    const node = ref({
+      w: 40,
+      h: 20,
+      x: 0,
+      y: 0,
+    })
+    const options = {
+      scale: ['rb'] as ['rb'],
+      lockAspectRatio: true,
+      modelValue: node.value,
+      minWidth: 50,
+      minHeight: 50,
+      'onUpdate:modelValue': (val: any) => { node.value = val },
+    }
+    const wrapper = mount(h(FreeDom, options, () => h('span', 'test')))
+    const resize = wrapper.findComponent({ name: 'ResizeDomCore' })
+
+    simulateMoveFromTo(resize, 40, 20, 100, 30)
+    expect(node.value.w).toBe(100)
+    expect(node.value.h).toBe(50)
+  })
+})
