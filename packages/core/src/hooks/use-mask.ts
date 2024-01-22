@@ -122,8 +122,8 @@ export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<IN
        */
     } else {
       history.push({ type: 'batch-select' })
-      document.removeEventListener('mouseup', handleMouseup)
     }
+    document.removeEventListener('mouseup', handleMouseup)
     lastX.value = 0
     lastY.value = 0
     startX.value = 0
