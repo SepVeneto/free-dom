@@ -112,9 +112,10 @@ const resizeDomCore = defineComponent({
 
         let width = props.width + (canDragX ? deltaX : 0)
         let height = props.height + (canDragY ? deltaY : 0)
-
         // 这里不加分号会导致语法错误
-        ;[width, height] = runConstraints(width, height)
+        if (!evt.shiftKey) {
+          [width, height] = runConstraints(width, height)
+        }
 
         const sizeChanged = width !== props.width || height !== props.height
 
