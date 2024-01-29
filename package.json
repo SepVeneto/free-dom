@@ -9,7 +9,7 @@
     "build:v3": "vue-demi-switch 3 && pnpm -C packages/core build",
     "build:v27": "vue-demi-switch 2.7 && pnpm -C packages/core build",
     "release": "pnpm -C packages/core release",
-    "docs:build": "pnpm build:core && vitepress build packages",
+    "docs:build": "pnpm build:v3 && vitepress build packages",
     "test": "vue-demi-switch 3 && vitest",
     "play:v27": "vue-demi-switch 2.7 && pnpm -C playgrounds/vue27 dev",
     "play:v3": "vue-demi-switch 3 && pnpm -C playgrounds/vue3 dev"
