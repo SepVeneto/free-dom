@@ -1,1 +1,0 @@
-import{f as s,h as a,Q as n}from"./chunks/framework.469ab03b.js";const l=n("",23),o=[l],D=JSON.parse('{"title":"free-dom","description":"","frontmatter":{},"headers":[],"relativePath":"core/README.md","filePath":"core/README.md"}'),p={name:"core/README.md"},F=Object.assign(p,{setup(t){return(e,c)=>(s(),a("div",null,o))}});export{D as __pageData,F as default};
