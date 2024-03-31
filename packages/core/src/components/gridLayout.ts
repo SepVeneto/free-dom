@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
-import { defineComponent, h, provide, ref } from 'vue-demi'
+import { Fragment, defineComponent, h, provide, ref } from 'vue-demi'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
@@ -132,7 +132,8 @@ const GridLayout = defineComponent({
         },
         resizeStopFn: (evt: any, data: any) => {
           const { w, h } = data
-          layout.resizeTo(config, w, h)
+          const _layout = layout.resizeTo(config, w, h)
+          emit('update:modelValue', _layout)
           activeDrag.value = null
         },
       }
@@ -165,19 +166,44 @@ const GridLayout = defineComponent({
       ...(this.$attrs.style || {}),
       height: this.layout.calContainerHeight(),
     }
+    const classes = Array.isArray(this.$attrs.class) ? this.$attrs.class : [this.$attrs.class]
+    const mergedClass = [
+      ...(classes || []),
+      'vv-grid-layout',
+    ]
     const defaultSlot =
       typeof this.$slots.default === 'function'
         ? this.$slots.default()
         : this.$slots.default ||
       []
+    const slotList = flattenSlots(defaultSlot)
     return h('div', {
-      class: 'vv-grid-layout',
+      class: mergedClass,
       style: mergedStyle,
     }, [
-      defaultSlot.map(this.processItem),
+      slotList.map((slot) => {
+        if (slot.type === Fragment) {
+          this.processItem(slot)
+        }
+        return this.processItem(slot)
+      }),
       this.placeholder(),
     ])
   },
 })
+
+function flattenSlots(slots: VNode[]) {
+  const slotList: VNode[] = []
+
+  slots.forEach(slot => {
+    if (slot.type === Fragment && Array.isArray(slot.children)) {
+      slotList.push(...flattenSlots(slot.children as VNode[]))
+    } else {
+      slotList.push(slot)
+    }
+  })
+
+  return slotList
+}
 
 export default GridLayout

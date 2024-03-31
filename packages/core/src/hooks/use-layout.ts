@@ -168,6 +168,7 @@ export function useLayout(props: GridLayoutProps) {
       item.h = h
     }
     layout.value = _normalize([...layout.value])
+    return layout.value
   }
 
   // 以在y轴上的距离升序排列
