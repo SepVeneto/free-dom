@@ -1,4 +1,4 @@
-import { computed, ref, shallowRef, watchEffect } from 'vue-demi'
+import { computed, ref, shallowRef, watch } from 'vue-demi'
 import type { GridLayoutConfig, GridLayoutItem, GridLayoutProps } from '../components/gridLayout'
 import type { GridItemProps } from '../components/gridItem'
 import type { CoreFnCallback } from '../components/freeDomCore'
@@ -7,9 +7,9 @@ import { clamp, log } from '../util'
 
 export function useLayout(props: GridLayoutProps) {
   const layout = shallowRef(props.modelValue)
-  watchEffect(() => {
+  watch(() => props.modelValue, () => {
     layout.value = props.modelValue
-  })
+  }, { deep: true })
   const cellWidth = computed(() => (
     (props.width - margin.value[0] * (cols.value - 1) - (containerPadding.value?.[0] || margin.value[0]) * 2)) / props.cols,
   )
@@ -26,6 +26,9 @@ export function useLayout(props: GridLayoutProps) {
   }
   function getFull() {
     return layout.value
+  }
+  function setFull(l: GridLayoutConfig) {
+    layout.value = l
   }
 
   function _moveElement(
@@ -139,7 +142,7 @@ export function useLayout(props: GridLayoutProps) {
   function moveTo(item: GridLayoutConfig[number], x?: number, y?: number) {
     const isUserAction = true
     const _layout = _moveElement(layout.value, item, x, y, isUserAction, !props.collision)
-    layout.value = _normalize(_layout)
+    layout.value = normalize(_layout)
     return layout.value
   }
   function resizeTo(item: GridLayoutConfig[number], w: number, h: number) {
@@ -167,7 +170,7 @@ export function useLayout(props: GridLayoutProps) {
       item.w = w
       item.h = h
     }
-    layout.value = _normalize([...layout.value])
+    layout.value = normalize([...layout.value])
     return layout.value
   }
 
@@ -198,7 +201,7 @@ export function useLayout(props: GridLayoutProps) {
     }
   }
 
-  function _normalize(layout: GridLayoutConfig) {
+  function normalize(layout: GridLayoutConfig) {
     const compareWith: any[] = layout.filter(item => item.static)
     const sorted = _sortLayoutItems(layout)
     const _layout = new Array(layout.length)
@@ -297,6 +300,13 @@ export function useLayout(props: GridLayoutProps) {
     item[axis] = position
   }
 
+  function updateDroppingItem(droppingItem: any) {
+    layout.value = [
+      ...layout.value,
+      droppingItem,
+    ]
+  }
+
   return {
     cellWidth,
     cols,
@@ -307,11 +317,14 @@ export function useLayout(props: GridLayoutProps) {
     minW,
     minH,
 
+    updateDroppingItem,
     calContainerHeight,
     moveTo,
     resizeTo,
     getItem,
     getFull,
+    setFull,
+    normalize,
   }
 }
 
