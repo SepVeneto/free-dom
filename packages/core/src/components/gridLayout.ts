@@ -1,11 +1,12 @@
 import type { ExtractPropTypes, PropType, VNode } from 'vue-demi'
-import { Fragment, defineComponent, h, provide, ref } from 'vue-demi'
+import { Fragment, defineComponent, h, provide, reactive, ref, toRefs } from 'vue-demi'
 import { GridItem } from './gridItem'
 import type { GridItemInfo } from './gridItem'
 import { gridLayoutContextKey } from './tokens'
 import { useLayout } from '../hooks'
 import type { ResizeDomCoreProps } from './resizeDomCore'
 import { createRender } from '../util'
+import { useDroppingItem } from '../hooks/use-droppingitem'
 
 export type GridLayoutItem = {
   i: string | number
@@ -21,6 +22,15 @@ export type GridLayoutConfig = GridLayoutItem[]
 export type GridLayoutKey = string | number | symbol
 
 const gridLayoutProps = {
+  droppable: Boolean,
+  droppingItem: {
+    type: Object,
+    default: () => ({
+      i: '__dropping-elem__',
+      w: 1,
+      h: 1,
+    }),
+  },
   modelValue: {
     type: Array as PropType<GridLayoutConfig>,
     required: true,
@@ -72,16 +82,17 @@ const GridLayout = defineComponent({
   name: 'GridLayout',
   inheritAttrs: false,
   props: gridLayoutProps,
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'dropItem'],
 
   setup(props, { emit }) {
-    const layout = useLayout(props)
+    const layout = useLayout(reactive(toRefs(props)))
+    const droppingItem = useDroppingItem(layout, props)
 
     provide(gridLayoutContextKey, layout)
 
     const activeDrag = ref<GridItemInfo | null>(null)
 
-    function processItem(node: VNode) {
+    function processItem(node: VNode, isDroppingItem = false) {
       const key = node.key
       if (!key) return
       const config = layout.getItem(String(key))
@@ -96,6 +107,7 @@ const GridLayout = defineComponent({
         isDraggable,
         isResizable,
         scale: config.scale,
+        droppingPosition: isDroppingItem ? droppingItem.position.value : undefined,
         dragEndFn: (evt: any, rect: any) => {
           const { x, y } = rect
           const _layout = layout.moveTo(config, x, y)
@@ -139,6 +151,7 @@ const GridLayout = defineComponent({
       }
       return createRender(GridItem, {}, _props)({ default: () => node })
     }
+
     function placeholder() {
       if (!activeDrag.value) return null
       const { x, y, width, height } = activeDrag.value
@@ -153,11 +166,53 @@ const GridLayout = defineComponent({
         class: 'vv-grid-layout--placeholder',
       }, _props)()
     }
+    function removeDroppingPlaceholder() {
+      const _layout = layout.getFull()
+      const newLayout = layout.normalize(_layout.filter(l => l.i !== props.droppingItem.i))
+      layout.setFull(newLayout)
+    }
+    let dragEnterCount = 0
+    function onDrop(evt: DragEvent) {
+      evt.stopPropagation()
+      evt.preventDefault()
+
+      const item = layout.getItem(props.droppingItem.i)
+
+      removeDroppingPlaceholder()
+
+      droppingItem.droppingNode.value = null
+      droppingItem.position.value = null
+      activeDrag.value = null
+
+      dragEnterCount = 0
+
+      emit('dropItem', item)
+    }
+    function onDragLeave(evt: DragEvent) {
+      evt.stopPropagation()
+      evt.preventDefault()
+
+      --dragEnterCount
+
+      if (dragEnterCount === 0) {
+        removeDroppingPlaceholder()
+      }
+    }
+    function onDragEnter(evt: DragEvent) {
+      evt.stopPropagation()
+      evt.preventDefault()
+
+      ++dragEnterCount
+    }
 
     return {
       processItem,
       placeholder,
+      onDrop,
+      onDragLeave,
+      onDragEnter,
       layout,
+      droppingItem,
     }
   },
 
@@ -180,6 +235,10 @@ const GridLayout = defineComponent({
     return h('div', {
       class: mergedClass,
       style: mergedStyle,
+      onDragover: this.droppable ? this.droppingItem.onDropover : noop,
+      onDrop: this.droppable ? this.onDrop : noop,
+      onDragleave: this.droppable ? this.onDragLeave : noop,
+      onDragenter: this.droppable ? this.onDragEnter : noop,
     }, [
       slotList.map((slot) => {
         if (slot.type === Fragment) {
@@ -187,10 +246,13 @@ const GridLayout = defineComponent({
         }
         return this.processItem(slot)
       }),
+      this.droppable && this.droppingItem.droppingNode.value && this.processItem(this.droppingItem.droppingNode.value(), true),
       this.placeholder(),
     ])
   },
 })
+
+function noop() { /* pass */ }
 
 function flattenSlots(slots: VNode[]) {
   const slotList: VNode[] = []

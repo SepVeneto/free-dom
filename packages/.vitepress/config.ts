@@ -41,6 +41,7 @@ export default defineConfig({
           { text: '元素的最小尺寸', link: '/grid-layout/min-size' },
           { text: '元素碰撞', link: '/grid-layout/collision' },
           { text: '缩放操作点', link: '/grid-layout/scale-handler' },
+          { text: '与外部元素交互(beta)', link: '/grid-layout/group' },
         ],
       },
     ],
