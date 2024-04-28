@@ -32,8 +32,14 @@ export const freeDomWrapProps = {
   keyboard: Boolean,
   disabledBatch: Boolean,
   handle: freeDomProps.handle,
-  minWidth: freeDomProps.minWidth,
-  minHeight: freeDomProps.minHeight,
+  minWidth: {
+    type: Number,
+    default: undefined,
+  },
+  minHeight: {
+    type: Number,
+    default: undefined,
+  },
   lockAspectRatio: freeDomProps.lockAspectRatio,
   disabledDrag: freeDomProps.disabledDrag,
   disabledResize: freeDomProps.disabledResize,
@@ -88,8 +94,15 @@ export const FreeDomWrap = defineComponent({
 
     function runCorrect() {
       nodes.value.forEach(pos => {
-        // @ts-expect-error: trigger after mounted
-        const { x, y, width, height } = correct(pos.node._rect)
+        // 由于freedom自身有默认的最小宽高，所以优先选择容器的设置
+        const minWidth = props.minWidth || pos.node.props.minWidth
+        const minHeight = props.minHeight || pos.node.props.minHeight
+        const { x, y, width, height } = correct(
+          // @ts-expect-error: triggered after mount
+          pos.node._rect,
+          minWidth,
+          minHeight,
+        )
         // 直接对_rect赋值会导致引用丢失，进而无法触发坐标的更新
         pos.node._rect.x = x
         pos.node._rect.y = y
@@ -117,7 +130,7 @@ export const FreeDomWrap = defineComponent({
       y! >= 0 &&
       y! + h! <= height.value
     }
-    function correct(pos: Required<IPos>) {
+    function correct(pos: Required<IPos>, minWidth: number, minHeight: number) {
       let x = Math.max(pos.x, 0)
       let y = Math.max(pos.y, 0)
       let w = pos.width
@@ -125,14 +138,14 @@ export const FreeDomWrap = defineComponent({
       if (pos.x + pos.width > width.value) {
         x = width.value - pos.width
         if (x < 0) {
-          w = width.value
+          w = Math.max(width.value, minWidth)
           x = 0
         }
       }
       if (pos.y + pos.height > height.value) {
         y = height.value - pos.height
         if (y < 0) {
-          h = height.value
+          h = Math.max(height.value, minHeight)
           y = 0
         }
       }

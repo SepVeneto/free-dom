@@ -131,6 +131,7 @@ const freeDom = defineComponent({
       trigger: (pos: any) => {
         emit('update:modelValue', pos)
       },
+      props,
     })
 
     const sceneContext = useSceneContext(domRef, context, props)
@@ -151,11 +152,13 @@ const freeDom = defineComponent({
       props.autoSize && syncSize()
     })
 
-    const style = computed(() => ({
-      width: `${width.value}px`,
-      height: `${height.value}px`,
-      transform: `translate(${x.value}px, ${y.value}px)`,
-    }))
+    const style = computed(() => {
+      return ({
+        width: `${width.value}px`,
+        height: `${height.value}px`,
+        transform: `translate(${x.value}px, ${y.value}px)`,
+      })
+    })
 
     const onDrag: CoreFnCallback = (evt, coreData) => {
       if (!canDrag.value) return
