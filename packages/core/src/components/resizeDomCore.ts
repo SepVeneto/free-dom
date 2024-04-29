@@ -68,11 +68,11 @@ const resizeDomCore = defineComponent({
     })
     const lastRect = shallowRef<DOMRect | undefined>()
 
-    function runConstraints(width: number, height: number) {
+    function runConstraints(width: number, height: number, axis: IDot) {
       const { lockAspectRatio } = props
       if (!props.minHeight && !props.minWidth && !lockAspectRatio) return [width, height]
 
-      if (lockAspectRatio) {
+      if (lockAspectRatio && axis.length === 2) {
         const ratio = props.width / props.height
 
         if (ratio > 1) {
@@ -114,7 +114,7 @@ const resizeDomCore = defineComponent({
         let height = props.height + (canDragY ? deltaY : 0)
         // 这里不加分号会导致语法错误
         if (!evt.shiftKey) {
-          [width, height] = runConstraints(width, height)
+          [width, height] = runConstraints(width, height, axis)
         }
 
         const sizeChanged = width !== props.width || height !== props.height
