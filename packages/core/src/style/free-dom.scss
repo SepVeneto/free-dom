@@ -2,6 +2,9 @@
   transition: background 0.3s;
   position: absolute;
   cursor: move;
+  img {
+    pointer-events: none;
+  }
 }
 .vv-free-dom--draggable:focus-visible {
   outline: none;

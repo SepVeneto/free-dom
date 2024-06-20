@@ -60,3 +60,8 @@
 .vv-resize-dom--disabled {
   display: none;
 }
+.vv-resize-dom--box {
+  img {
+    pointer-events: none;
+  }
+}
