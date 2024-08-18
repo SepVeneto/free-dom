@@ -1,1 +1,0 @@
-import{f as s,h as a,Q as e}from"./chunks/framework.770d1f77.js";const l=e("",5),o=[l],i=JSON.parse('{"title":"快速开始","description":"","frontmatter":{"title":"快速开始"},"headers":[],"relativePath":"quick-start.md","filePath":"quick-start.md"}'),n={name:"quick-start.md"},d=Object.assign(n,{setup(t){return(p,c)=>(s(),a("div",null,o))}});export{i as __pageData,d as default};
