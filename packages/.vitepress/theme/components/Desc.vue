@@ -4,6 +4,7 @@
     <ElTooltip
       effect="dark"
       :content="desc"
+      raw-content
       trigger="click"
     >
       <ElIcon

@@ -53,7 +53,8 @@ export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  setup(props) {
+  emits: ['batch-select'],
+  setup(props, { emit }) {
     const eventBus = useEventBus()
     const nodes = ref<INode[]>([])
     const history = useOperateHistory(nodes)
@@ -87,6 +88,10 @@ export const FreeDomWrap = defineComponent({
         node.node._rect.x! += deltaX || 0
         node.node._rect.y! += deltaY || 0
       })
+    })
+
+    eventBus.on('batch-select', (state, pos) => {
+      state === 'end' && emit('batch-select', pos)
     })
 
     const selecting = ref(false)

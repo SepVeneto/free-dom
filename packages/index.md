@@ -54,6 +54,11 @@ title: '首页'
 | scale | array | ❌ | - | ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] | 所有元素允许缩放的方向
 | lock-aspect-ratio | boolean | ❌ | false | - | 所有元素缩放时是否按当前宽高比计算
 
+### free-scene 事件
+| 事件名 | 详情 | 类型 |
+| ---- | ---- | ------------ |
+| batch-select | 批量框选结束时触发 | (pos: <Desc desc="{<br>&nbsp &nbsp startX: number,<br>&nbsp &nbsp startY: number,<br>&nbsp &nbsp lastX: number,<br>&nbsp &nbsp lastY: number,<br>}">Pos</Desc>) => void |
+
 ## [grid-layout](./grid-layout/introduction)
 
 严重参考了[react-grid-layout](https://github.com/react-grid-layout/react-grid-layout)的代码，同时只实现了部分功能。

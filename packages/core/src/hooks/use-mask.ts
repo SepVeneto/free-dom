@@ -122,16 +122,22 @@ export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<IN
        */
     } else {
       history.push({ type: 'batch-select' })
+      // 延迟选择事件的结束时间，保证在其它组件的onClickOutside之后触发
+      setTimeout(() => {
+        eventBus.emit('batch-select', 'end', {
+          lastX: lastX.value,
+          lastY: lastY.value,
+          startX: startX.value,
+          startY: startY.value,
+        })
+
+        lastX.value = 0
+        lastY.value = 0
+        startX.value = 0
+        startY.value = 0
+      })
     }
     document.removeEventListener('mouseup', handleMouseup)
-    lastX.value = 0
-    lastY.value = 0
-    startX.value = 0
-    startY.value = 0
-    // 延迟选择事件的结束时间，保证在其它组件的onClickOutside之后触发
-    setTimeout(() => {
-      eventBus.emit('batch-select', 'end')
-    })
   }
   function renderMask() {
     return h('div', {
