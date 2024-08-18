@@ -27,7 +27,7 @@ jobs:
 
       - name: Build
         run: |
-          pnpm i --frozen-lockfile --registry=https://registry.npmmirror.com
+          pnpm i --registry=https://registry.npmmirror.com
           pnpm docs:build
 
       - name: Deploy
