@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pnpm i --frozen-lockfile --registry=https://registry.npmmirror.com
+pnpm i --registry=https://registry.npmmirror.com
 
 cd packages/core && pnpm build && npm publish --no-git-checks --access public
 
