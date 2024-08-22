@@ -82,6 +82,8 @@ export function useMask(
   function isCrossing(a: number, b: number, c: number, d: number, standard: number) {
     return (Math.max(a, c) - Math.min(b, d)) <= -standard
   }
+  // evt.offsetX, evt.offsetY计算的是基于target计算的
+  // 因此当容器内存在子元素或缩放方向会经过mask时offset不能代表在容器内的相对位置
   function offsetFormat(evt: MouseEvent) {
     const offsetX = evt.clientX - rect.x.value
     const offsetY = evt.clientY - rect.y.value
