@@ -331,8 +331,8 @@ const freeDom = defineComponent({
 
       const isValid = sceneContext.check?.(newPos)
       if (!isValid) {
-        x.value = clamp(x.value, 0, sceneContext.width)
-        y.value = clamp(y.value, 0, sceneContext.height)
+        x.value = clamp(x.value, 0, (sceneContext.width || 0) - (width.value || 0))
+        y.value = clamp(y.value, 0, (sceneContext.height || 0) - (height.value || 0))
       }
 
       emit('update:x', x.value)
