@@ -1,12 +1,17 @@
 import type { MaybeRef, Ref } from 'vue-demi'
 import { computed, h, ref } from 'vue-demi'
 import { unrefElement, useElementBounding } from '@vueuse/core'
-import { addUserSelectStyle, removeUserSelectStyle } from '../util'
+import { addUserSelectStyle, clamp, removeUserSelectStyle } from '../util'
 import type { INode } from '../types'
 import { useEventBus, useOperateHistory } from '../hooks'
 import type { FreeDomWrapProps } from '../components/freeDomWrap'
 
-export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<INode[]>) {
+export function useMask(
+  target: MaybeRef,
+  props: FreeDomWrapProps,
+  nodes: Ref<INode[]>,
+  size: { width: Ref<number>, height: Ref<number> },
+) {
   const eventBus = useEventBus()
   const startX = ref(0)
   const startY = ref(0)
@@ -107,8 +112,9 @@ export function useMask(target: MaybeRef, props: FreeDomWrapProps, nodes: Ref<IN
 
     const { x: offsetX, y: offsetY } = offsetFormat(evt)
     if (lastX.value === offsetX && lastY.value === offsetY) return
-    lastX.value = offsetX
-    lastY.value = offsetY
+
+    lastX.value = clamp(offsetX, 0, size.width.value)
+    lastY.value = clamp(offsetY, 0, size.height.value)
     handleBatchSelect()
   }
   function handleMouseup() {

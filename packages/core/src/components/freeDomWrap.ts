@@ -95,7 +95,7 @@ export const FreeDomWrap = defineComponent({
     })
 
     const selecting = ref(false)
-    const mask = useMask(rectRef, props, nodes)
+    const mask = useMask(rectRef, props, nodes, { width, height })
 
     function runCorrect() {
       nodes.value.forEach(pos => {
