@@ -1,6 +1,9 @@
 {
   "extends": "@sepveneto",
   "rules": {
-    "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off",
+    "promise/param-names": {
+      "resolvePattern": "^_?[resolve,done]$"
+    }
   }
 }

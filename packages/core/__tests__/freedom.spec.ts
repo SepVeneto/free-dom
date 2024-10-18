@@ -1,5 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable promise/param-names */
 import { describe, expect, test, vi } from 'vitest'
 import { FreeDom, FreeScene } from '../src'
 import { mount } from '@vue/test-utils'
@@ -275,7 +273,7 @@ describe('select', () => {
   test('single selection', async () => {
     const wrapper = mount(h(FreeDom, () => h('span', 'test')))
     const dnd = wrapper.findComponent({ name: 'FreeDom' })
-    dnd.trigger('click')
+    dnd.trigger('mousedown')
     await nextTick()
     expect(dnd.element.classList).toContain('vv-free-dom--draggable__selected')
   })
@@ -289,16 +287,16 @@ describe('select', () => {
 
     const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
 
-    first.trigger('click')
+    first.trigger('mousedown')
     await nextTick()
     expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
     expect(second.element.classList).not.toContain('vv-free-dom--draggable__selected')
-    second.trigger('click')
+    second.trigger('mousedown')
     await nextTick()
     expect(first.element.classList).not.toContain('vv-free-dom--draggable__selected')
     expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
 
-    first.trigger('click', { ctrlKey: true })
+    first.trigger('mousedown', { ctrlKey: true })
     await nextTick()
     expect(first.element.classList).toContain('vv-free-dom--draggable__selected')
     expect(second.element.classList).toContain('vv-free-dom--draggable__selected')
@@ -310,6 +308,7 @@ describe('select', () => {
       { style: { x: 25, y: 0 } },
     ]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     scene.trigger('mousedown')
@@ -354,6 +353,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 25, y: 0 } },
     ]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     scene.trigger('mousedown')
@@ -369,6 +369,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 25, y: 0 } },
     ]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     scene.trigger('mousedown')
@@ -389,6 +390,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 25, y: 0 } },
     ]
     const wrapper = renderDemo(nodeList)
+    await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     scene.trigger('mousedown')

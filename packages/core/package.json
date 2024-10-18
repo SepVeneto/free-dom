@@ -37,8 +37,10 @@
     "vue-demi": "latest"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.12",
     "@types/uuid": "^8.3.4",
     "bumpp": "^8.2.1",
+    "debug": "^4.3.7",
     "esbuild-plugin-sass": "^1.0.1",
     "tsup": "^6.5.0"
   },

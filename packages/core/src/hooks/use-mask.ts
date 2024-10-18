@@ -5,6 +5,9 @@ import { addUserSelectStyle, clamp, removeUserSelectStyle } from '../util'
 import type { INode } from '../types'
 import { useEventBus, useOperateHistory } from '../hooks'
 import type { FreeDomWrapProps } from '../components/freeDomWrap'
+import debugInit from 'debug'
+
+const debug = debugInit('freeDom:use-mask')
 
 export function useMask(
   target: MaybeRef,
@@ -74,6 +77,7 @@ export function useMask(
     const areaEndX = Math.max(startX.value, lastX.value)
     const areaEndY = Math.max(startY.value, lastY.value)
 
+    debug('is selected', startX.value, startY.value, lastX.value, lastY.value)
     const crossX = isCrossing(areaStartX, areaEndX, x1, x2, Math.abs(x1 - x2) / 5)
     const crossY = isCrossing(areaStartY, areaEndY, y1, y2, Math.abs(y1 - y2) / 5)
 
@@ -113,10 +117,14 @@ export function useMask(
     }
 
     const { x: offsetX, y: offsetY } = offsetFormat(evt)
+
+    debug(lastX.value, offsetX, lastY.value, offsetY)
     if (lastX.value === offsetX && lastY.value === offsetY) return
 
+    debug('cal', offsetX, 0, size.width.value)
     lastX.value = clamp(offsetX, 0, size.width.value)
     lastY.value = clamp(offsetY, 0, size.height.value)
+    debug('update last', lastX.value, lastY.value)
     handleBatchSelect()
   }
   function handleMouseup() {

@@ -15,6 +15,9 @@ import { useDefaultSlot, useEventBus, useMask, useOperateHistory } from '../hook
 import { freeDomProps } from './freeDom'
 import type { INode, IPos } from '../types'
 import { useElementBounding } from '@vueuse/core'
+import debugInit from 'debug'
+
+const debug = debugInit('freeDom:wrap')
 
 export const freeDomWrapProps = {
   diff: {
@@ -68,6 +71,7 @@ export const FreeDomWrap = defineComponent({
       wrapRect.height,
       () => nodes.value.length,
     ], ([w, h]) => {
+      debug('update size')
       width.value = w
       height.value = h
 

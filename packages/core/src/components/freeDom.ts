@@ -385,7 +385,7 @@ const freeDom = defineComponent({
       },
       props,
       {
-        nativeOnClick: this.handleSelect,
+        nativeOnMousedown: this.handleSelect,
         nativeOnKeydown: this.handleKeyboard,
       },
     )?.(slots)
