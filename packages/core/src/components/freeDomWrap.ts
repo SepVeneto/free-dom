@@ -166,6 +166,7 @@ export const FreeDomWrap = defineComponent({
       }
     }
     function clearSelectState() {
+      // TODO: node上需要一个lock状态，根据lock过滤出可以被统一清除选中状态的节点
       selectedNodes.value.forEach(node => { node.node.selected = false })
     }
 

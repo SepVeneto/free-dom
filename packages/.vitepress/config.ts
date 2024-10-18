@@ -31,6 +31,7 @@ export default defineConfig({
           { text: '缩放补偿', link: '/free-dom/transform-scale' },
           { text: '批量操作', link: '/free-dom/batch-select' },
           { text: '从外部添加', link: '/free-dom/from-outside' },
+          { text: '手动选中', link: '/free-dom/manual-select' },
         ],
       },
       {

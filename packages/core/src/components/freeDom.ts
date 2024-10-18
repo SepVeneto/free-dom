@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, onMounted, reactive, ref, toRef } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref, toRef, watch } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -21,6 +21,10 @@ export const freeDomProps = {
   modelValue: {
     type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
+  },
+  active: {
+    type: Boolean,
+    default: undefined,
   },
   keyboard: Boolean,
   x: {
@@ -117,6 +121,12 @@ const freeDom = defineComponent({
     const { width, height, syncSize: _syncSize } = useResizableData(props, domRef)
     const selected = ref(false)
 
+    watch(() => props.active, (val) => {
+      if (typeof val === 'boolean') {
+        selected.value = val
+      }
+    }, { immediate: true })
+
     const context = reactive({
       disabledSelect: toRef(props, 'disabledSelect'),
       selected,
@@ -136,6 +146,8 @@ const freeDom = defineComponent({
 
     const sceneContext = useSceneContext(domRef, context, props)
     onClickOutside(domRef, () => {
+      if (typeof props.active === 'boolean') return
+
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
     }, { ignore: [sceneContext.clearSelectState && '.vv-free-dom--draggable'] })

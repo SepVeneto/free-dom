@@ -14,6 +14,7 @@ title: '首页'
 | 名称 | 类型 | 必填 | 默认值 | 可选值 | 说明 |
 | ---- | ---- | ---- | ----- | ----- | --- |
 | v-model/model-value | object | ❌ | - | - | 元素的位置及尺寸
+| active | boolean | ❌ | - | boolean | 手动控制元素的选中与否，优先级高于`hover` |
 | lock-aspect-ratio | boolean | ❌ | false | - | 缩放时是否按当前宽高比计算
 | handle | string | ❌ | - | - | 通过class或id指定允许触发拖曳的元素
 | drag-start-fn | <Desc desc="(evt, coreData) => void">CoreFnCallback</Desc> | ❌ | - | - | 拖曳开始的回调函数 |
@@ -37,6 +38,12 @@ title: '首页'
 | 名称 | 参数 | 说明 |
 | --- | ----  | --- |
 | syncSize | - | 重新根据内部元素大小计算宽高（需要关闭`auto-size`） |
+
+### 事件
+
+| 名称 | 参数 | 说明 |
+| --- | ----  | --- |
+| drop | (evt: DragEvent) => void | 外部可拖曳元素被放置时触发 |
 
 ### free-scene 属性
 
