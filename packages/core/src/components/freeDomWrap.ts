@@ -53,7 +53,7 @@ export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  emits: ['batch-select'],
+  emits: ['batch-select', 'drop'],
   setup(props, { emit }) {
     const eventBus = useEventBus()
     const nodes = ref<INode[]>([])
@@ -209,6 +209,12 @@ export const FreeDomWrap = defineComponent({
       },
       {},
       {
+        ondrop: (evt) => {
+          this.$emit('drop', evt)
+        },
+        ondragover: (evt) => {
+          evt.preventDefault()
+        },
         onMousedown: this.mask.handleMousedown,
         onMousemove: this.mask.handleMousemove,
       },

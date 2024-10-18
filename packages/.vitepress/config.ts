@@ -30,6 +30,7 @@ export default defineConfig({
           { text: '自动更正', link: '/free-dom/auto-correct' },
           { text: '缩放补偿', link: '/free-dom/transform-scale' },
           { text: '批量操作', link: '/free-dom/batch-select' },
+          { text: '从外部添加', link: '/free-dom/from-outside' },
         ],
       },
       {
