@@ -30,7 +30,6 @@ const props = defineProps<{
 const isGridLayout = computed(() => props.path.startsWith('grid-layout'))
 const wrapStyle = computed(() => {
   return {
-    border: '1px solid black',
     width: isGridLayout.value ? '' : '100%',
     height: isGridLayout.value ? '' : '300px',
   }
@@ -52,6 +51,10 @@ const demo = computed(() => {
   background: #ddd;
   display: block;
   width: 100%;
+  height: 100%;
+}
+.vv-free-dom--scene {
+  border: 1px solid black;
   height: 100%;
 }
 </style>

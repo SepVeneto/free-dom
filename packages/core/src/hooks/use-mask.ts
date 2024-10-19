@@ -39,6 +39,7 @@ export function useMask(
     }
   })
   const selecting = ref(false)
+  const prepareSelect = ref(false)
   const rect = useElementBounding(target)
   const ownerDoc = computed(() => unrefElement(target)?.ownerDocument)
   const activeNodes = computed(() => nodes.value.filter(node => {
@@ -101,7 +102,7 @@ export function useMask(
 
     addUserSelectStyle(ownerDoc.value)
     const { x: offsetX, y: offsetY } = offsetFormat(evt)
-    selecting.value = true
+    prepareSelect.value = true
     startX.value = offsetX
     startY.value = offsetY
     lastX.value = offsetX
@@ -109,7 +110,7 @@ export function useMask(
     document.addEventListener('mouseup', handleMouseup)
   }
   function handleMousemove(evt: MouseEvent) {
-    if (!selecting.value) return
+    if (!prepareSelect.value) return
 
     if (!hasEmit.value) {
       eventBus.emit('batch-select', 'start')
@@ -120,6 +121,7 @@ export function useMask(
 
     debug(lastX.value, offsetX, lastY.value, offsetY)
     if (lastX.value === offsetX && lastY.value === offsetY) return
+    selecting.value = true
 
     debug('cal', offsetX, 0, size.width.value)
     lastX.value = clamp(offsetX, 0, size.width.value)
@@ -129,6 +131,7 @@ export function useMask(
   }
   function handleMouseup() {
     removeUserSelectStyle(ownerDoc.value)
+    prepareSelect.value = false
     selecting.value = false
     hasEmit.value = false
     // 鼠标位置没有变化，没有触发框选操作

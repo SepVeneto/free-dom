@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, onMounted, reactive, ref, toRef } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref, toRef, watch, watchEffect } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -21,6 +21,10 @@ export const freeDomProps = {
   modelValue: {
     type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
+  },
+  active: {
+    type: Boolean,
+    default: undefined,
   },
   keyboard: Boolean,
   x: {
@@ -95,6 +99,7 @@ const freeDom = defineComponent({
     'update:x',
     'update:y',
     'update:modelValue',
+    'select',
   ],
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
@@ -117,6 +122,15 @@ const freeDom = defineComponent({
     const { width, height, syncSize: _syncSize } = useResizableData(props, domRef)
     const selected = ref(false)
 
+    watch(() => props.active, (val) => {
+      if (typeof val === 'boolean') {
+        selected.value = val
+      }
+    }, { immediate: true })
+    watchEffect(() => {
+      emit('select', selected.value)
+    })
+
     const context = reactive({
       disabledSelect: toRef(props, 'disabledSelect'),
       selected,
@@ -136,6 +150,7 @@ const freeDom = defineComponent({
 
     const sceneContext = useSceneContext(domRef, context, props)
     onClickOutside(domRef, () => {
+
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
     }, { ignore: [sceneContext.clearSelectState && '.vv-free-dom--draggable'] })
@@ -379,7 +394,7 @@ const freeDom = defineComponent({
         class: [
           'vv-free-dom--draggable',
           this.disabled && 'vv-free-dom--draggable__disabled',
-          this.selected && 'vv-free-dom--draggable__selected',
+          (this.active || this.selected) && 'vv-free-dom--draggable__selected',
         ],
         style: this.style,
       },
