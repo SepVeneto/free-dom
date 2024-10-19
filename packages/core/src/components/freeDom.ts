@@ -5,7 +5,7 @@ import {
   useSceneContext,
 } from '../hooks'
 import type { ExtractPropTypes, PropType } from 'vue-demi'
-import { computed, defineComponent, onMounted, reactive, ref, toRef, watch } from 'vue-demi'
+import { computed, defineComponent, onMounted, reactive, ref, toRef, watch, watchEffect } from 'vue-demi'
 import type { CoreFnCallback } from './freeDomCore'
 import FreeDomCore from './freeDomCore'
 import type { ResizeData } from './resizeDomCore'
@@ -99,6 +99,7 @@ const freeDom = defineComponent({
     'update:x',
     'update:y',
     'update:modelValue',
+    'select',
   ],
   setup(props, { emit, expose, slots }) {
     const domRef = ref<InstanceType<typeof FreeDomCore>>()
@@ -126,6 +127,9 @@ const freeDom = defineComponent({
         selected.value = val
       }
     }, { immediate: true })
+    watchEffect(() => {
+      emit('select', selected.value)
+    })
 
     const context = reactive({
       disabledSelect: toRef(props, 'disabledSelect'),
@@ -146,7 +150,6 @@ const freeDom = defineComponent({
 
     const sceneContext = useSceneContext(domRef, context, props)
     onClickOutside(domRef, () => {
-      if (typeof props.active === 'boolean') return
 
       if (!selected.value || isBatchSelecting.value) return
       selected.value = false
@@ -391,7 +394,7 @@ const freeDom = defineComponent({
         class: [
           'vv-free-dom--draggable',
           this.disabled && 'vv-free-dom--draggable__disabled',
-          this.selected && 'vv-free-dom--draggable__selected',
+          (this.active || this.selected) && 'vv-free-dom--draggable__selected',
         ],
         style: this.style,
       },
