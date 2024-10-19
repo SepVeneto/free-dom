@@ -258,7 +258,7 @@ const freeDom = defineComponent({
       y.value = Number(_y.toFixed(2))
 
       props.resizeFn(evt, { node, width: w, height: h, handle: axis })
-      sceneContext?.emit('move')
+      sceneContext.emit('move', sceneContext.manualDiff.value ? !evt.shiftKey : evt.shiftKey)
     }
     const onResizeStop: ResizeFnCallback = (evt, data) => {
       const isValid = sceneContext.check?.({ x: x.value, y: y.value, width: width.value, height: height.value })
