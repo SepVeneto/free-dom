@@ -24,6 +24,7 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
     return SceneContext?.fixNonMonospaced || props.fixNonMonospaced
   })
   const keyboard = computed(() => SceneContext?.keyboard || props.keyboard)
+  const manualDiff = computed(() => SceneContext?.manualDiff)
 
   onMounted(() => {
     const node = elm.value
@@ -68,5 +69,6 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
     fixNonMonospaced,
     transformScale,
     keyboard,
+    manualDiff,
   }
 }

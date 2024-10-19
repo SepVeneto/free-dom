@@ -51,6 +51,7 @@ title: '首页'
 | 名称 | 类型 | 必填 | 默认值 | 可选值 | 说明 |
 | ---- | ---- | ---- | ----- | ----- | --- |
 | diff | number | ❌ | 2 | - | 触发吸附的距离，单位px
+| manual-diff | boolean | ❌ | false | - | 开启后默认不会进行吸附，需要通过按住shift来暂时启用 |
 | show-line | boolean | ❌ | true | - | 显示对齐参考线
 | min-width | number | ❌ | 50 | - | 元素缩放的最小宽度，单位px
 | min-height | number | ❌ | 50 | - | 元素缩放的最小高度，单位px

@@ -24,6 +24,7 @@ export const freeDomWrapProps = {
     type: Number,
     default: 2,
   },
+  manualDiff: Boolean,
   showLine: {
     type: Boolean,
     default: true,

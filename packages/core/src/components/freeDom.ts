@@ -188,7 +188,7 @@ const freeDom = defineComponent({
       if (!isValid) return
 
       handleDrag(evt, data)
-      sceneContext.emit('move', evt.shiftKey)
+      sceneContext.emit('move', sceneContext.manualDiff.value ? !evt.shiftKey : evt.shiftKey)
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
       if (!canDrag.value) return
@@ -276,6 +276,7 @@ const freeDom = defineComponent({
       sceneContext.history?.push({ type: 'resize-end' })
     }
     const onResizeStart: ResizeFnCallback = (evt, data) => {
+      selected.value = true
       props.resizeStartFn(evt, data)
     }
     const resizeNode = () => {
