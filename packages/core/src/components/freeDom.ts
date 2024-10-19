@@ -276,6 +276,7 @@ const freeDom = defineComponent({
       sceneContext.history?.push({ type: 'resize-end' })
     }
     const onResizeStart: ResizeFnCallback = (evt, data) => {
+      sceneContext.clearSelectState?.()
       selected.value = true
       props.resizeStartFn(evt, data)
     }
