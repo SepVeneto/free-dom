@@ -6,9 +6,8 @@
     <ClientOnly>
       <component
         :is="demo"
+        :class="isGridLayout ? 'grid-wrap' : 'free-wrap'"
         v-if="demo"
-        :style="wrapStyle"
-        :width="width"
       />
     </ClientOnly>
   </section>
@@ -28,12 +27,7 @@ const props = defineProps<{
   path: string,
 }>()
 const isGridLayout = computed(() => props.path.startsWith('grid-layout'))
-const wrapStyle = computed(() => {
-  return {
-    width: isGridLayout.value ? '' : '100%',
-    height: isGridLayout.value ? '' : '300px',
-  }
-})
+
 const demo = computed(() => {
   const keys = Object.keys(props.demos)
   for (const k of keys) {
@@ -47,14 +41,19 @@ const demo = computed(() => {
 </script>
 
 <style>
+.free-wrap {
+  width: 100%;
+  height: 300px;
+  border: 1px solid black;
+  overflow: auto;
+}
+.grid-wrap {
+  border: 1px solid black;
+}
 .grid-item {
   background: #ddd;
   display: block;
   width: 100%;
-  height: 100%;
-}
-.vv-free-dom--scene {
-  border: 1px solid black;
   height: 100%;
 }
 </style>

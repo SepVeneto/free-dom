@@ -13,7 +13,7 @@ export function useMask(
   target: MaybeRef,
   props: FreeDomWrapProps,
   nodes: Ref<INode[]>,
-  size: { width: Ref<number>, height: Ref<number> },
+  size: { width: Ref<number | undefined>, height: Ref<number | undefined> },
 ) {
   const eventBus = useEventBus()
   const startX = ref(0)

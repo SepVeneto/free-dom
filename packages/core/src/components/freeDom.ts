@@ -188,6 +188,7 @@ const freeDom = defineComponent({
       if (!isValid) return
 
       handleDrag(evt, data)
+
       sceneContext.emit('move', sceneContext.manualDiff.value ? !evt.shiftKey : evt.shiftKey)
     }
     const onDragStop: CoreFnCallback = (evt, coreData) => {
@@ -252,10 +253,10 @@ const freeDom = defineComponent({
       const isValid = sceneContext.check?.({ x: _x, y: _y, width: w, height: h })
       if (!isValid) return
 
-      width.value = Number(w.toFixed(2))
-      height.value = Number(h.toFixed(2))
-      x.value = Number(_x.toFixed(2))
-      y.value = Number(_y.toFixed(2))
+      width.value = Math.round(w)
+      height.value = Math.round(h)
+      x.value = Math.round(_x)
+      y.value = Math.round(_y)
 
       props.resizeFn(evt, { node, width: w, height: h, handle: axis })
       sceneContext.emit('move', sceneContext.manualDiff.value ? !evt.shiftKey : evt.shiftKey)
