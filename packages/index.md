@@ -9,6 +9,14 @@ title: '首页'
 
 主要用于快速实现dom元素的拖曳和缩放功能，利用`FreeScene`可以额外实现边缘吸附和区域限制功能。
 
+:::info
+缩放和拖曳的最小移动单位是`1px`
+:::
+
+:::danger
+请务必不要在`.vv-free-dom--scene`上设置影响其宽度或高度的样式，比如`border`，否则会导致其陷入不断计算宽度和高度的死循环中
+:::
+
 ### 属性
 
 | 名称 | 类型 | 必填 | 默认值 | 可选值 | 说明 |
@@ -62,6 +70,7 @@ title: '首页'
 | disabled-batch | boolean | ❌ | false | - | 是否禁用批量选择
 | scale | array | ❌ | - | ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] | 所有元素允许缩放的方向
 | lock-aspect-ratio | boolean | ❌ | false | - | 所有元素缩放时是否按当前宽高比计算
+| auto-expand | boolean \| <Desc desc="{ width: boolean, height: boolean }">Object</Desc> | ❌ | - | - | 是否在元素到达边界时自动扩展宽度或高度
 
 ### free-scene 事件
 | 事件名 | 详情 | 类型 |
