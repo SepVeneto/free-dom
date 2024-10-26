@@ -1,10 +1,13 @@
 import { describe, expect, test, vi } from 'vitest'
 import { FreeDom, FreeScene } from '../src'
-import { mount } from '@vue/test-utils'
+import { mount, VueWrapper } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
 import { simulateMoveFromTo } from './util'
 import type { CoreFnCallback } from '../src/components/freeDomCore'
 import ResizeObserver from 'resize-observer-polyfill'
+const hackCss = (wrap: VueWrapper) => {
+  wrap.element.querySelector('.vv-free-dom--scene')?.setAttribute('style', 'width: 100px; height: 100px')
+}
 
 global.ResizeObserver = ResizeObserver
 global.window.HTMLElement.prototype.getBoundingClientRect = function () {
@@ -125,7 +128,7 @@ describe('auto correct', () => {
   test('when scene mounted', async () => {
     const INIT = { x: -20, y: 100, w: 20, h: 20 }
     const pos = ref(INIT)
-    mount(h(
+    const wrap = mount(h(
       FreeScene,
       {
         style: 'width: 100px; height: 100px;',
@@ -135,6 +138,9 @@ describe('auto correct', () => {
         'onUpdate:modelValue': (val) => { pos.value = val },
       }, () => h('span', 'test')),
     ))
+    await nextTick()
+    hackCss(wrap)
+    await nextTick()
     await nextTick()
     expect(pos.value.x).toBe(0)
     expect(pos.value.y).toBe(80)
@@ -160,6 +166,7 @@ describe('auto correct', () => {
       data: () => ({ nodeList: [] }),
     })
     await nextTick()
+    hackCss(wrapper)
     await wrapper.setData({
       nodeList,
     })
@@ -168,8 +175,8 @@ describe('auto correct', () => {
   })
 })
 
-function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
-  return mount({
+async function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
+  const wrapper = mount({
     components: {
       FreeDom,
       FreeScene,
@@ -195,6 +202,9 @@ function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
       data,
     }),
   })
+  await nextTick()
+  hackCss(wrapper)
+  return wrapper
 }
 describe('diff', () => {
   test('dynamic diff', async () => {
@@ -203,7 +213,7 @@ describe('diff', () => {
       { style: { x: 25, y: 0 } },
     ]
     const node = nodeList[0]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     simulateMoveFromTo(wrapper, node.style.x, node.style.y, 3, 0)
@@ -220,7 +230,7 @@ describe('diff', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     simulateMoveFromTo(wrapper, 0, 0, 4, 0, true)
@@ -283,7 +293,7 @@ describe('select', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
 
     const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
 
@@ -307,7 +317,7 @@ describe('select', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
@@ -332,7 +342,7 @@ describe('select', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList, { disabledSelect: true })
+    const wrapper = await renderDemo(nodeList, { disabledSelect: true })
     await wrapper.setData({ disabledBatch: true })
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
 
@@ -352,7 +362,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
@@ -368,7 +378,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
@@ -389,7 +399,7 @@ describe('multiple area trigger condition', () => {
       { style: { x: 0, y: 0 } },
       { style: { x: 25, y: 0 } },
     ]
-    const wrapper = renderDemo(nodeList)
+    const wrapper = await renderDemo(nodeList)
     await nextTick()
 
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
@@ -446,5 +456,81 @@ describe('minisize', () => {
     simulateMoveFromTo(resize, 40, 20, 100, 30)
     expect(node.value.w).toBe(100)
     expect(node.value.h).toBe(50)
+  })
+})
+
+describe('expand size', () => {
+  test('forbidden', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList)
+    await nextTick()
+
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    {
+      const rect = window.getComputedStyle(scene.element)
+      expect(rect.width).toBe('100px')
+      expect(rect.height).toBe('100px')
+    }
+
+
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    dnd.trigger('mousedown')
+    dnd.trigger('mousemove', { clientX: 100, clientY: 100})
+    await nextTick()
+    {
+      const rect = window.getComputedStyle(scene.element)
+      expect(rect.width).toBe('100px')
+      expect(rect.height).toBe('100px')
+    }
+  })
+
+  test('expand width', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList, { autoExpand: { width: true }})
+    await nextTick()
+
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    simulateMoveFromTo(dnd, 0, 0, 80, 80)
+    await nextTick()
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
+    expect(rect.width).toBe('101px')
+    expect(rect.height).toBe('100px')
+  })
+
+  test('expand height', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList, { autoExpand: { height: true }})
+    await nextTick()
+
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    simulateMoveFromTo(dnd, 0, 0, 80, 80)
+    await nextTick()
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
+    expect(rect.width).toBe('100px')
+    expect(rect.height).toBe('101px')
+  })
+
+  test('expand width&height', async () => {
+    const nodeList = [
+      { style: { x: 0, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList, { autoExpand: true })
+    await nextTick()
+
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    simulateMoveFromTo(dnd, 0, 0, 80, 80)
+    await nextTick()
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
+    expect(rect.width).toBe('101px')
+    expect(rect.height).toBe('101px')
   })
 })

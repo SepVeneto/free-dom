@@ -1,4 +1,4 @@
-import type { ExtractPropTypes } from 'vue-demi'
+import type { ExtractPropTypes, PropType } from 'vue-demi'
 import {
   computed,
   defineComponent,
@@ -24,6 +24,7 @@ export const freeDomWrapProps = {
     type: Number,
     default: 2,
   },
+  autoExpand: [Boolean, Object] as PropType<boolean | { width?: boolean, height?: boolean }>,
   manualDiff: Boolean,
   showLine: {
     type: Boolean,
@@ -62,10 +63,14 @@ export const FreeDomWrap = defineComponent({
     const eventBus = useEventBus()
     const nodes = ref<INode[]>([])
     const history = useOperateHistory(nodes)
-    const width = ref(0)
-    const height = ref(0)
+    const width = ref<number>()
+    const height = ref<number>()
     const rectRef = shallowRef<HTMLElement>()
     const wrapRect = useElementBounding(rectRef)
+    const wrapStyle = computed(() => ({
+      height: height.value + 'px',
+      width: width.value + 'px',
+    }))
 
     watch([
       wrapRect.width,
@@ -73,18 +78,48 @@ export const FreeDomWrap = defineComponent({
       () => nodes.value.length,
     ], ([w, h]) => {
       debug('update size')
-      width.value = w
-      height.value = h
 
       if (!w || !h) return
 
+      width.value = w
+      height.value = h
+
       runCorrect()
-    })
+    }, { immediate: true })
 
     const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
+
+    const expandSize = (node: INode) => {
+      let expandWidth = props.autoExpand === true
+      let expandHeight = props.autoExpand === true
+      if (typeof props.autoExpand === 'object') {
+        expandWidth = !!props.autoExpand.width
+        expandHeight = !!props.autoExpand.height
+      }
+
+      if (!expandWidth && !expandHeight) return
+
+      const {
+        x = 0,
+        width: nw = 0,
+        y = 0,
+        height: nh = 0,
+      } = node.node._rect
+      if (expandWidth && width.value && x + nw >= width.value) {
+        width.value += 1
+      }
+      if (expandHeight && height.value && y + nh >= height.value) {
+        height.value += 1
+      }
+    }
+    // 根据容器内元素的缩放或拖动行为计算参考线
     eventBus.on('move', (nodeId: number) => {
       const mainNode = selectedNodes.value.find(node => node.uuid === nodeId)
       if (!mainNode) return
+
+      if (props.autoExpand) {
+        expandSize(mainNode)
+      }
 
       const { deltaX, deltaY } = mainNode.node._rect
       selectedNodes.value.forEach((node) => {
@@ -134,6 +169,8 @@ export const FreeDomWrap = defineComponent({
       nodes.value.splice(index, 1)
     }
     function checkValid(pos: IPos) {
+      if (!width.value || !height.value) return false
+
       const { x, y, width: w, height: h } = pos
       return x! >= 0 &&
       x! + w! <= width.value &&
@@ -145,17 +182,19 @@ export const FreeDomWrap = defineComponent({
       let y = Math.max(pos.y, 0)
       let w = pos.width
       let h = pos.height
-      if (pos.x + pos.width > width.value) {
-        x = width.value - pos.width
+      const containerWidth = width.value || 0
+      const containerHeight = height.value || 0
+      if (pos.x + pos.width > containerWidth) {
+        x = containerWidth - pos.width
         if (x < 0) {
-          w = Math.max(width.value, minWidth)
+          w = Math.max(containerWidth, minWidth)
           x = 0
         }
       }
-      if (pos.y + pos.height > height.value) {
-        y = height.value - pos.height
+      if (pos.y + pos.height > containerHeight) {
+        y = containerHeight - pos.height
         if (y < 0) {
-          h = Math.max(height.value, minHeight)
+          h = Math.max(containerHeight, minHeight)
           y = 0
         }
       }
@@ -194,6 +233,7 @@ export const FreeDomWrap = defineComponent({
       selecting,
       mask,
       history,
+      wrapStyle,
     }
   },
   render() {
@@ -206,23 +246,29 @@ export const FreeDomWrap = defineComponent({
       marklineComp,
     ]
 
-    return createRender(
+    const main = createRender(
       'section',
       {
         ref: 'rectRef',
         class: 'vv-free-dom--scene',
+        style: this.wrapStyle,
       },
+    )(slotList)
+    const wrap = (comp: any) => createRender(
+      'section',
+      {},
       {},
       {
+        onMousedown: this.mask.handleMousedown,
+        onMousemove: this.mask.handleMousemove,
         ondrop: (evt) => {
           this.$emit('drop', evt)
         },
         ondragover: (evt) => {
           evt.preventDefault()
         },
-        onMousedown: this.mask.handleMousedown,
-        onMousemove: this.mask.handleMousemove,
-      },
-    )(slotList)
+      }
+    )(comp)
+    return wrap(main)
   },
 })

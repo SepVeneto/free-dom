@@ -33,6 +33,7 @@ export default defineConfig({
           { text: '从外部添加', link: '/free-dom/from-outside' },
           { text: '手动选中', link: '/free-dom/manual-select' },
           { text: '手动吸附', link: '/free-dom/manual-diff' },
+          { text: '自动扩展尺寸', link: '/free-dom/auto-expand' },
         ],
       },
       {
