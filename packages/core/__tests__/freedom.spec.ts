@@ -146,7 +146,7 @@ describe('auto correct', () => {
     expect(pos.value.y).toBe(80)
   })
   test('when add new', async () => {
-    const nodeList = [{ style: { x: -20, y: 100 } }]
+    const nodeList = [{ style: { x: -20, y: 100, w: 20, h: 20 } }]
     const wrapper = mount({
       components: {
         FreeDom,
@@ -157,8 +157,6 @@ describe('auto correct', () => {
         <FreeDom
           v-for="(node, index) in nodeList"
           :key="index"
-          :width="20"
-          :height="20"
           v-model="node.style"
         >{{ index }}</FreeDom>
       </FreeScene>
@@ -190,8 +188,6 @@ async function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
           <FreeDom
             v-for="(node, index) in nodeList"
             :key="index"
-            :width="20"
-            :height="20"
             v-model="node.style"
           >{{ index }}</FreeDom>
         </FreeScene>
@@ -209,8 +205,8 @@ async function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
 describe('diff', () => {
   test('dynamic diff', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const node = nodeList[0]
     const wrapper = await renderDemo(nodeList)
@@ -227,8 +223,8 @@ describe('diff', () => {
   })
   test('use shift to ignore diff', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList)
     await nextTick()
@@ -314,8 +310,8 @@ describe('select', () => {
 
   test('multiple selection with area', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList)
     await nextTick()
@@ -359,8 +355,8 @@ describe('select', () => {
 describe('multiple area trigger condition', () => {
   test('away from', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList)
     await nextTick()
@@ -375,8 +371,8 @@ describe('multiple area trigger condition', () => {
   })
   test('intersect but not meet the condition', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList)
     await nextTick()
@@ -396,8 +392,8 @@ describe('multiple area trigger condition', () => {
    */
   test('intersect and meet the condition', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
-      { style: { x: 25, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList)
     await nextTick()
@@ -488,7 +484,7 @@ describe('expand size', () => {
 
   test('expand width', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList, { autoExpand: { width: true }})
     await nextTick()
@@ -504,7 +500,7 @@ describe('expand size', () => {
 
   test('expand height', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList, { autoExpand: { height: true }})
     await nextTick()
@@ -520,7 +516,7 @@ describe('expand size', () => {
 
   test('expand width&height', async () => {
     const nodeList = [
-      { style: { x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList, { autoExpand: true })
     await nextTick()

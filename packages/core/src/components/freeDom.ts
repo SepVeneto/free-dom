@@ -27,22 +27,6 @@ export const freeDomProps = {
     default: undefined,
   },
   keyboard: Boolean,
-  x: {
-    type: Number,
-    default: 0,
-  },
-  y: {
-    type: Number,
-    default: 0,
-  },
-  width: {
-    type: Number,
-    default: undefined,
-  },
-  height: {
-    type: Number,
-    default: undefined,
-  },
   handle: {
     type: String,
     default: undefined,
@@ -232,9 +216,7 @@ const freeDom = defineComponent({
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
-      // @ts-expect-error: execute after mounted
       const offsetW = -(w - width.value)
-      // @ts-expect-error: execute after mounted
       const offsetH = -(h - height.value)
 
       const axisH = axis[0]
