@@ -1,6 +1,10 @@
 <template>
+  <div>width: {{ width }}</div>
+  <div>height: {{ height }}</div>
   <FreeScene
     auto-expand
+    v-model:width="width"
+    v-model:height="height"
   >
     <FreeDom
       v-model="pos1"
@@ -18,6 +22,8 @@
 import { FreeDom, FreeScene } from 'free-dom'
 import { ref } from 'vue'
 
+const width = ref()
+const height = ref()
 const active = ref(false)
 const pos1 = ref({
   x: Math.random() * 100,

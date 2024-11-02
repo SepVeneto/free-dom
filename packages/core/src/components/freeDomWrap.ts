@@ -37,6 +37,14 @@ export const freeDomWrapProps = {
   keyboard: Boolean,
   disabledBatch: Boolean,
   handle: freeDomProps.handle,
+  width: {
+    type: Number,
+    default: undefined,
+  },
+  height: {
+    type: Number,
+    default: undefined,
+  },
   minWidth: {
     type: Number,
     default: undefined,
@@ -58,13 +66,13 @@ export type FreeDomWrapProps = ExtractPropTypes<typeof freeDomWrapProps>
 export const FreeDomWrap = defineComponent({
   name: 'FreeDomWrap',
   props: freeDomWrapProps,
-  emits: ['batch-select', 'drop'],
+  emits: ['batch-select', 'drop', 'update:width', 'update:height'],
   setup(props, { emit }) {
     const eventBus = useEventBus()
     const nodes = ref<INode[]>([])
     const history = useOperateHistory(nodes)
-    const width = ref<number>()
-    const height = ref<number>()
+    const width = ref<number | undefined>(props.width)
+    const height = ref<number | undefined>(props.height)
     const rectRef = shallowRef<HTMLElement>()
     const wrapRect = useElementBounding(rectRef)
     const wrapStyle = computed(() => ({
@@ -83,6 +91,8 @@ export const FreeDomWrap = defineComponent({
 
       width.value = w
       height.value = h
+      emit('update:width', w)
+      emit('update:height', h)
 
       runCorrect()
     }, { immediate: true })
