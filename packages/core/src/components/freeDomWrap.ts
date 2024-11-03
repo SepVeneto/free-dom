@@ -8,6 +8,7 @@ import {
   shallowRef,
   toRefs,
   watch,
+  watchEffect,
 } from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
@@ -79,6 +80,11 @@ export const FreeDomWrap = defineComponent({
       height: height.value + 'px',
       width: width.value + 'px',
     }))
+
+    watchEffect(() => {
+      width.value = props.width
+      height.value = props.height
+    })
 
     watch([
       wrapRect.width,
