@@ -17,10 +17,14 @@ export function useResizableData(
     height.value = getHeight()
   })
   function getWidth() {
-    return props.w || props.modelValue.w || props.minWidth
+    return props.w
+      || props.modelValue.w
+      || (props.autoSize ? undefined : props.minWidth)
   }
   function getHeight() {
-    return props.h || props.modelValue.h || props.minHeight
+    return props.h
+      || props.modelValue.h
+      || (props.autoSize ? undefined : props.minHeight)
   }
   async function syncSize(
     fixNonMonospaced: boolean,

@@ -19,9 +19,17 @@ title: '首页'
 
 ### 属性
 
+:::info
+如果元素创建之初可以确定它的大小，可以禁用`autoSize`来优化性能
+:::
+
 | 名称 | 类型 | 必填 | 默认值 | 可选值 | 说明 |
 | ---- | ---- | ---- | ----- | ----- | --- |
-| v-model/model-value | object | ❌ | - | - | 元素的位置及尺寸
+| v-model/model-value | <Desc desc="{ x: number, y: number, w: number, h: number }">object</Desc> | ❌ | - | - | 元素的位置及尺寸
+| v-model:x/x | number | ❌ | - | - | 元素在x轴上的位置
+| v-model:y/y | number | ❌ | - | - | 元素在y轴上的位置
+| v-model:w/w | number | ❌ | - | - | 元素的宽度
+| v-model:h/h | number | ❌ | - | - | 元素的高度
 | active | boolean | ❌ | - | boolean | 手动控制元素的选中与否，仅影响样式 |
 | lock-aspect-ratio | boolean | ❌ | false | - | 缩放时是否按当前宽高比计算
 | handle | string | ❌ | - | - | 通过class或id指定允许触发拖曳的元素

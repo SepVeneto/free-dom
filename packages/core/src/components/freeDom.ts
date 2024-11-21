@@ -232,8 +232,8 @@ const freeDom = defineComponent({
     }
 
     const onResize: ResizeFnCallback = (evt, { node, width: w, height: h, handle: axis }) => {
-      const offsetW = -(w - width.value)
-      const offsetH = -(h - height.value)
+      const offsetW = -(w - (width.value || 0))
+      const offsetH = -(h - (height.value || 0))
 
       const axisH = axis[0]
       const axisV = axis[axis.length - 1]

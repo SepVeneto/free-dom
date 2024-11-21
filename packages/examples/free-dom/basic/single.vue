@@ -1,10 +1,10 @@
 <template>
   <section>
     <FreeDom @update:model-value="pos = $event">
-      <pre>{{ pos }}</pre>
+      <div>长文本长文本长文本长文本长文本长文本长文本长文本</div>
     </FreeDom>
-    <FreeDom>
-      <div>test1</div>
+    <FreeDom :auto-size="false">
+      <div>长文本长文本长文本长文本长文本长文本长文本长文本</div>
     </FreeDom>
   </section>
 </template>
