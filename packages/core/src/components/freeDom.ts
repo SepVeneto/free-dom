@@ -18,6 +18,22 @@ function noop() { /* noop */ }
 type ResizeFnCallback = (evt: MouseEvent, resizeData: ResizeData) => void
 
 export const freeDomProps = {
+  w: {
+    type: Number,
+    default: undefined,
+  },
+  h: {
+    type: Number,
+    default: undefined,
+  },
+  x: {
+    type: Number,
+    default: undefined,
+  },
+  y: {
+    type: Number,
+    default: undefined,
+  },
   modelValue: {
     type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
@@ -78,8 +94,8 @@ const freeDom = defineComponent({
   name: 'FreeDom',
   props: freeDomProps,
   emits: [
-    'update:width',
-    'update:height',
+    'update:w',
+    'update:h',
     'update:x',
     'update:y',
     'update:modelValue',
@@ -251,8 +267,8 @@ const freeDom = defineComponent({
       }
 
       props.resizeStopFn(evt, data)
-      emit('update:width', width.value)
-      emit('update:height', height.value)
+      emit('update:w', width.value)
+      emit('update:h', height.value)
       emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
       sceneContext.emit('moveup')
 
