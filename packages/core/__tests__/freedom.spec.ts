@@ -65,7 +65,7 @@ describe('callback', () => {
     const resize = wrapper.findComponent({ name: 'ResizeDomCore' })
     expect(resize.classes()).toContain('vv-resize-dom--box')
 
-    simulateMoveFromTo(resize, 0, 0, 100, 100)
+    simulateMoveFromTo(resize, 0, 0, -100, -100)
 
     expect(resizeStartSpy).toHaveBeenCalled()
     expect(resizeSpy).toHaveBeenCalled()
