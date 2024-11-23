@@ -366,6 +366,9 @@ const freeDom = defineComponent({
       selected,
       domRef,
       style,
+      reset() {
+        sceneContext.emit('moveup')
+      },
       onDragStop,
       onDrag,
       onDragStart,
@@ -403,6 +406,7 @@ const freeDom = defineComponent({
       {
         nativeOnMousedown: this.handleSelect,
         nativeOnKeydown: this.handleKeyboard,
+        nativeOnKeyup: this.reset,
       },
     )?.(slots)
   },

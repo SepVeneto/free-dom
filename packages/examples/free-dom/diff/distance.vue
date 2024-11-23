@@ -1,6 +1,7 @@
 <template>
   <FreeScene
     :diff="10"
+    manual-diff
     keyboard
   >
     <FreeDom v-model="pos1">
