@@ -6,13 +6,13 @@
 }
 .vv-resize-dom--handler__l {
   top: 50%;
-  left: 0;
+  left: 4px;
   transform: translateY(-50%) rotate(135deg);
   cursor: ew-resize;
 }
 .vv-resize-dom--handler__r {
   top: 50%;
-  right: 0;
+  right: 4px;
   transform: translateY(-50%) rotate(-45deg);
   cursor: ew-resize;
 }
