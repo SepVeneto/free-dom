@@ -27,7 +27,7 @@ jobs:
 
       - name: Build
         run: |
-          pnpm i --registry=https://registry.npmmirror.com
+          pnpm i
           pnpm docs:build
 
       - name: Deploy
