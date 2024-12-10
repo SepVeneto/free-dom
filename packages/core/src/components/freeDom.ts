@@ -407,6 +407,7 @@ const freeDom = defineComponent({
         nativeOnMousedown: this.handleSelect,
         nativeOnKeydown: this.handleKeyboard,
         nativeOnKeyup: this.reset,
+        onBlur: this.reset,
       },
     )?.(slots)
   },
