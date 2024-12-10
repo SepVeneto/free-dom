@@ -152,7 +152,7 @@ const freeDomCore = defineComponent({
       {
         onMousedown: (evt: MouseEvent) => {
           evt.stopPropagation()
-          this.mousedownFn(evt)
+          evt.button === 0 && this.mousedownFn(evt)
         },
         onMouseup: this.mouseupFn,
       },
