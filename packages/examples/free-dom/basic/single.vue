@@ -1,7 +1,7 @@
 <template>
   <section>
     <FreeDom @update:model-value="pos = $event">
-      <div>长文本长文本长文本长文本长文本长文本长文本长文本</div>
+      <div style="color: #fff; width: 100%; height: 100%; background: crimson;">长文本长文本长文本长文本长文本长文本长文本长文本</div>
     </FreeDom>
     <FreeDom :auto-size="false">
       <div>长文本长文本长文本长文本长文本长文本长文本长文本</div>
