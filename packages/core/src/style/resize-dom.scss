@@ -43,11 +43,12 @@
 .vv-resize-dom--handler__rb {
   bottom: 0;
   right: 0;
-  cursor: nw-resize
+  cursor: nw-resize;
 }
 
 .vv-resize-dom--handler {
   position: absolute;
+  z-index: 1;
   width: 20px;
   height: 20px;
   padding: 0 3px 3px 0;

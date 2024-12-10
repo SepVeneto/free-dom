@@ -25,7 +25,7 @@ export const freeDomWrapProps = {
     type: Number,
     default: 2,
   },
-  autoExpand: [Boolean, Object] as PropType<boolean | { width?: boolean, height?: boolean }>,
+  autoExpand: [Number, Boolean, Object] as PropType<boolean | number | { width?: boolean | number, height?: boolean | number }>,
   manualDiff: Boolean,
   showLine: {
     type: Boolean,
@@ -106,14 +106,17 @@ export const FreeDomWrap = defineComponent({
     const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
 
     const expandSize = (node: INode) => {
-      let expandWidth = props.autoExpand === true
-      let expandHeight = props.autoExpand === true
+      let expandWidth = props.autoExpand
+      let expandHeight = props.autoExpand
       if (typeof props.autoExpand === 'object') {
-        expandWidth = !!props.autoExpand.width
-        expandHeight = !!props.autoExpand.height
+        expandWidth = props.autoExpand.width
+        expandHeight = props.autoExpand.height
       }
 
       if (!expandWidth && !expandHeight) return
+
+      const offsetWidth = typeof expandWidth === 'number' ? expandWidth : 10
+      const offsetHeight = typeof expandHeight === 'number' ? expandHeight : 10
 
       const {
         x = 0,
@@ -122,10 +125,10 @@ export const FreeDomWrap = defineComponent({
         height: nh = 0,
       } = node.node._rect
       if (expandWidth && width.value && x + nw >= width.value) {
-        width.value += 1
+        width.value += offsetWidth
       }
       if (expandHeight && height.value && y + nh >= height.value) {
-        height.value += 1
+        height.value += offsetHeight
       }
     }
     // 根据容器内元素的缩放或拖动行为计算参考线

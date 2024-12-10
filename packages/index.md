@@ -78,7 +78,7 @@ title: '首页'
 | disabled-batch | boolean | ❌ | false | - | 是否禁用批量选择
 | scale | array | ❌ | - | ['t', 'r', 'l', 'b', 'lt', 'lb', 'rt', 'rb'] | 所有元素允许缩放的方向
 | lock-aspect-ratio | boolean | ❌ | false | - | 所有元素缩放时是否按当前宽高比计算
-| auto-expand | boolean \| <Desc desc="{ width: boolean, height: boolean }">Object</Desc> | ❌ | - | - | 是否在元素到达边界时自动扩展宽度或高度
+| auto-expand | boolean \| number \| <Desc desc="{ width: boolean \| number, height: boolean \| number }">Object</Desc> | ❌ | - | - | 是否在元素到达边界时自动扩展宽度或高度, 如果设置开启，默认自动扩展10px
 
 ### free-scene 事件
 | 事件名 | 详情 | 类型 |

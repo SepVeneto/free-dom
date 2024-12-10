@@ -494,7 +494,7 @@ describe('expand size', () => {
     await nextTick()
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
-    expect(rect.width).toBe('101px')
+    expect(rect.width).toBe('110px')
     expect(rect.height).toBe('100px')
   })
 
@@ -511,7 +511,7 @@ describe('expand size', () => {
     const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
     const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
     expect(rect.width).toBe('100px')
-    expect(rect.height).toBe('101px')
+    expect(rect.height).toBe('110px')
   })
 
   test('expand width&height', async () => {
@@ -519,6 +519,22 @@ describe('expand size', () => {
       { style: { w: 20, h: 20, x: 0, y: 0 } },
     ]
     const wrapper = await renderDemo(nodeList, { autoExpand: true })
+    await nextTick()
+
+    const dnd = wrapper.findComponent({ name: 'FreeDom' })
+    simulateMoveFromTo(dnd, 0, 0, 80, 80)
+    await nextTick()
+    const scene = wrapper.findComponent({ name: 'FreeDomWrap' })
+    const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
+    expect(rect.width).toBe('110px')
+    expect(rect.height).toBe('110px')
+  })
+
+  test('expand 1px', async () => {
+    const nodeList = [
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList, { autoExpand: 1 })
     await nextTick()
 
     const dnd = wrapper.findComponent({ name: 'FreeDom' })
