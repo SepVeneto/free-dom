@@ -34,6 +34,7 @@ export default defineConfig({
           { text: '手动选中', link: '/free-dom/manual-select' },
           { text: '手动吸附', link: '/free-dom/manual-diff' },
           { text: '自动扩展尺寸', link: '/free-dom/auto-expand' },
+          { text: '遮罩层', link: '/free-dom/mask' },
         ],
       },
       {

@@ -12,8 +12,8 @@
 .vv-free-dom--draggable__disabled {
   cursor: initial;
 }
-.vv-free-dom--draggable__selected::after,
-.vv-free-dom--draggable__selected:focus-visible {
+.vv-free-dom--draggable__mask.vv-free-dom--draggable__selected::after,
+.vv-free-dom--draggable__mask.vv-free-dom--draggable__selected:focus-visible {
   content: '';
   display: block;
   width: 100%;

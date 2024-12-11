@@ -25,6 +25,16 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
   })
   const keyboard = computed(() => SceneContext?.keyboard || props.keyboard)
   const manualDiff = computed(() => SceneContext?.manualDiff)
+  const mask = computed(() => {
+    // free-dom的优化级最高
+    if (props.mask != null) {
+      return props.mask
+    } else if (SceneContext?.mask == null) {
+      return true
+    } else {
+      return SceneContext.mask
+    }
+  })
 
   onMounted(() => {
     const node = elm.value
@@ -70,5 +80,6 @@ export function useSceneContext(elm: Ref<InstanceType<typeof FreeDomCore> | unde
     transformScale,
     keyboard,
     manualDiff,
+    mask,
   }
 }

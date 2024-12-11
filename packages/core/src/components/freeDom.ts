@@ -34,6 +34,10 @@ export const freeDomProps = {
     type: Number,
     default: undefined,
   },
+  mask: {
+    type: Boolean,
+    default: undefined,
+  },
   modelValue: {
     type: Object as PropType<Partial<{ x: number, y: number, w: number, h: number }>>,
     default: () => ({}),
@@ -363,6 +367,7 @@ const freeDom = defineComponent({
     })
 
     return {
+      itemMask: sceneContext.mask,
       selected,
       domRef,
       style,
@@ -399,6 +404,7 @@ const freeDom = defineComponent({
           'vv-free-dom--draggable',
           this.disabled && 'vv-free-dom--draggable__disabled',
           (this.active || this.selected) && 'vv-free-dom--draggable__selected',
+          this.itemMask && 'vv-free-dom--draggable__mask',
         ],
         style: this.style,
       },

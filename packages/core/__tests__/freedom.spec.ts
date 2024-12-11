@@ -189,6 +189,7 @@ async function renderDemo(nodeList: any[], data: Record<string, any> = {}) {
             v-for="(node, index) in nodeList"
             :key="index"
             v-model="node.style"
+            :mask="node.mask"
           >{{ index }}</FreeDom>
         </FreeScene>
       `,
@@ -544,5 +545,51 @@ describe('expand size', () => {
     const rect = window.getComputedStyle(scene.element.querySelector('.vv-free-dom--scene')!)
     expect(rect.width).toBe('101px')
     expect(rect.height).toBe('101px')
+  })
+})
+
+describe('mask', () => {
+  test('default exist mask', async () => {
+    const node = ref({ w: 20, h: 30, x: 0, y: 0, })
+    const options = {
+      modelValue: node.value,
+    }
+    const wrapper = mount(h(FreeDom, options, () => h('span', 'test')))
+    wrapper.trigger('mousedown')
+    expect(wrapper.classes()).toContain('vv-free-dom--draggable__mask')
+  })
+  test('without mask', async () => {
+    const node = ref({ w: 20, h: 30, x: 0, y: 0, })
+    const options = {
+      modelValue: node.value,
+      mask: false,
+    }
+    const wrapper = mount(h(FreeDom, options, () => h('span', 'test')))
+    wrapper.trigger('mousedown')
+    expect(wrapper.classes()).not.toContain('vv-free-dom--draggable__mask')
+  })
+  test('in scene with default', async () => {
+    const nodeList = [
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 } },
+    ]
+    const wrapper = await renderDemo(nodeList)
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    first.trigger('mousedown')
+    expect(first.classes()).toContain('vv-free-dom--draggable__mask')
+    second.trigger('mousedown')
+    expect(second.classes()).toContain('vv-free-dom--draggable__mask')
+  })
+  test('in scene with single control', async () => {
+    const nodeList = [
+      { style: { w: 20, h: 20, x: 0, y: 0 } },
+      { style: { w: 20, h: 20, x: 25, y: 0 }, mask: true },
+    ]
+    const wrapper = await renderDemo(nodeList, { mask: false })
+    const [first, second] = wrapper.findAllComponents({ name: 'FreeDom' })
+    first.trigger('mousedown')
+    expect(first.classes()).not.toContain('vv-free-dom--draggable__mask')
+    second.trigger('mousedown')
+    expect(second.classes()).toContain('vv-free-dom--draggable__mask')
   })
 })

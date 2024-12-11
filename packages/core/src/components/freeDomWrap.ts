@@ -25,6 +25,7 @@ export const freeDomWrapProps = {
     type: Number,
     default: 2,
   },
+  mask: freeDomProps.mask,
   autoExpand: [Number, Boolean, Object] as PropType<boolean | number | { width?: boolean | number, height?: boolean | number }>,
   manualDiff: Boolean,
   showLine: {
