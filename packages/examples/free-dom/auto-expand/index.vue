@@ -1,9 +1,11 @@
 <template>
   <div>
-    <div>width: <input type="number" v-model="width"></div>
-    <div>height: <input type="number" v-model="height"></div>
+    <div style="position: absolute;">
+      <div>width: <input type="number" v-model="width"></div>
+      <div>height: <input type="number" v-model="height"></div>
+    </div>
     <FreeScene
-      auto-expand
+      :auto-expand="10"
       v-model:width="width"
       v-model:height="height"
     >

@@ -1,7 +1,7 @@
 <template>
   <FreeScene
-    :transform-scale="0.5"
-    style="transform: scale(0.5)"
+    :transform-scale="1.5"
+    style="transform: scale(1.5); transform-origin: top left; overflow: hidden;"
   >
     <FreeDom v-model="pos1">
       测试文本1
@@ -18,6 +18,8 @@ import { ref } from 'vue'
 const pos1 = ref({
   x: Math.random() * 100,
   y: Math.random() * 100,
+  w: 200,
+  h: 200
 })
 const pos2 = ref({
   x: Math.random() * 100 + 100,

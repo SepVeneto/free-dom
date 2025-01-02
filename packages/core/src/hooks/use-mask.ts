@@ -90,8 +90,8 @@ export function useMask(
   // evt.offsetX, evt.offsetY计算的是基于target计算的
   // 因此当容器内存在子元素或缩放方向会经过mask时offset不能代表在容器内的相对位置
   function offsetFormat(evt: MouseEvent) {
-    const offsetX = evt.clientX - rect.x.value
-    const offsetY = evt.clientY - rect.y.value
+    const offsetX = (evt.clientX - rect.x.value) / props.transformScale
+    const offsetY = (evt.clientY - rect.y.value) / props.transformScale
     return {
       x: offsetX,
       y: offsetY,

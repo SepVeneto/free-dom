@@ -2,23 +2,20 @@ import type { ExtractPropTypes, PropType } from 'vue-demi'
 import {
   computed,
   defineComponent,
+  onMounted,
   provide,
   reactive,
   ref,
   shallowRef,
   toRefs,
   watch,
-  watchEffect,
 } from 'vue-demi'
 import { SceneToken, createRender } from '../util'
 import markLine from './markLine'
 import { useDefaultSlot, useEventBus, useMask, useOperateHistory } from '../hooks'
 import { freeDomProps } from './freeDom'
 import type { INode, IPos } from '../types'
-import { useElementBounding } from '@vueuse/core'
-import debugInit from 'debug'
 
-const debug = debugInit('freeDom:wrap')
 
 export const freeDomWrapProps = {
   diff: {
@@ -73,36 +70,25 @@ export const FreeDomWrap = defineComponent({
     const eventBus = useEventBus()
     const nodes = ref<INode[]>([])
     const history = useOperateHistory(nodes)
-    const width = ref<number | undefined>(props.width)
-    const height = ref<number | undefined>(props.height)
+    const width = ref<number | undefined>()
+    const height = ref<number | undefined>()
     const rectRef = shallowRef<HTMLElement>()
-    const wrapRect = useElementBounding(rectRef)
     const wrapStyle = computed(() => ({
       height: height.value + 'px',
       width: width.value + 'px',
     }))
 
-    watchEffect(() => {
-      width.value = props.width
-      height.value = props.height
+    onMounted(() => {
+      if (rectRef.value) {
+        const { width: w, height: h } = window.getComputedStyle(rectRef.value)
+        width.value = props.width || Math.round(parseFloat(w)) || 0
+        height.value = props.height || Math.round(parseFloat(h)) || 0
+      }
     })
 
-    watch([
-      wrapRect.width,
-      wrapRect.height,
-      () => nodes.value.length,
-    ], ([w, h]) => {
-      debug('update size')
-
-      if (!w || !h) return
-
-      width.value = w
-      height.value = h
-      emit('update:width', w)
-      emit('update:height', h)
-
+    watch([width, height, () => nodes.value.length], () => {
       runCorrect()
-    }, { immediate: true })
+    })
 
     const selectedNodes = computed(() => nodes.value.filter(node => node.node.selected))
 
@@ -269,14 +255,16 @@ export const FreeDomWrap = defineComponent({
     const main = createRender(
       'section',
       {
-        ref: 'rectRef',
         class: 'vv-free-dom--scene',
         style: this.wrapStyle,
       },
     )(slotList)
     const wrap = (comp: any) => createRender(
       'section',
-      {},
+      {
+        ref: 'rectRef',
+        style: 'overflow: hidden;',
+      },
       {},
       {
         onMousedown: this.mask.handleMousedown,

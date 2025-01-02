@@ -128,7 +128,7 @@ describe('auto correct', () => {
   test('when scene mounted', async () => {
     const INIT = { x: -20, y: 100, w: 20, h: 20 }
     const pos = ref(INIT)
-    const wrap = mount(h(
+    mount(h(
       FreeScene,
       {
         style: 'width: 100px; height: 100px;',
@@ -139,9 +139,7 @@ describe('auto correct', () => {
       }, () => h('span', 'test')),
     ))
     await nextTick()
-    hackCss(wrap)
-    await nextTick()
-    await nextTick()
+
     expect(pos.value.x).toBe(0)
     expect(pos.value.y).toBe(80)
   })
@@ -164,7 +162,7 @@ describe('auto correct', () => {
       data: () => ({ nodeList: [] }),
     })
     await nextTick()
-    hackCss(wrapper)
+    // hackCss(wrapper)
     await wrapper.setData({
       nodeList,
     })
