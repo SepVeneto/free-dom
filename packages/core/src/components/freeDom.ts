@@ -213,9 +213,13 @@ const freeDom = defineComponent({
 
       sceneContext.emit('moveup')
 
-      emit('update:x', x.value)
-      emit('update:y', y.value)
-      emit('update:modelValue', { x: x.value, y: y.value, w: width.value, h: height.value })
+      const roundX = Math.round(x.value)
+      const roundY = Math.round(y.value)
+      const roundW = Math.round(width.value || 0)
+      const roundH = Math.round(height.value || 0)
+      emit('update:x', roundX)
+      emit('update:y', roundY)
+      emit('update:modelValue', { x: roundX, y: roundY, w: roundW, h: roundH })
       sceneContext.history?.push({ type: 'move-end' })
     }
     const onDragStart: CoreFnCallback = (evt, coreData) => {

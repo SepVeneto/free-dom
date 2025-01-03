@@ -20,8 +20,8 @@ export function useDraggableData(props: FreeDomProps) {
     props.dragStartFn(evt, data)
   }
   const handleDrag: CoreFnCallback = (evt, data) => {
-    x.value = Math.round(data.x)
-    y.value = Math.round(data.y)
+    x.value = data.x
+    y.value = data.y
     deltaX.value = data.deltaX
     deltaY.value = data.deltaY
 
