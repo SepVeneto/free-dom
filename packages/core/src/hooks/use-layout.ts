@@ -56,6 +56,7 @@ export function useLayout(props: GridLayoutProps) {
     const sortable = _sortLayoutItems(layout)
 
     // const moveup = typeof y === 'number' && oldY >= y
+    if (!props.collision) return layout
 
     // TODO: 碰撞检测
     const collisions = sortable.filter(l => _collides(l, config))

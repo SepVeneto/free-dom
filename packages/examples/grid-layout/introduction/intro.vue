@@ -1,7 +1,10 @@
 <template>
   <GridLayout
     v-model="layout"
-    collision
+    :width="375"
+    :cols="375"
+    :row-height="1"
+    :margin="[0, 0]"
   >
     <span
       key="a"
@@ -11,10 +14,6 @@
       key="b"
       class="grid-item"
     >b</span>
-    <span
-      key="c"
-      class="grid-item"
-    >c</span>
   </GridLayout>
 </template>
 
@@ -27,8 +26,7 @@ defineOptions({
 })
 
 const layout = ref([
-  { i: 'a', x: 0, y: 0, w: 1, h: 2 },
-  { i: 'b', x: 1, y: 0, w: 3, h: 2 },
-  { i: 'c', x: 2, y: 0, w: 1, h: 2 },
+  { i: 'a', x: 0, y: 0, w: 300, h: 150 },
+  { i: 'b', x: 0, y: 0, w: 300, h: 150 },
 ])
 </script>
