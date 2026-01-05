@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref } from 'vue-demi'
 import type { useLayout } from './use-layout'
 import type { GridLayoutProps } from '../components/gridLayout'
 import type { PositionParams } from '../util'
