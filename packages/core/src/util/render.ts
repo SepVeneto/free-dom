@@ -46,7 +46,14 @@ export function createRender(
   return (slots: Slots) => {
     if (isVue2) {
       if (Object.prototype.toString.call(slots) === '[object Object]') {
-        return h(comp, { ...options, scopedSlots: slots })
+        let children = []
+        // @ts-expect-error: ignore
+        if ('default' in slots) {
+          children = slots.default()
+        } else {
+          children = [slots]
+        }
+        return h(comp, options, children)
       } else {
         return h(comp, options, Array.isArray(slots) ? slots : [slots])
       }
